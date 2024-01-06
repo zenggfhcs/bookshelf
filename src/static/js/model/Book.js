@@ -1,10 +1,10 @@
-import {Bookinfo} from "./Bookinfo.js";
+import {BookInfo} from "./BookInfo.js";
 import {Check} from "@/static/js/utils/tools.js";
 
 export class Book {
    constructor() {
       const internal = {
-         bookId: 1, bookDamageLevel: 0, borrowable: false, bookInfo: new Bookinfo(),
+         bookId: 1, bookDamageLevel: 0, borrowable: false, bookInfo: new BookInfo(),
       }
       Object.defineProperties(this, {
          /**
@@ -14,7 +14,7 @@ export class Book {
             get: () => {
                return internal.bookId;
             }, set: (val) => {
-               Check.isPositiveInteger(this.bookId.name, val);
+               Check.isPositiveInteger("bookId", val);
 
                internal.bookId = val;
             }, configurable: false
@@ -26,7 +26,7 @@ export class Book {
             get: () => {
                return internal.bookDamageLevel;
             }, set: (val) => {
-               Check.isPositiveInteger(this.bookDamageLevel.name, val);
+               Check.isPositiveInteger("bookDamageLevel", val);
 
                internal.bookDamageLevel = val;
             }, configurable: false
@@ -38,7 +38,7 @@ export class Book {
             get: () => {
                return internal.borrowable;
             }, set: (val) => {
-               Check.isBoolean(this.borrowable.name, val);
+               Check.isBoolean("borrowable", val);
 
                internal.borrowable = val;
             }, configurable: false
@@ -50,7 +50,7 @@ export class Book {
             get: () => {
                return internal.bookInfo
             }, set: (val) => {
-               Check.classCorrect(this.bookInfo.name, Bookinfo, val);
+               Check.classCorrect("bookInfo", BookInfo, val);
 
                internal.bookInfo = val;
             }, configurable: false

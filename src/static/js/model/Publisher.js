@@ -1,5 +1,5 @@
 import {BaseEntity} from "@/static/js/model/BaseEntity.js";
-import {BoolHelper, Check, Exception, Type} from "@/static/js/utils/tools.js";
+import {Check, Type} from "@/static/js/utils/tools.js";
 
 /**
  * 出版社-实体
@@ -18,8 +18,8 @@ export class Publisher extends BaseEntity {
             get: () => {
                return internal.publishId;
             }, set: (val) => {
-               Check.typeCorrect(this.publishId.name, Type.Number, val);
-               Check.isPositiveInteger(this.publishId.name, val);
+               Check.typeCorrect("publishId", Type.Number, val);
+               Check.isPositiveInteger("publishId", val);
 
                internal.publishId = val;
             }, configurable: false
@@ -31,7 +31,7 @@ export class Publisher extends BaseEntity {
             get: () => {
                return internal.name;
             }, set: (val) => {
-               Check.typeCorrect(this.name.name, Type.String, val);
+               Check.typeCorrect("name", Type.String, val);
 
                internal.name = val;
             }, configurable: false
@@ -43,7 +43,7 @@ export class Publisher extends BaseEntity {
             get: () => {
                return internal.remark;
             }, set: (val) => {
-               Check.typeCorrect(this.remark.name, Type.String, val);
+               Check.typeCorrect("remark", Type.String, val);
 
                internal.remark = val;
             }, configurable: false

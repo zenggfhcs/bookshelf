@@ -10,7 +10,7 @@ export class User extends BaseEntity {
          displayName: '',
          userEmail: '',
          userPhoneNumber: '',
-         state: 0,
+         condition: 0,
          authority: 0,
          surname: '',
          name: '',
@@ -26,7 +26,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.userId;
             }, set: (val) => {
-               Check.isPositiveInteger(this.userId.name, val);
+               Check.isPositiveInteger("userId", val);
 
                internal.userId = val;
             }, configurable: false
@@ -38,7 +38,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.authenticationString;
             }, set: (val) => {
-               Check.typeCorrect(this.authenticationString.name, Type.String, val);
+               Check.typeCorrect("authenticationString", Type.String, val);
 
                internal.authenticationString = val;
             }, configurable: false
@@ -50,7 +50,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.displayName;
             }, set: (val) => {
-               Check.typeCorrect(this.displayName.name, Type.String, val);
+               Check.typeCorrect("displayName", Type.String, val);
 
                internal.displayName = val;
             }, configurable: false
@@ -62,7 +62,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.userEmail;
             }, set: (val) => {
-               Check.typeCorrect(this.userEmail.name, Type.String, val);
+               Check.typeCorrect("userEmail", Type.String, val);
 
                internal.userEmail = val;
             }, configurable: false
@@ -74,7 +74,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.userPhoneNumber;
             }, set: (val) => {
-               Check.typeCorrect(this.userPhoneNumber.name, Type.String, val);
+               Check.typeCorrect("userPhoneNumber", Type.String, val);
 
                internal.userPhoneNumber = val;
             }, configurable: false
@@ -82,13 +82,13 @@ export class User extends BaseEntity {
          /**
           * 状态
           */
-         state: {
+         condition: {
             get: () => {
-               return internal.state;
+               return internal.condition;
             }, set: (val) => {
-               Check.isPositiveInteger(this.state.name, val);
+               Check.isPositiveInteger("condition", val);
 
-               internal.state = val;
+               internal.condition = val;
             }, configurable: false
          },
          /**
@@ -98,7 +98,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.authority;
             }, set: (val) => {
-               Check.isPositiveInteger(this.authority.name, val);
+               Check.isPositiveInteger("authority", val);
 
                internal.authority = val;
             }, configurable: false
@@ -110,7 +110,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.surname;
             }, set: (val) => {
-               Check.typeCorrect(this.surname.name, Type.String, val);
+               Check.typeCorrect("surname", Type.String, val);
 
                internal.surname = val;
             }, configurable: false
@@ -122,7 +122,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.name;
             }, set: (val) => {
-               Check.typeCorrect(this.name.name, Type.String, val);
+               Check.typeCorrect("name", Type.String, val);
 
                internal.name = val;
             }, configurable: false
@@ -134,7 +134,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.sex;
             }, set: (val) => {
-               Check.isPositiveInteger(this.sex.name, val, () => {
+               Check.isPositiveInteger("sex", val, () => {
                   return true
                });
 
@@ -148,7 +148,7 @@ export class User extends BaseEntity {
             get: () => {
                return internal.age;
             }, set: (val) => {
-               Check.isPositiveInteger(this.age.name, val);
+               Check.isPositiveInteger("age", val);
 
                internal.age = val;
             }, configurable: false
@@ -160,11 +160,15 @@ export class User extends BaseEntity {
             get: () => {
                return internal.lastLoginTime;
             }, set: (val) => {
-               Check.classCorrect(this.lastLoginTime.name, Date, val);
+               Check.classCorrect("lastLoginTime", Date, val);
 
                internal.lastLoginTime = val;
             }, configurable: false
          },
       });
+   }
+
+   login() {
+
    }
 }

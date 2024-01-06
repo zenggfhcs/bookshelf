@@ -33,7 +33,9 @@ export class BoolHelper {
     * @returns {boolean}
     */
    static isFloat(val, fun) {
-      return val === +val && val !== (val | 0) && this.f(fun);
+      return val === +val
+         // && val !== (val | 0)
+         && this.f(fun);
    }
 
    /**

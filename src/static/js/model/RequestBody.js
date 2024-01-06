@@ -14,7 +14,7 @@ export class RequestBody {
             get: () => {
                return internal.entity;
             }, set: (val) => {
-               Check.classCorrect(this.entity.name, BaseEntity, val);
+               Check.classCorrect("entity", BaseEntity, val);
 
                internal.entity = val;
             }, configurable: false
@@ -23,7 +23,7 @@ export class RequestBody {
              get: () => {
                  return internal.filter;
              }, set: (val) => {
-                 Check.classCorrect(this.filter.name, Filter, val);
+               Check.classCorrect("filter", Filter, val);
 
                  internal.filter = val;
              }, configurable: false

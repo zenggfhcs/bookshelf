@@ -1,14 +1,9 @@
 import axios from "axios";
 import {Check, Type} from "@/static/js/utils/tools.js";
 import {RequestBody} from "@/static/js/model/RequestBody.js";
+import {Url} from "@/static/js/service/Url.js";
 
 export class BaseService {
-   /**
-    * 请求前缀
-    * @type {string}
-    */
-   static baseUrl = "http://localhost:9090";
-
    /**
     * 创建
     * @param entity 实体
@@ -87,7 +82,7 @@ export class BaseService {
 
       /* ======= 请求 ======= */
       axios({
-         methods: method, url: this.baseUrl + url + id, data: body
+         methods: method, url: Url.baseUrl + url + id, data: body
       }).then(myThen)
          .catch(myCatch)
          .finally(myFinally);

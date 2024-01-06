@@ -1,4 +1,4 @@
-import {BoolHelper, Check, Exception, Type} from "@/static/js/utils/tools.js";
+import {Check, Type} from "@/static/js/utils/tools.js";
 
 export class BaseEntity {
    constructor() {
@@ -13,8 +13,8 @@ export class BaseEntity {
             get: () => {
                return internal.createBy;
             }, set: (val) => {
-               Check.typeCorrect(this.createBy.name, Type.Number, val);
-               Check.isPositiveInteger(this.createBy.name, val);
+               Check.typeCorrect("createBy", Type.Number, val);
+               Check.isPositiveInteger("createBy", val);
 
                internal.createBy = val;
             }, configurable: false
@@ -26,8 +26,8 @@ export class BaseEntity {
             get: () => {
                return internal.updateBy;
             }, set: (val) => {
-               Check.typeCorrect(this.updateBy.name, Type.Number, val);
-               Check.isPositiveInteger(this.updateBy.name, val);
+               Check.typeCorrect("updateBy", Type.Number, val);
+               Check.isPositiveInteger("updateBy", val);
 
                internal.updateBy = val;
             }, configurable: false
@@ -39,7 +39,7 @@ export class BaseEntity {
             get: () => {
                return internal.updateTime;
             }, set: (val) => {
-               Check.classCorrect(this.updateTime.name, Date, val);
+               Check.classCorrect("updateTime", Date, val);
 
                internal.updateTime = val;
             }, configurable: false
@@ -51,7 +51,7 @@ export class BaseEntity {
             get: () => {
                return internal.createTime;
             }, set: (val) => {
-               Check.classCorrect(this.createTime.name, Date, val);
+               Check.classCorrect("createTime", Date, val);
 
                internal.createTime = val;
             }, configurable: false
