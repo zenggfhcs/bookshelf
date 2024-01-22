@@ -1,36 +1,43 @@
+<style scoped>
+.i-btn {
+   width: 46%;
+   margin: 2%;
+}
+
+.i-input {
+   font-size: 1.2rem;
+}
+</style>
 <template>
    <n-form ref="formRef" :model="model" :rules="rules" style="width: 20rem">
-      <n-form-item path="name">
+      <n-form-item path="name" size="large" label="user-number">
          <n-input
             v-model:value="model.name"
             :maxlength="length.max"
             @keydown.enter.prevent
             placeholder="账号"
-            style="font-size: 1.5rem"
+            class="i-input"
          />
       </n-form-item>
-      <n-form-item path="password">
+      <n-form-item path="password" size="large" label="password">
          <n-input
             v-model:value="model.password"
             :maxlength="length.max"
             type="password"
             @keydown.enter.prevent
             placeholder="密码"
-            style="font-size: 1.5rem"
+            class="i-input"
          />
       </n-form-item>
-      <n-form-item>
-         <n-button type="primary" @click="register">
+         <n-button type="primary" @click="register" class="i-btn">
             register
          </n-button>
-         <n-button type="primary" @click="login">
+         <n-button type="primary" @click="login" class="i-btn">
             login
          </n-button>
-      </n-form-item>
    </n-form>
 
-   <pre>{{ JSON.stringify(model, null, 2) }}
-</pre>
+   <pre>{{ JSON.stringify(model, null, 2) }}</pre>
 </template>
 
 <script setup>
@@ -63,6 +70,12 @@ const rules = {
             if (value === null || value.length === 0) {
                return new Error("请输入账号");
             }
+            else if (value.length < length.min) {
+               return new Error("user-number 长度应为 7-19")
+            }
+            else if (!/\d+/.test(value)) {
+               return new Error("这不是一个有效的 user-number");
+            }
          },
       }
    ],
@@ -73,14 +86,17 @@ const rules = {
             if (value === null || value.length === 0) {
                return new Error("请输入密码");
             }
+            else if (value.length < length.min) {
+               return new Error("password 长度应为 7-19")
+            }
          },
       }
    ]
 };
 
 const length = {
-   min: 8,
-   max: 16
+   min: 7,
+   max: 19
 }
 
 /**
@@ -99,30 +115,16 @@ const login = debounce((e) => {
    });
 }, 555);
 
-//    (e) => {
-//    if (!running) {
-//       running = true;                           // 运行中（防抖）
-//       e.preventDefault();                       // 父默认方法
-//       formRef.value?.validate((errors) => {     // 验证表单
-//          if (!errors) {                         // 验证通过
-//             // message.success("");
-//             userLogin();                        // 进行登录
-//          } else {
-//             message.error("login error");
-//          }
-//       });
-//       setTimeout(() => {                 // 延时解除
-//          running = false;                       // 解除防抖
-//       }, 500);                          // 延时时间
-//    }
-// }
+
 const userLogin = (user) => {       // 登录
    console.log(user);
 }
 
+
 const register = (e) => {
    e.preventDefault();                       // 父默认方法
 }
+
 
 const switchForm = () => {
    console.log(switchForm);

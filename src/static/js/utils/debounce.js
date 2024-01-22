@@ -7,7 +7,7 @@ import {Check, Type} from "@/static/js/utils/tools.js";
  * @param delay 延迟时间（毫秒值）
  * @returns debounce ref
  */
-export function debounceRef(value, delay = 1000) {
+export function debounceRef(value, delay = 666) {
    let timer;
    return customRef((track, trigger) => {
       return {
@@ -44,7 +44,9 @@ export function debounce(fun, delay) {
          return;                                                  // 阻止运行
       }
       running = true;                                             // 设置 true，表示运行中
-      setTimeout(() => {running = false;}, delay);  // 设置延时，经过时长 delay 后，默认运行结束，允许运行
+      setTimeout(() => {
+         running = false;
+      }, delay);  // 设置延时，经过时长 delay 后，默认运行结束，允许运行
       fun(args);                                                  // 运行
    };
 }
