@@ -73,7 +73,7 @@ const rules = {
             else if (value.length < length.min) {
                return new Error("user-number 长度应为 7-19")
             }
-            else if (!/\d+/.test(value)) {
+            else if (!(/^\d+$/.test(value))) {
                return new Error("这不是一个有效的 user-number");
             }
          },
