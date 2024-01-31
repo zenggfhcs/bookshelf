@@ -1,71 +1,3 @@
-<template>
-   <n-layout style="height: 100vh">
-      <n-layout-header bordered style="height: 64px; padding: 24px">
-         天堂桥
-      </n-layout-header>
-      <n-layout has-sider position="absolute" style="top: 64px; bottom: 64px">
-         <n-layout-sider
-            :collapsed="collapsed"
-            :collapsed-width="64"
-            :width="240"
-            bordered
-            collapse-mode="width"
-            show-trigger
-            @collapse="collapsed = true"
-            @expand="collapsed = false"
-         >
-            <n-scrollbar>
-               <n-menu
-                  :collapsed="collapsed"
-                  :collapsed-icon-size="22"
-                  :collapsed-width="64"
-                  :expand-icon="expandIcon"
-                  :options="menuOptions"
-                  :render-icon="renderMenuIcon"
-                  :render-label="renderMenuLabel"
-                  :style="manuStyle"
-               />
-            </n-scrollbar>
-         </n-layout-sider>
-         <n-layout :native-scrollbar="false" content-style="padding: 24px;">
-            <n-layout-sider>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-               <n-h2>平山道</n-h2>
-            </n-layout-sider>
-         </n-layout>
-      </n-layout>
-      <n-layout-footer
-         bordered
-         position="absolute"
-         style="height: 64px; padding: 24px"
-      >
-         地府路
-      </n-layout-footer>
-   </n-layout>
-</template>
-
 <script lang="ts" setup>
 import {h, ref} from "vue";
 import {MenuOption, NH2, NIcon, NLayout, NLayoutFooter, NLayoutSider, NMenu, NScrollbar} from 'naive-ui';
@@ -211,5 +143,75 @@ function expandIcon() {
 
 </script>
 
+<template>
+   <n-layout style="height: 100vh">
+      <n-layout-header bordered style="height: 64px; padding: 24px">
+         天堂桥
+      </n-layout-header>
+      <n-layout has-sider position="absolute" style="top: 64px; bottom: 64px">
+         <n-layout-sider
+            :collapsed="collapsed"
+            :collapsed-width="64"
+            :width="240"
+            bordered
+            collapse-mode="width"
+            show-trigger
+            @collapse="collapsed = true"
+            @expand="collapsed = false"
+         >
+            <n-scrollbar>
+               <n-menu
+                  :collapsed="collapsed"
+                  :collapsed-icon-size="22"
+                  :collapsed-width="64"
+                  :expand-icon="expandIcon"
+                  :options="menuOptions"
+                  :render-icon="renderMenuIcon"
+                  :render-label="renderMenuLabel"
+                  :style="manuStyle"
+               />
+            </n-scrollbar>
+         </n-layout-sider>
+         <n-layout :native-scrollbar="false" content-style="padding: 24px;">
+            <n-layout-sider>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+               <n-h2>平山道</n-h2>
+            </n-layout-sider>
+         </n-layout>
+      </n-layout>
+      <n-layout-footer
+         bordered
+         position="absolute"
+         style="height: 64px; padding: 24px"
+      >
+         地府路
+      </n-layout-footer>
+   </n-layout>
+</template>
+
 <style scoped>
+
 </style>
+

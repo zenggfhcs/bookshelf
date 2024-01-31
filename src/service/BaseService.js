@@ -1,7 +1,7 @@
 import axios from "axios";
-import {Check, Type} from "@/static/js/utils/tools.js";
-import {RequestBody} from "@/static/js/model/RequestBody.js";
-import {Url} from "@/static/js/service/Url.js";
+import {Check, Type} from "@/utils/tools.js";
+import {RequestBody} from "@/model/RequestBody.js";
+import {Url} from "@/service/Url.js";
 
 export class BaseService {
    /**

@@ -1,5 +1,5 @@
-import {Check, Type} from "@/static/js/utils/tools.js";
-import {BaseEntity} from "@/static/js/model/BaseEntity.js";
+import {Check, Type} from "@/utils/tools.js";
+import {BaseEntity} from "@/model/BaseEntity.js";
 
 export class User extends BaseEntity {
    constructor() {

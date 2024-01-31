@@ -1,8 +1,8 @@
 import {customRef} from "vue"
-import {Check, Type} from "@/static/js/utils/tools.js";
+import {Check, Type} from "@/utils/tools.js";
 
 /**
- * 带延迟更新的 ref
+ * 带延迟更新的 ref，对于变量可以实现，对于对象不行
  * @param value 更新的值
  * @param delay 延迟时间（毫秒值）
  * @returns debounce ref

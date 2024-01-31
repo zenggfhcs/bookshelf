@@ -1,6 +1,6 @@
-import {Check} from "@/static/js/utils/tools.js";
-import {BaseEntity} from "@/static/js/model/BaseEntity.js";
-import {Filter} from "@/static/js/model/Filter.js";
+import {Check} from "@/utils/tools.js";
+import {BaseEntity} from "@/model/BaseEntity.js";
+import {Filter} from "@/model/Filter.js";
 
 export class RequestBody {
    constructor(entity, filter) {
@@ -20,13 +20,13 @@ export class RequestBody {
             }, configurable: false
          },
          filter: {
-             get: () => {
-                 return internal.filter;
-             }, set: (val) => {
+            get: () => {
+               return internal.filter;
+            }, set: (val) => {
                Check.classCorrect("filter", Filter, val);
 
-                 internal.filter = val;
-             }, configurable: false
+               internal.filter = val;
+            }, configurable: false
          },
       })
    }

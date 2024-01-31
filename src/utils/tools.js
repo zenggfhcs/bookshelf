@@ -6,6 +6,7 @@ export class BoolHelper {
    static isFunction(val, fun = undefined) {
       return this.isType(val, Type.Function) && this.f(fun);
    }
+
    /**
     * 判断 val 是不是布尔值
     * @param val
@@ -67,7 +68,7 @@ export class BoolHelper {
 
 export class Exception {
    static typeError(attribute, type, val) {
-      throw new Error(`属性 ${attribute} 必须是一个 ${type}；而你的赋值为：${val}`);
+      throw new Error(`属性 ${attribute} 应当是一个 ${type}；而你的赋值为：${val}`);
    }
 }
 

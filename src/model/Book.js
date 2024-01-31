@@ -1,5 +1,5 @@
 import {BookInfo} from "./BookInfo.js";
-import {Check} from "@/static/js/utils/tools.js";
+import {Check} from "@/utils/tools.js";
 
 export class Book {
    constructor() {

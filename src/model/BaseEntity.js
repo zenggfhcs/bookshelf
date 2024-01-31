@@ -1,4 +1,4 @@
-import {Check, Type} from "@/static/js/utils/tools.js";
+import {Check, Type} from "@/utils/tools.js";
 
 export class BaseEntity {
    constructor() {

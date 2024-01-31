@@ -1,6 +1,6 @@
-import {Publisher} from "@/static/js/model/Publisher.js";
-import {BaseEntity} from "@/static/js/model/BaseEntity.js";
-import {Check, Type} from "@/static/js/utils/tools.js";
+import {Publisher} from "@/model/Publisher.js";
+import {BaseEntity} from "@/model/BaseEntity.js";
+import {Check, Type} from "@/utils/tools.js";
 
 
 export class BookInfo extends BaseEntity {
