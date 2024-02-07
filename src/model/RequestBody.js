@@ -1,10 +1,10 @@
-import {Check} from "@/utils/tools.js";
+import {TypeCheck} from "@/utils/Check.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
 import {Filter} from "@/model/Filter.js";
 
 export class RequestBody {
    constructor(entity, filter) {
-      Check.classCorrect(entity.name, BaseEntity, entity);
+      TypeCheck.classCorrect(entity.name, BaseEntity, entity);
       const internal = {
          entity: entity,
          filter: filter ? filter : new Filter()
@@ -14,7 +14,7 @@ export class RequestBody {
             get: () => {
                return internal.entity;
             }, set: (val) => {
-               Check.classCorrect("entity", BaseEntity, val);
+               TypeCheck.classCorrect("entity", BaseEntity, val);
 
                internal.entity = val;
             }, configurable: false
@@ -23,7 +23,7 @@ export class RequestBody {
             get: () => {
                return internal.filter;
             }, set: (val) => {
-               Check.classCorrect("filter", Filter, val);
+               TypeCheck.classCorrect("filter", Filter, val);
 
                internal.filter = val;
             }, configurable: false

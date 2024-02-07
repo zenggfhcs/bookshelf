@@ -1,61 +1,71 @@
-import {Check, Type} from "@/utils/tools.js";
+import {ParameterType} from "@/constant/type.js";
+import {TypeCheck} from "@/utils/Check.js";
+import {generateProperties} from "@/utils/generate.js";
 
 export class BaseEntity {
+   /**
+    * 创建人
+    */
+   #createBy;
+   /**
+    * 更新人
+    */
+   #updateBy;
+   /**
+    * 更新时间
+    */
+   #updateTime;
+   /**
+    * 创建时间
+    */
+   #createTime;
+   /**
+    * 备注
+    */
+   #remark;
+
    constructor() {
-      const internal = {
-         createBy: -1, updateBy: -1, createTime: new Date(), updateTime: new Date(),
-      };
+      this.#init();
+   }
+
+   #init() {
       Object.defineProperties(this, {
-         /**
-          * 创建人
-          */
-         createBy: {
-            get: () => {
-               return internal.createBy;
-            }, set: (val) => {
-               Check.typeCorrect("createBy", Type.Number, val);
-               Check.isPositiveInteger("createBy", val);
-
-               internal.createBy = val;
-            }, configurable: false
-         },
-         /**
-          * 更新人
-          */
-         updateBy: {
-            get: () => {
-               return internal.updateBy;
-            }, set: (val) => {
-               Check.typeCorrect("updateBy", Type.Number, val);
-               Check.isPositiveInteger("updateBy", val);
-
-               internal.updateBy = val;
-            }, configurable: false
-         },
-         /**
-          * 更新时间
-          */
-         updateTime: {
-            get: () => {
-               return internal.updateTime;
-            }, set: (val) => {
-               Check.classCorrect("updateTime", Date, val);
-
-               internal.updateTime = val;
-            }, configurable: false
-         },
-         /**
-          * 创建时间
-          */
-         createTime: {
-            get: () => {
-               return internal.createTime;
-            }, set: (val) => {
-               Check.classCorrect("createTime", Date, val);
-
-               internal.createTime = val;
-            }, configurable: false
-         },
+         createBy: generateProperties(
+            this.#createBy,
+            'createBy',
+            (val) => {
+               TypeCheck.typeCorrect("createBy", ParameterType.NUMBER, val);
+               TypeCheck.isPositiveInteger("createBy", val);
+            }),
+         updateBy: generateProperties(
+            this.#updateBy,
+            'updateBy',
+            (val) => {
+               TypeCheck.typeCorrect("updateBy", ParameterType.NUMBER, val);
+               TypeCheck.isPositiveInteger("updateBy", val);
+            }
+         ),
+         updateTime: generateProperties(
+            this.#updateTime,
+            'updateTime',
+            (val) => {
+               TypeCheck.classCorrect("updateTime", Date, val);
+            }
+         ),
+         createTime: generateProperties(
+            this.#createTime,
+            'createTime',
+            (val) => {
+               TypeCheck.classCorrect("createTime", Date, val);
+            }
+         ),
+         remark: generateProperties(
+            this.#remark,
+            'remark',
+            (val) => {
+               TypeCheck.typeCorrect('remark', ParameterType.STRING, val);
+            }
+         )
       });
    }
 }

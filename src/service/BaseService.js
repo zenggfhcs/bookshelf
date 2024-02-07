@@ -1,103 +1,104 @@
 import axios from "axios";
-import {Check, Type} from "@/utils/tools.js";
 import {RequestBody} from "@/model/RequestBody.js";
-import {Url} from "@/service/Url.js";
+import {ParameterType, PostType} from "@/constant/type.js";
+import {TypeCheck} from "@/utils/Check.js";
 
 export class BaseService {
+   /**
+    * 资源名称
+    */
+   #resourceName;
+
+   constructor(resourceName) {
+      this.#resourceName = resourceName;
+   }
+
    /**
     * 创建
     * @param entity 实体
     * @param filter 过滤类
-    * @param url 请求路径
-    * @param id 后缀
-    * @param myThen then
-    * @param myCatch catch
-    * @param myFinally finally
+    * @param resource 后缀
+    * @param iThen then
+    * @param iCatch catch
+    * @param iFinally finally
     */
-   static create(entity, filter, url, id, myThen = undefined, myCatch = undefined, myFinally = undefined) {
-      this.base('post', entity, filter, url, id, myThen, myCatch, myFinally);
+   cr8(entity, filter, resource, iThen, iCatch, iFinally) {
+      this.#base(entity, filter, resource, PostType.CREATE, iThen, iCatch, iFinally);
    }
 
    /**
     * 更新
     * @param entity 实体
     * @param filter 过滤类
-    * @param url 请求路径
-    * @param id 后缀
-    * @param myThen then
-    * @param myCatch catch
-    * @param myFinally finally
+    * @param resource 后缀
+    * @param iThen then
+    * @param iCatch catch
+    * @param iFinally finally
     */
-   static update(entity, filter, url, id, myThen, myCatch, myFinally) {
-      this.base('patch', entity, filter, url, id, myThen, myCatch, myFinally);
+   upd(entity, filter, resource, iThen, iCatch, iFinally) {
+      this.#base(entity, filter, resource, PostType.UPDATE, iThen, iCatch, iFinally);
    }
 
    /**
     * 获取
     * @param entity 实体
     * @param filter 过滤类
-    * @param url 请求路径
-    * @param id 后缀
-    * @param myThen then
-    * @param myCatch catch
-    * @param myFinally finally
+    * @param resource 后缀
+    * @param iThen then
+    * @param iCatch catch
+    * @param iFinally finally
     */
-   static select(entity, filter, url, id, myThen, myCatch, myFinally) {
-      this.base('get', entity, filter, url, id, myThen, myCatch, myFinally);
+   sel(entity, filter, resource, iThen, iCatch, iFinally) {
+      this.#base(entity, filter, resource, PostType.SELECT, iThen, iCatch, iFinally);
    }
 
    /**
     * 删除
     * @param entity 实体
     * @param filter 过滤类
-    * @param url 请求路径
-    * @param id 后缀
-    * @param myThen then
-    * @param myCatch catch
-    * @param myFinally finally
+    * @param resource 后缀
+    * @param iThen then
+    * @param iCatch catch
+    * @param iFinally finally
     */
-   static delete(entity, filter, url, id, myThen = undefined, myCatch = undefined, myFinally = undefined) {
-      this.base('delete', entity, filter, url, id, myThen, myCatch, myFinally);
+   del(entity, filter, resource, iThen, iCatch, iFinally) {
+      this.#base(entity, filter, resource, PostType.DELETE, iThen, iCatch, iFinally);
    }
 
    /**
     * base request
-    * @param method 请求方式
     * @param entity 实体
     * @param filter 过滤类
-    * @param url 请求路径
-    * @param id 后缀
-    * @param myThen then
-    * @param myCatch catch
-    * @param myFinally finally
+    * @param resource 后缀
+    * @param postType post type
+    * @param iThen then
+    * @param iCatch catch
+    * @param iFinally finally
     */
-   static base(method, entity, filter, url, id, myThen = undefined, myCatch = undefined, myFinally = undefined) {
-      /* ======= 请求前校验 ======= */
-      this.before(entity, filter, myThen, myCatch, myFinally);
-      /* ======= 请求前校验 ======= */
+   #base(entity, filter, resource, postType, iThen = undefined, iCatch = undefined, iFinally = undefined) {
+      /* ============================ 请求前校验 ============================ */
+      this.#checkTypeBeforeRequest(iThen, iCatch, iFinally);
 
-      /* ======= 组装请求数据 ======= */
-      let body = new RequestBody(entity, filter);
-      /* ======= 组装请求数据 ======= */
-
-      /* ======= 请求 ======= */
+      /* ============================ 请求 ============================ */
       axios({
-         methods: method, url: Url.baseUrl + url + id, data: body
-      }).then(myThen)
-         .catch(myCatch)
-         .finally(myFinally);
-      /* ======= 请求 ======= */
+         methods: 'post',                                            // 默认请求方式
+         baseURL: `http://localhost/${this.#resourceName}/`,         // 基础 url
+         url: `${resource}/${postType}`,                             // 具体资源
+         data: new RequestBody(entity, filter),                      // 请求载体：组装请求数据
+      }).then(iThen)                                                // diy then
+         .catch(iCatch)                                             // diy catch
+         .finally(iFinally);                                        // diy finally
    }
 
    /**
-    * 数据校验
-    * @param myThen then
-    * @param myCatch catch
-    * @param myFinally finally
+    * 参数校验
+    * @param iThen then
+    * @param iCatch catch
+    * @param iFinally finally
     */
-   static before(myThen, myCatch, myFinally) {
-      Check.typeCorrect('myThen', Type.Function, myThen);
-      Check.typeCorrect('myCatch', Type.Function, myCatch);
-      Check.typeCorrect('myFinally', Type.Function, myFinally);
+   #checkTypeBeforeRequest(iThen, iCatch, iFinally) {
+      TypeCheck.typeCorrect('iThen', ParameterType.FUNCTION, iThen);
+      TypeCheck.typeCorrect('iCatch', ParameterType.FUNCTION, iCatch);
+      TypeCheck.typeCorrect('iFinally', ParameterType.FUNCTION, iFinally);
    }
 }

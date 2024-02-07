@@ -1,29 +1,37 @@
 import {BaseEntity} from "@/model/BaseEntity.js";
-import {Check, Type} from "@/utils/tools.js";
+import {ParameterType} from "@/constant/type.js";
+import {TypeCheck} from "@/utils/Check.js";
+import {generateProperties} from "@/utils/generate.js";
 
 /**
  * 出版社-实体
  */
 export class Publisher extends BaseEntity {
+   #internal = {
+      publishId: -1, name: '', remark: ''
+   };
+   #publishId;
+   #name;
+   #remark;
+
    constructor() {
       super();
-      const internal = {
-         publishId: -1, name: '', remark: ''
-      };
+      this.#init();
+   }
+
+   #init() {
       Object.defineProperties(this, {
          /**
           * 出版社 id
           */
-         publishId: {
-            get: () => {
-               return internal.publishId;
-            }, set: (val) => {
-               Check.typeCorrect("publishId", Type.Number, val);
-               Check.isPositiveInteger("publishId", val);
+         publishId: generateProperties(
+            this.#internal,
+            'publishId',
+            (val) => {
+               TypeCheck.typeCorrect("publishId", ParameterType.NUMBER, val);
+               TypeCheck.isPositiveInteger("publishId", val);
+            }),
 
-               internal.publishId = val;
-            }, configurable: false
-         },
          /**
           * 出版社名称
           */
@@ -31,7 +39,7 @@ export class Publisher extends BaseEntity {
             get: () => {
                return internal.name;
             }, set: (val) => {
-               Check.typeCorrect("name", Type.String, val);
+               TypeCheck.typeCorrect("name", ParameterType.STRING, val);
 
                internal.name = val;
             }, configurable: false
@@ -43,7 +51,7 @@ export class Publisher extends BaseEntity {
             get: () => {
                return internal.remark;
             }, set: (val) => {
-               Check.typeCorrect("remark", Type.String, val);
+               TypeCheck.typeCorrect("remark", ParameterType.STRING, val);
 
                internal.remark = val;
             }, configurable: false

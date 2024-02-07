@@ -1,6 +1,7 @@
 import {Publisher} from "@/model/Publisher.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
-import {Check, Type} from "@/utils/tools.js";
+import {ParameterType} from "@/constant/type.js";
+import {TypeCheck} from "@/utils/Check.js";
 
 
 export class BookInfo extends BaseEntity {
@@ -32,7 +33,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.bookInfoId;
             }, set: (val) => {
-               Check.isPositiveInteger("bookInfoId", val);
+               TypeCheck.isPositiveInteger("bookInfoId", val);
 
                internal.bookInfoId = val;
             }, configurable: false
@@ -43,7 +44,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.publisher;
             }, set: (val) => {
-               Check.classCorrect("publisher", Publisher, val);
+               TypeCheck.classCorrect("publisher", Publisher, val);
 
             }, configurable: false
          }, /**
@@ -53,7 +54,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.publishPlace;
             }, set: (val) => {
-               Check.typeCorrect("publisher", Type.String, val);
+               TypeCheck.typeCorrect("publisher", ParameterType.STRING, val);
 
                internal.publishPlace = val;
             }, configurable: false
@@ -64,7 +65,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.bookName;
             }, set: (val) => {
-               Check.typeCorrect("isbn", Type.String, val);
+               TypeCheck.typeCorrect("isbn", ParameterType.STRING, val);
 
                internal.isbn = val;
             }, configurable: false
@@ -75,7 +76,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.cip;
             }, set: (val) => {
-               Check.typeCorrect("cip", Type.String, val);
+               TypeCheck.typeCorrect("cip", ParameterType.STRING, val);
 
                internal.cip = val;
             }, configurable: false
@@ -86,7 +87,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.bookName;
             }, set: (val) => {
-               Check.typeCorrect(this.bookName, Type.String, val);
+               TypeCheck.typeCorrect(this.bookName, ParameterType.STRING, val);
 
                internal.bookName = val;
             }, configurable: false
@@ -97,7 +98,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.bookType;
             }, set: (val) => {
-               Check.typeCorrect("bookType", Type.String, val);
+               TypeCheck.typeCorrect("bookType", ParameterType.STRING, val);
 
                internal.bookType = val;
             }, configurable: false
@@ -108,7 +109,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.cover;
             }, set: (val) => {
-               Check.typeCorrect("cover", Type.String, val);
+               TypeCheck.typeCorrect("cover", ParameterType.STRING, val);
 
                internal.cover = val;
             }, configurable: false
@@ -119,7 +120,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.author;
             }, set: (val) => {
-               Check.typeCorrect("author", Type.String, val);
+               TypeCheck.typeCorrect("author", ParameterType.STRING, val);
 
                internal.author = val;
             }, configurable: false
@@ -130,7 +131,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.describe;
             }, set: (val) => {
-               Check.typeCorrect("describe", Type.String, val);
+               TypeCheck.typeCorrect("describe", ParameterType.STRING, val);
 
                internal.describe = val;
             }, configurable: false
@@ -141,7 +142,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.publishDate;
             }, set: (val) => {
-               Check.classCorrect("publishDate", Date, val);
+               TypeCheck.classCorrect("publishDate", Date, val);
 
                internal.publishDate = val;
             }, configurable: false
@@ -152,7 +153,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.keyword;
             }, set: (val) => {
-               Check.typeCorrect("keyword", Type.String, val);
+               TypeCheck.typeCorrect("keyword", ParameterType.STRING, val);
 
                internal.keyword = val;
             }, configurable: false
@@ -163,7 +164,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.lang;
             }, set: (val) => {
-               Check.typeCorrect("lang", Type.String, val);
+               TypeCheck.typeCorrect("lang", ParameterType.STRING, val);
 
                internal.lang = val;
             }, configurable: false
@@ -174,7 +175,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.price;
             }, set: (val) => {
-               Check.isFloatNumber("price", val, () => {
+               TypeCheck.isFloatNumber("price", val, () => {
                   return val > 0
                });
 
@@ -187,7 +188,7 @@ export class BookInfo extends BaseEntity {
             get: () => {
                return internal.stock;
             }, set: (val) => {
-               Check.isPositiveInteger("stock", val);
+               TypeCheck.isPositiveInteger("stock", val);
 
                internal.stock = val;
             }, configurable: false

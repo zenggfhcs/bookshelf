@@ -1,8 +1,10 @@
 import {BookInfo} from "./BookInfo.js";
-import {Check} from "@/utils/tools.js";
+import {TypeCheck} from "@/utils/Check.js";
+import {BaseEntity} from "@/model/BaseEntity.js";
 
-export class Book {
+export class Book extends BaseEntity {
    constructor() {
+      super();
       const internal = {
          bookId: 1, bookDamageLevel: 0, borrowable: false, bookInfo: new BookInfo(),
       }
@@ -14,7 +16,7 @@ export class Book {
             get: () => {
                return internal.bookId;
             }, set: (val) => {
-               Check.isPositiveInteger("bookId", val);
+               TypeCheck.isPositiveInteger("bookId", val);
 
                internal.bookId = val;
             }, configurable: false
@@ -26,7 +28,7 @@ export class Book {
             get: () => {
                return internal.bookDamageLevel;
             }, set: (val) => {
-               Check.isPositiveInteger("bookDamageLevel", val);
+               TypeCheck.isPositiveInteger("bookDamageLevel", val);
 
                internal.bookDamageLevel = val;
             }, configurable: false
@@ -38,7 +40,7 @@ export class Book {
             get: () => {
                return internal.borrowable;
             }, set: (val) => {
-               Check.isBoolean("borrowable", val);
+               TypeCheck.isBoolean("borrowable", val);
 
                internal.borrowable = val;
             }, configurable: false
@@ -50,7 +52,7 @@ export class Book {
             get: () => {
                return internal.bookInfo
             }, set: (val) => {
-               Check.classCorrect("bookInfo", BookInfo, val);
+               TypeCheck.classCorrect("bookInfo", BookInfo, val);
 
                internal.bookInfo = val;
             }, configurable: false

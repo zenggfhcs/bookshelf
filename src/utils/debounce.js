@@ -1,5 +1,6 @@
 import {customRef} from "vue"
-import {Check, Type} from "@/utils/tools.js";
+import {TypeCheck} from "@/utils/Check.js";
+import {ParameterType} from "@/constant/type.js";
 
 /**
  * 带延迟更新的 ref，对于变量可以实现，对于对象不行
@@ -34,8 +35,8 @@ export function debounceRef(value, delay = 666) {
  */
 export function debounce(fun, delay) {
    {                                                              // 类型检查
-      Check.isPositiveInteger('delay', delay);
-      Check.typeCorrect('fun', Type.Function, fun);
+      TypeCheck.isPositiveInteger('delay', delay);
+      TypeCheck.typeCorrect('fun', ParameterType.FUNCTION, fun);
    }
    let running = false;                                  // 默认 false，表示未在运行
    // console.log(running);
