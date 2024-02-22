@@ -1,61 +1,46 @@
 import {BaseEntity} from "@/model/BaseEntity.js";
-import {ParameterType} from "@/constant/type.js";
 import {TypeCheck} from "@/utils/Check.js";
-import {generateProperties} from "@/utils/generate.js";
+import {ParameterType} from "@/constant/type.js";
 
 /**
  * 出版社-实体
  */
 export class Publisher extends BaseEntity {
-   #internal = {
-      publishId: -1, name: '', remark: ''
-   };
-   #publishId;
+   #id;
    #name;
    #remark;
 
    constructor() {
       super();
-      this.#init();
    }
 
-   #init() {
-      Object.defineProperties(this, {
-         /**
-          * 出版社 id
-          */
-         publishId: generateProperties(
-            this.#internal,
-            'publishId',
-            (val) => {
-               TypeCheck.typeCorrect("publishId", ParameterType.NUMBER, val);
-               TypeCheck.isPositiveInteger("publishId", val);
-            }),
+   get id() {
+      return this.#id;
+   }
 
-         /**
-          * 出版社名称
-          */
-         name: {
-            get: () => {
-               return internal.name;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("name", ParameterType.STRING, val);
+   set id(value) {
+      TypeCheck.typeCorrect('id', ParameterType.NUMBER, value);
 
-               internal.name = val;
-            }, configurable: false
-         },
-         /**
-          * 备注
-          */
-         remark: {
-            get: () => {
-               return internal.remark;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("remark", ParameterType.STRING, val);
+      this.#id = value;
+   }
 
-               internal.remark = val;
-            }, configurable: false
-         },
-      });
+   get name() {
+      return this.#name;
+   }
+
+   set name(value) {
+      TypeCheck.typeCorrect('name', ParameterType.STRING, value);
+
+      this.#name = value;
+   }
+
+   get remark() {
+      return this.#remark;
+   }
+
+   set remark(value) {
+      TypeCheck.typeCorrect('remark', ParameterType.STRING, value);
+
+      this.#remark = value;
    }
 }

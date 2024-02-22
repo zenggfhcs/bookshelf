@@ -25,8 +25,8 @@ export class BoolHelper {
     * @param fun 额外的判断
     * @returns {boolean}
     */
-   static isPositiveInteger(val, fun) {
-      return Number.isInteger(val) && val > 0 && this.f(fun);
+   static Integer(val, fun) {
+      return Number.isInteger(val) && this.f(fun);
    }
 
    /**
@@ -64,7 +64,6 @@ export class BoolHelper {
    static f(fun) {
       return fun === undefined || fun();
    }
-
 
 }
 

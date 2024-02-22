@@ -1,12 +1,13 @@
 <template>
    <n-message-provider>
-      <ij-login/>
+      <i-base>
+      </i-base>
    </n-message-provider>
 </template>
 
 <script setup>
 import {NMessageProvider} from "naive-ui";
-import IjLogin from "@/views/ij-login.vue";
+import IBase from "@/layout/i-base.vue";
 </script>
 
 <style scoped>

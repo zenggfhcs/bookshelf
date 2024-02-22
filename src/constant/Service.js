@@ -12,6 +12,10 @@ const Log = new BaseService(ResourceType.Log);
 const Publisher = new BaseService(ResourceType.Publisher);
 
 const User = new BaseService(ResourceType.User);
+/**
+ *
+ * @type {{Debit: BaseService, User: BaseService, Log: BaseService, Book: BaseService, BookInfo: BaseService, Publisher: BaseService}}
+ */
 export const Service = {
    Book,
    BookInfo,

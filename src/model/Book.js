@@ -1,62 +1,56 @@
-import {BookInfo} from "./BookInfo.js";
-import {TypeCheck} from "@/utils/Check.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
 
 export class Book extends BaseEntity {
+   /**
+    * book id
+    */
+   #id;
+   /**
+    * 书籍损坏级别
+    */
+   #bookDamageLevel;
+   /**
+    * 可借的
+    */
+   #borrowable;
+   /**
+    * 书籍信息
+    */
+   #bookInfo;
+
    constructor() {
       super();
-      const internal = {
-         bookId: 1, bookDamageLevel: 0, borrowable: false, bookInfo: new BookInfo(),
-      }
-      Object.defineProperties(this, {
-         /**
-          * book id
-          */
-         bookId: {
-            get: () => {
-               return internal.bookId;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("bookId", val);
+   }
 
-               internal.bookId = val;
-            }, configurable: false
-         },
-         /**
-          * 书籍损坏级别
-          */
-         bookDamageLevel: {
-            get: () => {
-               return internal.bookDamageLevel;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("bookDamageLevel", val);
+   get id() {
+      return this.#id;
+   }
 
-               internal.bookDamageLevel = val;
-            }, configurable: false
-         },
-         /**
-          * 可借的
-          */
-         borrowable: {
-            get: () => {
-               return internal.borrowable;
-            }, set: (val) => {
-               TypeCheck.isBoolean("borrowable", val);
+   set id(value) {
+      this.#id = value;
+   }
 
-               internal.borrowable = val;
-            }, configurable: false
-         },
-         /**
-          * 书籍信息
-          */
-         bookInfo: {
-            get: () => {
-               return internal.bookInfo
-            }, set: (val) => {
-               TypeCheck.classCorrect("bookInfo", BookInfo, val);
+   get bookDamageLevel() {
+      return this.#bookDamageLevel;
+   }
 
-               internal.bookInfo = val;
-            }, configurable: false
-         },
-      })
+   set bookDamageLevel(value) {
+      this.#bookDamageLevel = value;
+   }
+
+   get borrowable() {
+      return this.#borrowable;
+   }
+
+   set borrowable(value) {
+      this.#borrowable = value;
+   }
+
+   get bookInfo() {
+      return this.#bookInfo;
+   }
+
+   set bookInfo(value) {
+      this.#bookInfo = value;
    }
 }

@@ -1,6 +1,5 @@
 import {ParameterType} from "@/constant/type.js";
 import {TypeCheck} from "@/utils/Check.js";
-import {generateProperties} from "@/utils/generate.js";
 
 export class BaseEntity {
    /**
@@ -24,48 +23,58 @@ export class BaseEntity {
     */
    #remark;
 
-   constructor() {
-      this.#init();
+   get createBy() {
+      return this.#createBy;
    }
 
-   #init() {
-      Object.defineProperties(this, {
-         createBy: generateProperties(
-            this.#createBy,
-            'createBy',
-            (val) => {
-               TypeCheck.typeCorrect("createBy", ParameterType.NUMBER, val);
-               TypeCheck.isPositiveInteger("createBy", val);
-            }),
-         updateBy: generateProperties(
-            this.#updateBy,
-            'updateBy',
-            (val) => {
-               TypeCheck.typeCorrect("updateBy", ParameterType.NUMBER, val);
-               TypeCheck.isPositiveInteger("updateBy", val);
-            }
-         ),
-         updateTime: generateProperties(
-            this.#updateTime,
-            'updateTime',
-            (val) => {
-               TypeCheck.classCorrect("updateTime", Date, val);
-            }
-         ),
-         createTime: generateProperties(
-            this.#createTime,
-            'createTime',
-            (val) => {
-               TypeCheck.classCorrect("createTime", Date, val);
-            }
-         ),
-         remark: generateProperties(
-            this.#remark,
-            'remark',
-            (val) => {
-               TypeCheck.typeCorrect('remark', ParameterType.STRING, val);
-            }
-         )
-      });
+   set createBy(value) {
+      /* ===================== 类型检查 ===================== */
+      TypeCheck.typeCorrect("createBy", ParameterType.NUMBER, value);
+
+      this.#createBy = value;
+   }
+
+   get updateBy() {
+      return this.#updateBy;
+   }
+
+   set updateBy(value) {
+      /* ===================== 类型检查 ===================== */
+      TypeCheck.typeCorrect("updateBy", ParameterType.NUMBER, value);
+
+      this.#updateBy = value;
+   }
+
+   get updateTime() {
+      return this.#updateTime;
+   }
+
+   set updateTime(value) {
+      /* ===================== 类型检查 ===================== */
+      TypeCheck.typeCorrect("updateTime", Date, value);
+
+      this.#updateTime = value;
+   }
+
+   get createTime() {
+      return this.#createTime;
+   }
+
+   set createTime(value) {
+      /* ===================== 类型检查 ===================== */
+      TypeCheck.typeCorrect("createTime", Date, value);
+
+      this.#createTime = value;
+   }
+
+   get remark() {
+      return this.#remark;
+   }
+
+   set remark(value) {
+      /* ===================== 类型检查 ===================== */
+      TypeCheck.typeCorrect("remark", ParameterType.STRING, value);
+
+      this.#remark = value;
    }
 }

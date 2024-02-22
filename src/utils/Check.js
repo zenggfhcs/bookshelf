@@ -38,36 +38,30 @@ export class TypeCheck {
     * @param val 被检查的变量
     * @param fun 额外的判断函数
     */
-   static isPositiveInteger(attribute, val, fun) {
-      if (BoolHelper.isPositiveInteger(val, fun)) {
+   static isInteger(attribute, val, fun) {
+      if (BoolHelper.Integer(val, fun)) {
          return;
       }
-      Exception.typeError(attribute, 'positive integer', val);
+      Exception.typeError(attribute, 'integer', val);
    }
 
    /**
-    * 检查 typeof val 是不是 type
+    * 检查 val 的类型是不是 type
     * @param attribute 要接收 val 的变量名
     * @param type 类型
     * @param val 被检查的变量
     */
    static typeCorrect(attribute, type, val) {
-      if (BoolHelper.isType(val, type)) {
-         return;
+      if (typeof type === 'string') {
+         if (BoolHelper.isType(val, type)) {
+            return;
+         }
+         Exception.typeError(attribute, type, val);
+      } else {
+         if (BoolHelper.isInstanceOf(val, type)) {
+            return;
+         }
+         Exception.typeError(attribute, type.name, val);
       }
-      Exception.typeError(attribute, type, val);
-   }
-
-   /**
-    * 检查 val 是不是 Class 的实例
-    * @param attribute 要接收 val 的变量名
-    * @param Class 类
-    * @param val 被检查的变量
-    */
-   static classCorrect(attribute, Class, val) {
-      if (BoolHelper.isInstanceOf(val, Class)) {
-         return;
-      }
-      Exception.typeError(attribute, Class.name, val);
    }
 }

@@ -1,6 +1,8 @@
 import {TypeCheck} from "@/utils/Check.js";
 import {ParameterType} from "@/constant/type.js";
 
+
+/* ============================ property ============================ */
 /**
  *
  * @param internal
@@ -8,24 +10,45 @@ import {ParameterType} from "@/constant/type.js";
  * @param check
  * @returns {{set: *, get: (function(): *), configurable: boolean}}
  */
-const generateProperties = (internal, property, check) => {
-   generateProperties_check(internal, property, check);
+const generateProperty = (internal, property, check) => {
+   generateProperty_check(internal, property, check);
    return {
       get: () => {
-         return internal[property];
+         return internal;
       }, set: (val) => {
          check(val);
-         internal[property] = val;
+         internal = val;
       }, configurable: false,
    }
 }
 
-const generateProperties_check = (internal, property, check) => {
-   TypeCheck.typeCorrect('internal', ParameterType.OBJECT, internal);
+const generateProperty_check = (internal, property, check) => {
+   // TypeCheck.typeCorrect('internal', ParameterType.OBJECT, internal);
    TypeCheck.typeCorrect('property', ParameterType.STRING, property);
    TypeCheck.typeCorrect('check', ParameterType.FUNCTION, check);
 }
 
 export {
-   generateProperties,
+   generateProperty,
 }
+/* ============================ property ============================ */
+
+
+/* ============================ to ============================ */
+/**
+ * menu 路由生成
+ * @param name 对应 router 配置里面的 name
+ * @returns {{to: {name: string, params: {lang: string}}}}
+ */
+const generateProps = (name) => {
+   return {
+      to: {
+         name: `${name}`
+      }
+   };
+};
+
+export {
+   generateProps,
+}
+/* ============================ to ============================ */

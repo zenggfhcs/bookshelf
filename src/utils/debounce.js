@@ -35,7 +35,7 @@ export function debounceRef(value, delay = 666) {
  */
 export function debounce(fun, delay) {
    {                                                              // 类型检查
-      TypeCheck.isPositiveInteger('delay', delay);
+      TypeCheck.isInteger('delay', delay);
       TypeCheck.typeCorrect('fun', ParameterType.FUNCTION, fun);
    }
    let running = false;                                  // 默认 false，表示未在运行

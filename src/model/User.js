@@ -3,169 +3,140 @@ import {BaseEntity} from "@/model/BaseEntity.js";
 import {ParameterType} from "@/constant/type.js";
 
 export class User extends BaseEntity {
+   #id;
+   #authenticationString;
+   #displayName;
+   #userEmail;
+   #userPhoneNumber;
+   #condition;
+   #authority;
+   #surname;
+   #name;
+   #sex;
+   #age;
+   #lastLoginTime;
+
    constructor() {
       super();
-      const internal = {
-         userId: -1,
-         authenticationString: '',
-         displayName: '',
-         userEmail: '',
-         userPhoneNumber: '',
-         condition: 0,
-         authority: 0,
-         surname: '',
-         name: '',
-         sex: 0,
-         age: 0,
-         lastLoginTime: new Date(),
-      };
-      Object.defineProperties(this, {
-         /**
-          * 用户id
-          */
-         userId: {
-            get: () => {
-               return internal.userId;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("userId", val);
+   }
 
-               internal.userId = val;
-            }, configurable: false
-         },
-         /**
-          * 用户验证字符串
-          */
-         authenticationString: {
-            get: () => {
-               return internal.authenticationString;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("authenticationString", ParameterType.STRING, val);
+   get id() {
+      return this.#id;
+   }
 
-               internal.authenticationString = val;
-            }, configurable: false
-         },
-         /**
-          * 用户名
-          */
-         displayName: {
-            get: () => {
-               return internal.displayName;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("displayName", ParameterType.STRING, val);
+   set id(value) {
+      TypeCheck.typeCorrect("userId", ParameterType.NUMBER, value);
 
-               internal.displayName = val;
-            }, configurable: false
-         },
-         /**
-          * 用户邮箱
-          */
-         userEmail: {
-            get: () => {
-               return internal.userEmail;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("userEmail", ParameterType.STRING, val);
+      this.#id = value;
+   }
 
-               internal.userEmail = val;
-            }, configurable: false
-         },
-         /**
-          * 用户电话号码
-          */
-         userPhoneNumber: {
-            get: () => {
-               return internal.userPhoneNumber;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("userPhoneNumber", ParameterType.STRING, val);
+   get authenticationString() {
+      return this.#authenticationString;
+   }
 
-               internal.userPhoneNumber = val;
-            }, configurable: false
-         },
-         /**
-          * 状态
-          */
-         condition: {
-            get: () => {
-               return internal.condition;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("condition", val);
+   set authenticationString(value) {
+      TypeCheck.typeCorrect("authenticationString", ParameterType.STRING, value);
 
-               internal.condition = val;
-            }, configurable: false
-         },
-         /**
-          * 权限
-          */
-         authority: {
-            get: () => {
-               return internal.authority;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("authority", val);
+      this.#authenticationString = value;
+   }
 
-               internal.authority = val;
-            }, configurable: false
-         },
-         /**
-          * 姓
-          */
-         surname: {
-            get: () => {
-               return internal.surname;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("surname", ParameterType.STRING, val);
+   get displayName() {
+      return this.#displayName;
+   }
 
-               internal.surname = val;
-            }, configurable: false
-         },
-         /**
-          * 名
-          */
-         name: {
-            get: () => {
-               return internal.name;
-            }, set: (val) => {
-               TypeCheck.typeCorrect("name", ParameterType.STRING, val);
+   set displayName(value) {
+      TypeCheck.typeCorrect("displayName", ParameterType.STRING, value);
 
-               internal.name = val;
-            }, configurable: false
-         },
-         /**
-          * 用户性别
-          */
-         sex: {
-            get: () => {
-               return internal.sex;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("sex", val, () => {
-                  return true
-               });
+      this.#displayName = value;
+   }
 
-               internal.sex = val;
-            }, configurable: false
-         },
-         /**
-          * 用户年龄
-          */
-         age: {
-            get: () => {
-               return internal.age;
-            }, set: (val) => {
-               TypeCheck.isPositiveInteger("age", val);
+   get userEmail() {
+      return this.#userEmail;
+   }
 
-               internal.age = val;
-            }, configurable: false
-         },
-         /**
-          * 用户最后登陆的时间
-          */
-         lastLoginTime: {
-            get: () => {
-               return internal.lastLoginTime;
-            }, set: (val) => {
-               TypeCheck.classCorrect("lastLoginTime", Date, val);
+   set userEmail(value) {
+      TypeCheck.typeCorrect("userEmail", ParameterType.STRING, value);
 
-               internal.lastLoginTime = val;
-            }, configurable: false
-         },
-      });
+      this.#userEmail = value;
+   }
+
+   get userPhoneNumber() {
+      return this.#userPhoneNumber;
+   }
+
+   set userPhoneNumber(value) {
+      TypeCheck.typeCorrect("userPhoneNumber", ParameterType.NUMBER, value);
+
+      this.#userPhoneNumber = value;
+   }
+
+   get condition() {
+      return this.#condition;
+   }
+
+   set condition(value) {
+      TypeCheck.typeCorrect("condition", ParameterType.NUMBER, value);
+
+      this.#condition = value;
+   }
+
+   get authority() {
+      return this.#authority;
+   }
+
+   set authority(value) {
+      TypeCheck.typeCorrect("authority", ParameterType.NUMBER, value);
+
+      this.#authority = value;
+   }
+
+   get surname() {
+      return this.#surname;
+   }
+
+   set surname(value) {
+      TypeCheck.typeCorrect("surname", ParameterType.STRING, value);
+
+      this.#surname = value;
+   }
+
+   get name() {
+      return this.#name;
+   }
+
+   set name(value) {
+      TypeCheck.typeCorrect("name", ParameterType.STRING, value);
+
+      this.#name = value;
+   }
+
+   get sex() {
+      return this.#sex;
+   }
+
+   set sex(value) {
+      TypeCheck.typeCorrect("sex", ParameterType.NUMBER, value);
+
+      this.#sex = value;
+   }
+
+   get age() {
+      return this.#age;
+   }
+
+   set age(value) {
+      TypeCheck.typeCorrect("age", ParameterType.NUMBER, value);
+
+      this.#age = value;
+   }
+
+   get lastLoginTime() {
+      return this.#lastLoginTime;
+   }
+
+   set lastLoginTime(value) {
+      TypeCheck.typeCorrect("lastLoginTime", Date, value);
+
+      this.#lastLoginTime = value;
    }
 }
