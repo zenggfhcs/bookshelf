@@ -1,5 +1,5 @@
 import {TypeCheck} from "@/utils/Check.js";
-import {ParameterType} from "@/constant/type.js";
+import {ParameterType} from "@/constant/Type.js";
 
 
 /* ============================ property ============================ */

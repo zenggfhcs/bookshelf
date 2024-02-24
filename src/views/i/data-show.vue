@@ -1,12 +1,12 @@
 <template>
    <n-data-table
-      remote
       ref="table"
       :columns="columnsRef"
       :data="dataRef"
       :loading="loading"
       :pagination="pagination"
       :row-key="rowKey"
+      remote
       @update:sorter="handleSorterChange"
       @update:filters="handleFiltersChange"
       @update:page="handlePageChange"

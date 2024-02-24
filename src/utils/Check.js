@@ -1,6 +1,6 @@
 import {BoolHelper} from "@/utils/BoolHelper.js";
 import {Exception} from "@/utils/exception.js";
-import {ParameterType} from "@/constant/type.js";
+import {ParameterType} from "@/constant/Type.js";
 
 /**
  * type check

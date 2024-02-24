@@ -7,7 +7,7 @@
 
 <script setup>
 import {NMessageProvider} from "naive-ui";
-import IBase from "@/layout/i-base.vue";
+import IBase from "@/views/i/i-base.vue";
 </script>
 
 <style scoped>

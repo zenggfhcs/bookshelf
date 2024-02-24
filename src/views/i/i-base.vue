@@ -86,7 +86,7 @@ function expandIcon() {
             </n-scrollbar>
          </n-layout-sider>
          <n-layout :native-scrollbar="false" content-style="padding: 8px;" has-sider>
-               <router-view/>
+            <router-view/>
          </n-layout>
       </n-layout>
       <n-layout-footer

@@ -1,4 +1,4 @@
-import {ParameterType} from "@/constant/type.js";
+import {ParameterType} from "@/constant/Type.js";
 import {TypeCheck} from "@/utils/Check.js";
 
 export class BaseEntity {

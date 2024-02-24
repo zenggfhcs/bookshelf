@@ -43,7 +43,7 @@
 import {ref} from "vue";
 import {NButton, NFlex, NForm, NFormItem, NInput, useMessage} from "naive-ui";
 import {debounce} from "@/utils/debounce.js";
-import {REG_USER_ID} from "@/constant/reg.js";
+import {REG_USER_ID} from "@/constant/RegularExpression.js";
 
 
 const formRef = ref(null);

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-   12
+   error
 </template>
 
 <style scoped>

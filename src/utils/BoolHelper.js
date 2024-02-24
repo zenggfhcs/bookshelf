@@ -1,4 +1,4 @@
-import {ParameterType} from "@/constant/type.js";
+import {ParameterType} from "@/constant/Type.js";
 
 /**
  * bool 聚合类

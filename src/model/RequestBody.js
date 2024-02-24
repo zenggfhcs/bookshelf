@@ -2,32 +2,41 @@ import {TypeCheck} from "@/utils/Check.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
 import {Filter} from "@/model/Filter.js";
 
-export class RequestBody {
-   constructor(entity, filter) {
-      TypeCheck.classCorrect(entity.name, BaseEntity, entity);
-      const internal = {
-         entity: entity,
-         filter: filter ? filter : new Filter()
-      }
-      Object.defineProperties(this, {
-         entity: {
-            get: () => {
-               return internal.entity;
-            }, set: (val) => {
-               TypeCheck.classCorrect("entity", BaseEntity, val);
+export class Payload {
 
-               internal.entity = val;
-            }, configurable: false
-         },
-         filter: {
-            get: () => {
-               return internal.filter;
-            }, set: (val) => {
-               TypeCheck.classCorrect("filter", Filter, val);
+   #entity;
 
-               internal.filter = val;
-            }, configurable: false
-         },
-      })
+   #filter;
+
+   constructor() {
+   }
+
+   get entity() {
+      return this.#entity;
+   }
+
+   set entity(value) {
+      TypeCheck.typeCorrect("entity", BaseEntity, value);
+      this.#entity = value;
+   }
+
+   get filter() {
+      return this.#filter;
+   }
+
+   set filter(value) {
+      TypeCheck.typeCorrect("filter", Filter, value);
+      this.#filter = value;
+   }
+
+   toString() {
+      return JSON.stringify(this.toJSON());
+   }
+
+   toJSON() {
+      return {
+         entity: this.entity,
+         filter: this.filter
+      };
    }
 }

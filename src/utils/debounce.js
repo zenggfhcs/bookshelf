@@ -1,6 +1,6 @@
 import {customRef} from "vue"
 import {TypeCheck} from "@/utils/Check.js";
-import {ParameterType} from "@/constant/type.js";
+import {ParameterType} from "@/constant/Type.js";
 
 /**
  * 带延迟更新的 ref，对于变量可以实现，对于对象不行

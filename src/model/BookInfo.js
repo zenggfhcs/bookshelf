@@ -1,6 +1,6 @@
 import {Publisher} from "@/model/Publisher.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
-import {ParameterType} from "@/constant/type.js";
+import {ParameterType} from "@/constant/Type.js";
 import {TypeCheck} from "@/utils/Check.js";
 
 
