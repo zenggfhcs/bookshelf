@@ -38,7 +38,7 @@ export {
 /**
  * menu 路由生成
  * @param name 对应 router 配置里面的 name
- * @returns {{to: {name: string, params: {lang: string}}}}
+ * @returns {{to: {name: string}}}
  */
 const generateProps = (name) => {
    return {
@@ -48,7 +48,24 @@ const generateProps = (name) => {
    };
 };
 
+
 export {
    generateProps,
 }
 /* ============================ to ============================ */
+
+/* ============================ route ============================ */
+const generateRoute = (c, n, p, ch, r) => {
+   return {
+      component: c,
+      name: n,
+      path: p,
+      children: ch,
+      redirect: ch?.[0]
+   }
+}
+
+export {
+   generateRoute
+}
+/* ============================ route ============================ */

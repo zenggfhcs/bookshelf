@@ -1,56 +1,87 @@
 import UserManager from "@/views/i/user-manager.vue";
-import DataShow from "@/views/i/data-show.vue";
-import Test from '@/views/test.vue';
+import Login from "@/views/login.vue";
+import BaseI from "@/views/i/base-i.vue";
+import DebitManager from "@/views/i/debit-manager.vue";
+import BaseJ from "@/views/j/base-j.vue";
+import {generateRoute} from "@/utils/generate.js"; 
+/* ============================ route object ============================ */
+const LOGIN = generateRoute(Login, 'login', '/login');
 
-/**
- * route 预定义类
- */
-class RouteItem {
+const REGISTER = generateRoute(Login, 'register', '/register');
 
-   #component;
-   #name;
-   #path;
+//#region Manager
+const MANAGER_DEBIT = generateRoute(DebitManager, 'debitManager', '/manager/debitManager');
+const MANAGER_USER = generateRoute(UserManager, 'userManager', '/manager/userManager');
 
-   // #
+const MANAGER = generateRoute(BaseI, 'manager', '/manager', [MANAGER_DEBIT, MANAGER_USER], MANAGER_DEBIT);
+//#endregion
 
-   /**
-    *
-    * @param component
-    * @param name
-    * @param path
-    */
-   constructor(component, name, path = `/${name}`) {
-      this.#component = component;
-      this.#name = name;
-      this.#path = path;
-   }
+//#region User
+const HOME = generateRoute(BaseJ, 'user', '/', []);
+//#endregion
 
-   get name() {
-      return this.#name;
-   }
+/* ============================ route object ============================ */
 
-   get path() {
-      return this.#path;
-   }
-
-   get component() {
-      return this.#component;
-   }
+/* ============================ export route item ============================ */
+export {
+   LOGIN,
+   MANAGER_DEBIT,
+   MANAGER_USER,
+   HOME
 }
-
-/* ============================ route object ============================ */
-const HOME = new RouteItem(Test, '');
-const MANAGER_USER = new RouteItem(UserManager, 'userManager');
-
-const MANAGER_DEBIT = new RouteItem(DataShow, 'debitManager');
-/* ============================ route object ============================ */
+/* ============================ export route item ============================ */
 
 
 /* ============================ export route ============================ */
 export const PredefinedRoutes = [
-   HOME,
-   MANAGER_DEBIT,
-   MANAGER_USER,
+   LOGIN,
+   REGISTER,
+   MANAGER,
+   HOME
 ]
+
 /* ============================ export route ============================ */
+
+
+// /**
+//  * route 预定义类
+//  */
+// class RouteItem {
+//
+//    #component;
+//    #name;
+//    #path;
+//    #children;
+//
+//    // #
+//
+//    /**
+//     *
+//     * @param component
+//     * @param name
+//     * @param path
+//     */
+//    constructor(component, name, path = `/${name}`) {
+//       this.#component = component;
+//       this.#name = name;
+//       this.#path = path;
+//       this.#children = [];
+//    }
+//
+//    get name() {
+//       return this.#name;
+//    }
+//
+//    get path() {
+//       return this.#path;
+//    }
+//
+//    get component() {
+//       return this.#component;
+//    }
+//
+//    addChildren(val) {
+//       this.#children.push(val);
+//    }
+// }
 

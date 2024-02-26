@@ -1,14 +1,25 @@
 <script setup>
 import {h, nextTick, onMounted, ref} from 'vue'
 import {NDataTable, NDropdown, useMessage} from 'naive-ui'
-import {Service} from "@/constant/Service.js";
+import {Service} from "@/api/index.js";
 
 onMounted(() => { // 加载数据
-   Service.User.select(null, null);
+   find();
 })
 
 const find = () => {
+   const filter = {
+      page: {
+         start: 0,
+         end: 10
+      }
+   }
+   const entity = {
 
+   }
+   Service.Users.list(entity, filter).then(res => {
+      console.log(res);
+   });
 }
 
 const data = []

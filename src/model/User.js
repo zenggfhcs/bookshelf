@@ -2,7 +2,7 @@ import {TypeCheck} from "@/utils/Check.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
 import {ParameterType} from "@/constant/Type.js";
 
-export class User extends BaseEntity {
+class User extends BaseEntity {
    #id;
    #authenticationString;
    #displayName;
@@ -35,8 +35,7 @@ export class User extends BaseEntity {
    }
 
    set authenticationString(value) {
-      TypeCheck.typeCorrect("authenticationString", ParameterType.STRING, value);
-
+      // TypeCheck.typeCorrect("authenticationString", ParameterType.STRING, value);
       this.#authenticationString = value;
    }
 
@@ -139,4 +138,19 @@ export class User extends BaseEntity {
 
       this.#lastLoginTime = value;
    }
+
+   toString() {
+      return JSON.stringify(this.toJSON());
+   }
+
+   toJSON() {
+      return {
+         displayName: this.displayName,
+         authenticationString: this.authenticationString
+      }
+   }
+}
+
+export {
+   User,
 }

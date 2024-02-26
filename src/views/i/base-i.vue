@@ -11,27 +11,31 @@ import {
 import {OperationsRecord as LogManager} from "@vicons/carbon";
 import {RouterLink} from "vue-router";
 import {generateProps} from "@/utils/generate.js";
+import {MANAGER_DEBIT, MANAGER_USER} from "@/router/RouterValue.js";
+import {expandIcon, renderIcon} from "@/utils/IconGenerator.js";
 
 const collapsed = ref(true);
-const manuStyle = `font-size: 1.2rem`;
-
-function renderIcon(icon) {
-   return () => h(NIcon, null, {default: () => h(icon)})
-}
+const menuStyle = `font-size: 1.2rem`;
 
 const menuOptions = [
    {
       label: () =>
          h(
             RouterLink,
-            generateProps('userManager'),
+            generateProps(MANAGER_DEBIT.name),
             {default: () => '借阅记录'}
          ),
       key: 'm-debit',
       icon: renderIcon(DebitManagerIcon)
    },
    {
-      label: '书籍管理',
+      label: () =>
+         h(
+            RouterLink,
+            generateProps(MANAGER_USER.name),
+            {default: () => '书籍管理'}
+         )
+      ,
       key: 'm-book',
       icon: renderIcon(BookManagerIcon)
    },
@@ -41,7 +45,13 @@ const menuOptions = [
       icon: renderIcon(BookInfoManagerIcon)
    },
    {
-      label: '用户管理',
+      label: () =>
+         h(
+            RouterLink,
+            generateProps(MANAGER_USER.name),
+            {default: () => '用户管理'}
+         )
+      ,
       key: 'm-user',
       icon: renderIcon(UserManagerIcon)
    },
@@ -52,9 +62,6 @@ const menuOptions = [
    }
 ]
 
-function expandIcon() {
-   return h(NIcon, null, {default: () => h(null)})
-}
 
 </script>
 
@@ -62,6 +69,9 @@ function expandIcon() {
    <n-layout style="height: 100vh">
       <n-layout-header bordered style="height: 48px;">
          天堂桥
+         <a href="/login">
+            <button>login</button>
+         </a>
       </n-layout-header>
       <n-layout has-sider position="absolute" style="top: 48px; bottom: 48px">
          <n-layout-sider
@@ -81,12 +91,14 @@ function expandIcon() {
                   :collapsed-width="64"
                   :expand-icon="expandIcon"
                   :options="menuOptions"
-                  :style="manuStyle"
+                  :style="menuStyle"
                />
             </n-scrollbar>
          </n-layout-sider>
-         <n-layout :native-scrollbar="false" content-style="padding: 8px;" has-sider>
-            <router-view/>
+         <n-layout :native-scrollbar="false" content-style="padding: 8px;">
+            <router-view v-slot="{ Component}">
+               <component :is="Component" />
+            </router-view>
          </n-layout>
       </n-layout>
       <n-layout-footer
