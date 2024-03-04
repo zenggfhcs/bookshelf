@@ -1,4 +1,4 @@
-import {BoolHelper} from "@/utils/BoolHelper.js";
+import {BoolTools} from "@/utils/BoolTools.js";
 import {Exception} from "@/utils/exception.js";
 import {ParameterType} from "@/constant/Type.js";
 
@@ -13,7 +13,7 @@ export class TypeCheck {
     * @param fun 额外的判断函数
     */
    static isBoolean(attribute, val, fun) {
-      if (BoolHelper.isBoolean(val, fun)) {
+      if (BoolTools.isBoolean(val, fun)) {
          return;
       }
       Exception.typeError(attribute, ParameterType.BOOLEAN, val);
@@ -26,7 +26,7 @@ export class TypeCheck {
     * @param fun 额外的判断函数
     */
    static isFloatNumber(attribute, val, fun) {
-      if (BoolHelper.isFloat(val, fun)) {
+      if (BoolTools.isFloat(val, fun)) {
          return;
       }
       Exception.typeError(attribute, 'float number', val);
@@ -39,7 +39,7 @@ export class TypeCheck {
     * @param fun 额外的判断函数
     */
    static isInteger(attribute, val, fun) {
-      if (BoolHelper.Integer(val, fun)) {
+      if (BoolTools.Integer(val, fun)) {
          return;
       }
       Exception.typeError(attribute, 'integer', val);
@@ -53,12 +53,12 @@ export class TypeCheck {
     */
    static typeCorrect(attribute, type, val) {
       if (typeof type === 'string') {
-         if (BoolHelper.isType(val, type)) {
+         if (BoolTools.isType(val, type)) {
             return;
          }
          Exception.typeError(attribute, type, val);
       } else {
-         if (BoolHelper.isInstanceOf(val, type)) {
+         if (BoolTools.isInstanceOf(val, type)) {
             return;
          }
          Exception.typeError(attribute, type.name, val);

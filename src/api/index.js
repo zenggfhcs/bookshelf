@@ -1,11 +1,21 @@
 import {MyRequest} from "@/api/MyRequest.js";
 import {Urls} from "@/api/UrlProvider.js"
+import {encodeByRSA} from "@/utils/RSATools.js";
 
-/* ============================ user api ============================ */
+//#region user api
 const Users = {
    login: (entity) => {
       const _payload = {entity: entity};
       return MyRequest.post(Urls.LOGIN, _payload);
+   },
+   register: (entity) => {
+      const _payload = {
+         entity: {
+            email: encodeByRSA(entity.email),
+            authenticationString: encodeByRSA(entity.authenticationString),
+         }
+      };
+      return MyRequest.post(Urls.REGISTER, _payload);
    },
    list: (entity, filter) => {
       const _payload = {entity: entity, filter: filter};
@@ -27,9 +37,23 @@ const Users = {
 
    }
 }
-/* ============================ user api ============================ */
+//#endregion
+
+//#region debit api
+/* === === === === === === === === === === === === === */
+const Debits = {
+   list: (entity, filter) => {
+      const _payload = {entity: entity, filter: filter};
+      console.log(_payload);
+      return MyRequest.post(Urls.DEBIT('list').R, _payload);
+   }
+}
+/* === === === === === === === === === === === === === */
+//#endregion
+
 const Service = {
-   Users: Users
+   Users: Users,
+   Debits: Debits
 }
 
 

@@ -11,6 +11,9 @@ const Urls = {
    REGISTER: '/register',
    USER: (id) => {
       return {...g('users', id)};
+   },
+   DEBIT: (id) => {
+      return {...g('debits', id)};
    }
 }
 
