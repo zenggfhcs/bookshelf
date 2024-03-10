@@ -1,20 +1,20 @@
 const Validator = {}
 
 export {
-   Validator
+	Validator
 }
 
 
 const validate = (message, messageContent, form, then) => {
-   form?.value?.validate((errors) => {
-      if (!errors) {
-         then(this.args);
-      } else {
-         message?.error(messageContent);
-      }
-   });
+	form?.value?.validate((errors) => {
+		if (!errors) {
+			then(this.args);
+		} else {
+			message?.error(messageContent);
+		}
+	});
 };
 
 export {
-   validate
+	validate
 }

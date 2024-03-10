@@ -1,11 +1,16 @@
 <script setup>
-import {ref} from "vue";
-import {NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
-import {debounce} from "@/utils/debounce.js";
 import {Service} from "@/api/index.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
 import Bg from "@/components/bg.vue";
 import {REG_EMAIL} from "@/constant/RegularExpression.js";
+import {ResponseCode} from "@/constant/ResponseCode.js";
+import router from "@/router/Router.js";
+import {debounce} from "@/utils/debounce.js";
+import {NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
+import {onMounted, ref} from "vue";
+
+onMounted(() => {
+})
+
 
 const formRef = ref(null);
 const message = useMessage();
@@ -56,7 +61,11 @@ const login = debounce((e) => {
          Service.Users.login(model.value)
             .then(res => {
                const data = res.data;
-               if (data?.code !== ResponseCode.SUCCESS) {
+               if (data?.code === ResponseCode.SUCCESS) {
+                  // 登录
+                  localStorage.setItem("token", data?.data?.token);
+                  router.push("/");
+               } else {
                   message.error(data?.msg);
                }
             })
@@ -67,10 +76,10 @@ const login = debounce((e) => {
                loading.value = false;
             });
       } else {
-         message.error("login error");
+         message.error("登录失误");
       }
    });
-}, 555);
+}, 777);
 
 
 </script>

@@ -1,6 +1,6 @@
+import router from '@/router/Router.js'
 import {createApp} from 'vue'
 import App from './App.vue'
-import router from '@/router/Router.js'
 import 'virtual:uno.css'
 
 const app = createApp(App)

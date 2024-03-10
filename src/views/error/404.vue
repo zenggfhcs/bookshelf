@@ -1,6 +1,6 @@
 <script setup>
-import {NResult} from 'naive-ui'
 import Index from "@/layout/error.vue";
+import {NResult} from 'naive-ui'
 </script>
 
 <template>

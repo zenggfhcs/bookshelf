@@ -8,7 +8,7 @@ const CREATE = 'create';
  * @type {{DELETE: string, CREATE: string, UPDATE: string, SELECT: string}}
  */
 export const PostType = {
-   SELECT, UPDATE, DELETE, CREATE,
+	SELECT, UPDATE, DELETE, CREATE,
 };
 /* ============================ post type ============================ */
 
@@ -21,7 +21,7 @@ const FUNCTION = 'function';
 const OBJECT = 'object';
 
 export const ParameterType = {
-   NUMBER, STRING, BOOLEAN, FUNCTION, OBJECT,
+	NUMBER, STRING, BOOLEAN, FUNCTION, OBJECT,
 };
 /* ============================ parameter type ============================ */
 
@@ -39,11 +39,11 @@ const User = 'users';
  * @type {{Debit: string, User: string, Log: string, Book: string, BookInfo: string, Publisher: string}}
  */
 export const ResourceType = {
-   Book,
-   BookInfo,
-   Debit,
-   Log,
-   Publisher,
-   User,
+	Book,
+	BookInfo,
+	Debit,
+	Log,
+	Publisher,
+	User,
 };
 /* ============================ 声明 ============================ */

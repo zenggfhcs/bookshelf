@@ -1,11 +1,11 @@
 <script setup>
-import {ref} from "vue";
-import {NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
-import {debounce} from "@/utils/debounce.js";
 import {Service} from "@/api/index.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
 import Bg from "@/components/bg.vue";
 import {REG_EMAIL} from "@/constant/RegularExpression.js";
+import {ResponseCode} from "@/constant/ResponseCode.js";
+import {debounce} from "@/utils/debounce.js";
+import {NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
+import {ref} from "vue";
 
 //#region all
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -88,9 +88,6 @@ const rules = {
  */
 const register = debounce((e) => {
    e.preventDefault();                       // 父默认方法
-   // let data = 'a';
-
-   // console.log(decodeByRSA("c75HtC9vgWVtsp7PY0EZr4A+PTWHPerY3u4V4hJP6iLHJp0lJ4lVSsjGXRFJrIoCgMW4Enz2JVHiuTdcrPrRBuj8hEB0G+IUm8J1i9H3ZM7mOoHmI70MvZYwwFKNCx/8cDQg8yjr63esjxROBtgIe2xE2sH5a3jiBKK8sm7bfAX/9qMWc2hh3XW53NM10DB55PGhMDm1f8YBNUcLvF0NWITuQ51UcbYpQGYVZtreoAhgHLrLkkbjliq3b+qyI8DnId1EQWmeAr6SRtMliOXO6gDcwZYxCY47cYSqyaxFIvrpu+6m1pMHuEEc5rq0qS6nnwsb5Vdr6MUr2Dm3xpErKA=="));
    formRef.value?.validate((errors) => {     // 验证表单
       if (!errors) {                         // 验证通过
          loading.value = true;
@@ -98,11 +95,23 @@ const register = debounce((e) => {
             .then(res => {
                const data = res.data;
                if (data?.code !== ResponseCode.SUCCESS) {
-                  message.error(data?.msg);
+                  message.error(data?.msg, {
+                     duration: 10000,
+                     closable: true
+                  });
+               } else {
+                  message.success("REGISTER_SUCCESS: 注册成功，验证链接已经发送到您的邮箱", {
+                     duration: 10000,
+                     closable: true
+                  })
+                  // todo 之后要做些什么呢？
                }
             })
             .catch(err => {
-               message.error(err.message);
+               message.error(err.message, {
+                  duration: 10000,
+                  closable: true
+               });
             })
             .finally(() => {
                loading.value = false;

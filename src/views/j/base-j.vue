@@ -1,11 +1,17 @@
 <script setup>
-import {NLayout, NLayoutHeader, NMenu} from 'naive-ui'
-import {h} from "vue";
-import {RouterLink} from "vue-router";
-import {expandIcon, generateProps, renderIcon} from "@/utils/generate.js";
+import {checkLoginState} from "@/constant/Provider.js";
 import {HOME} from "@/router/RouterValue.js";
+import {expandIcon, generateProps, renderIcon} from "@/utils/generate.js";
 import {Home} from "@vicons/fa";
-import Test from "@/views/test.vue";
+import {NLayout, NLayoutHeader, NMenu} from 'naive-ui'
+import {h, onMounted} from "vue";
+import {RouterLink} from "vue-router";
+
+
+onMounted(() => {
+   checkLoginState();
+   // localStorage.clear();
+})
 
 const menuOptions = [
    {
@@ -40,7 +46,7 @@ const menuOptions = [
 </script>
 
 <template>
-   <n-layout style="height: 100vh;">
+   <n-layout position="absolute">
       <n-layout-header>
          <n-menu
             :collapsed-icon-size="16"
@@ -52,15 +58,16 @@ const menuOptions = [
       </n-layout-header>
       <n-layout :native-scrollbar="false" content-style="padding: 8px;" position="absolute"
                 style="top: 3em; bottom: 0; background-color: #00bd7e">
-         <test/>
       </n-layout>
 
    </n-layout>
 </template>
 
 <style scoped>
+
 .n-layout-header {
    padding: calc((3em - 42px) / 2) 0;
    height: 3em;
 }
+
 </style>

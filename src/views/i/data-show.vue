@@ -14,8 +14,8 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
 import {NDataTable} from 'naive-ui'
+import {onMounted, reactive, ref} from 'vue'
 
 const column1 = {
    title: 'column1',

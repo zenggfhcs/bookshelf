@@ -1,15 +1,18 @@
-import UserManager from "@/views/i/users.vue";
-import Login from "@/views/login.vue";
-import BaseI from "@/views/i/base-i.vue";
-import DebitManager from "@/views/i/debits.vue";
-import BaseJ from "@/views/j/base-j.vue";
-import Page404 from "@/views/error/404.vue";
 import {generateRoute} from "@/utils/generate.js";
-import Manager from "@/views/i/manager.vue";
-import BookManager from "@/views/i/books.vue";
+import Page404 from "@/views/error/404.vue";
+import BaseI from "@/views/i/base-i.vue";
 import BookInfoManager from "@/views/i/book-infos.vue";
+import BookManager from "@/views/i/books.vue";
+import DebitManager from "@/views/i/debits.vue";
+import LogManager from "@/views/i/logs.vue";
+import Manager from "@/views/i/manager.vue";
+import PublisherManager from "@/views/i/publishers.vue";
+import UserManager from "@/views/i/users.vue";
+import BaseJ from "@/views/j/base-j.vue";
+import Login from "@/views/login.vue";
 import Register from "@/views/register.vue";
 import ResetPassword from "@/views/reset-password.vue";
+import Verify from "@/views/verify.vue";
 /* ============================ route object ============================ */
 const LOGIN = generateRoute(Login, 'login', '/login');
 
@@ -17,14 +20,21 @@ const REGISTER = generateRoute(Register, 'register', '/register');
 
 const RESET_PASSWORD = generateRoute(ResetPassword, 'resetPassword', '/reset-password');
 
-//#region Manager
-const MANAGER_HOME = generateRoute(Manager, 'manage-home', '/manage/index')
-const MANAGER_DEBIT = generateRoute(DebitManager, 'debitManager', '/manage/debits');
-const MANAGER_USER = generateRoute(UserManager, 'userManager', '/manage/users');
-const MANAGER_BOOK = generateRoute(BookManager, 'bookManager', '/manage/books');
-const MANAGER_BOOK_INFO = generateRoute(BookInfoManager, 'bookInfoManager', '/manage/bookInfos')
 
-const MANAGER = generateRoute(BaseI, 'manage', '/manage', [MANAGER_HOME, MANAGER_DEBIT, MANAGER_USER, MANAGER_BOOK, MANAGER_BOOK_INFO]);
+const VERIFY = generateRoute(Verify, 'verify', '/verify', undefined, undefined, {props: route => ({token: route.query.token})});
+
+//#region Manager
+const MANAGE_HOME = generateRoute(Manager, 'manage-home', '/manage/index')
+const MANAGE_DEBIT = generateRoute(DebitManager, 'debitManager', '/manage/debits');
+const MANAGE_BOOK = generateRoute(BookManager, 'bookManager', '/manage/books');
+const MANAGE_BOOK_INFO = generateRoute(BookInfoManager, 'bookInfoManager', '/manage/bookInfos');
+
+const MANAGE_PUBLISHER = generateRoute(PublisherManager, 'publisherManager', '/manage/publishers');
+const MANAGE_USER = generateRoute(UserManager, 'userManager', '/manage/users');
+
+const MANAGE_LOG = generateRoute(LogManager, 'logManager', '/manage/logs');
+
+const MANAGE = generateRoute(BaseI, 'manage', '/manage', [MANAGE_HOME, MANAGE_DEBIT, MANAGE_BOOK, MANAGE_BOOK_INFO, MANAGE_PUBLISHER, MANAGE_USER, MANAGE_LOG]);
 //#endregion
 
 //#region User
@@ -42,12 +52,14 @@ const UNDEFINED = generateRoute(null, 'undefined', '/:pathMatch(.*)*', [_404]);
 //#region export route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 export {
-   LOGIN,
-   MANAGER_DEBIT,
-   MANAGER_USER,
-   MANAGER_BOOK,
-   MANAGER_BOOK_INFO,
-   HOME
+	LOGIN,
+	MANAGE_DEBIT,
+	MANAGE_USER,
+	MANAGE_BOOK,
+	MANAGE_BOOK_INFO,
+	MANAGE_PUBLISHER,
+	MANAGE_LOG,
+	HOME
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -56,13 +68,14 @@ export {
 //#region export routes
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 export const PredefinedRoutes = [
-   LOGIN,
-   REGISTER,
-   RESET_PASSWORD,
-   MANAGER,
-   HOME,
-   ERROR,
-   UNDEFINED,
+	LOGIN,
+	REGISTER,
+	VERIFY,
+	RESET_PASSWORD,
+	MANAGE,
+	HOME,
+	ERROR,
+	UNDEFINED,
 ]
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

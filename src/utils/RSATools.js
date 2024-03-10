@@ -11,42 +11,19 @@ RMSTCB7blECd4Mt9VDmEHODWHpvxIdBrzu2E3VioY2OX0hCQafmkyg1oez0h+IdFxS/Bd2R27UjG
 JW/ts1PqsLXRBMpDRhBqvALY5vddnnNXWGKM6vCS5Q8S1j08yZMg0YKMzSz5GnKIa9dFlQ9dSqTD
 kO1fGwIDAQAB`;
 
-const RSA_PRIVATE_KEY =
-   `MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDMQ5ty0dZLQCwRhyMy1DPuJyyO
-DfHVMAuLc6M5uhhGzrfnwVmhB8TgPaVNlRHoXb/OrEOAU0qn/VBEbP0nt/M1dSUpnofQ1dWGeDH1
-wXdWM+Ds2CJ1KfF6yEcyb82eS5AtmXY+hkOl15AR4M4d9jgg1RKrnEGOUoy3UBEusi46wVN//JMI
-LtQCF3hExJMIHtuUQJ3gy31UOYQc4NYem/Eh0GvO7YTdWKhjY5fSEJBp+aTKDWh7PSH4h0XFL8F3
-ZHbtSMYlb+2zU+qwtdEEykNGEGq8Atjm912ec1dYYozq8JLlDxLWPTzJkyDRgozNLPkacohr10WV
-D11KpMOQ7V8bAgMBAAECggEABAdpWjBtYPqZDpdzHZ415Vf8dv4ra6BmTzqEA7AkqRuMC77dPQyM
-Lj1ztJNg0QvYVq6V05gmUX3w8V3noxBBHyglCCx0/VeFE1aXla4FOTwODwiMVXHzA2Wj5zNxWNKg
-u2WFgYzgagsAb88sAZyeVXdzxigaMEEh6WkOOF+SAzKioAFnlWeSSLdfNsN9pjiV5s7GiAqnWsmu
-hRT4/q2RvknE0bMCqr1KK8qjv/wCnpBSxSWpz0yBhtExVZvdURMQyVwVxp1QwFBMtjSYZ+nMxNu9
-7htvm/nPBH7ghoRkCHoyHP2nugfx5fis7XJsrjIDIsI4LjaNGJjVfKagKZCX8QKBgQDWK8EbV62v
-kwXAZIcJCnWNiUDbv0pRn2Bpp3zWg3knzsHA0Xg0EFQHNNcw0yIOB4StBbNu/m5ePkupMFxYM4/H
-r+qU/owHN8urI+gb0a6uITN3YaXuAWtQtG1XvBDYKrsnmEf2WfmXgVMaX85dW2ULecGpnCTKuEbV
-3x992IgQHwKBgQD0KIaKRusW6P+DK57C0cgswqVzacCpxUc4A2uCP+z303vmHISws61xke+lMFtx
-orMFNOJuzQR30Gcmhc0nl/z68FsQAbTkcY3atqlHhENznGDSPn+yX6e2HL4bD2WqR+MMqm4/RUYr
-Cr51+4lAWmg1j8mBYfhTr+h2fZYCvrchhQKBgQCcJ7rc3MjewyvmY2WxydZ8JB8OGiNt7+60GlKD
-dcjYpX/PvusNyvn5ZyWfi9HAuOqb3RQ/UXPXc0RnT8OE69NhnXpEuHQQrzXoyn1qCzB59es4mBIL
-vy0n4uX2mkEN29opvHZ7wI6jUL/u8vvcRc8e1t/FcvvAcyvytISZlU9fsQKBgAjoXZg35CXO1Fud
-wMoMy0fOxiiCyDOpbeK+RTLYUDXucku/6JtlwsMs9thI/l0T+YIMHuK5+hrA8LJ4GTcDlYg2MqxP
-06Ct/+Xl2iEw0yEpqGKjQxdn4/+B5vGnyya+PqtcoG8QgPHbD33Qcn51je2+VDSzNVMgTNPd2xY4
-jQfdAoGBAIcjNj7/cldXAaQNKroEWGZ+5EYT3Cmvytx533Gw3lgAAXkSzYePorMFMcMV7EIeNR+3
-Ir/XqkOWMSc5TNJbOmla5oxwjtf7R5LnryzdV9h73Mm6V0OmTyAAK4PfyOjEClj07WwOTpY8J75G
-0migmjxMQ+oPYzb3aopblQUTaV6R`;
+const RSA_PRIVATE_KEY = ``;
 
 encryptor.setPublicKey(RSA_PUBLIC_KEY);
-encryptor.setPrivateKey(RSA_PRIVATE_KEY);
 
 const encodeByRSA = (data) => {
-   return encryptor.encrypt(data);
+	return encryptor.encrypt(data);
 }
 
 const decodeByRSA = (encryptData) => {
-   return encryptor.decrypt(encryptData);
+	return encryptor.decrypt(encryptData);
 }
 
 export {
-   encodeByRSA,
-   decodeByRSA
+	encodeByRSA,
+	decodeByRSA
 }

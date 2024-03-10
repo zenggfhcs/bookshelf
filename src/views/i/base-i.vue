@@ -1,5 +1,23 @@
 <script setup>
-import {h, onMounted, ref} from "vue";
+import BookBrain from "@/icons/book-brain.vue";
+import IconPublisher from "@/icons/icon-publisher.vue";
+import {
+   MANAGE_BOOK,
+   MANAGE_BOOK_INFO,
+   MANAGE_DEBIT,
+   MANAGE_LOG,
+   MANAGE_PUBLISHER,
+   MANAGE_USER
+} from "@/router/RouterValue.js";
+import {expandIcon, generateProps, renderIcon} from "@/utils/generate.js";
+import {OperationsRecord as LogManager} from "@vicons/carbon";
+
+import {
+   Book as BookManagerIcon,
+   BookOpen as BookInfoManagerIcon,
+   BookReader as DebitManagerIcon,
+   UsersCog as UserManagerIcon
+} from "@vicons/fa";
 import {
    NButton,
    NFlex,
@@ -10,20 +28,34 @@ import {
    NLayoutSider,
    NMenu,
    NPopover,
-   NScrollbar
+   NScrollbar,
+   useDialog,
+   useMessage,
 } from 'naive-ui';
-
-import {
-   Book as BookManagerIcon,
-   BookOpen as BookInfoManagerIcon,
-   BookReader as DebitManagerIcon,
-   UsersCog as UserManagerIcon
-} from "@vicons/fa";
-import {OperationsRecord as LogManager} from "@vicons/carbon";
+import {h, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
-import {expandIcon, generateProps, renderIcon} from "@/utils/generate.js";
-import {MANAGER_BOOK, MANAGER_BOOK_INFO, MANAGER_DEBIT, MANAGER_USER} from "@/router/RouterValue.js";
-import BookBrain from "@/icons/book-brain.vue";
+
+onMounted(() => {
+})
+
+
+const dialog = useDialog();
+const message = useMessage();
+
+const logoutConfirm = () => {
+   dialog.warning({
+      title: '警告',
+      content: '你确定？',
+      positiveText: '确定',
+      negativeText: '不确定',
+      onPositiveClick: () => {
+         message.success('确定')
+      },
+      onNegativeClick: () => {
+         message.error('不确定')
+      }
+   })
+}
 
 const collapsed = ref(false);
 
@@ -32,71 +64,66 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGER_DEBIT.name),
+            generateProps(MANAGE_DEBIT.name),
             {default: () => '借阅记录'}
          ),
       key: 'm-debit',
       icon: renderIcon(DebitManagerIcon)
-   },
-   {
+   }, {
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGER_BOOK.name),
+            generateProps(MANAGE_BOOK.name),
             {default: () => '书籍管理'}
          ),
       key: 'm-book',
       icon: renderIcon(BookManagerIcon)
-   },
-   {
+   }, {
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGER_BOOK_INFO.name),
+            generateProps(MANAGE_BOOK_INFO.name),
             {default: () => '书籍信息管理'}
          ),
       key: 'm-book-info',
       icon: renderIcon(BookInfoManagerIcon)
-   },
-   {
+   }, {
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGER_USER.name),
+            generateProps(MANAGE_PUBLISHER.name),
+            {default: () => '出版社管理'}
+         )
+      ,
+      key: 'm-publisher',
+      icon: renderIcon(IconPublisher)
+   }, {
+      label: () =>
+         h(
+            RouterLink,
+            generateProps(MANAGE_USER.name),
             {default: () => '用户管理'}
          )
       ,
       key: 'm-user',
       icon: renderIcon(UserManagerIcon)
-   },
-   {
-      label: '系统日志',
+   }, {
+      label: () =>
+         h(
+            RouterLink,
+            generateProps(MANAGE_LOG.name),
+            {default: () => '系统日志'}
+         )
+      ,
       key: 'log',
       icon: renderIcon(LogManager)
    }
 ]
 
-const leave = ref(false);
-
-onMounted(() => {
-   //#region 监听侧边栏动作，展开时执行动画
-   // document.querySelector('.n-layout-toggle-button').onclick = () => {
-   //    if (collapsed.value === false) {
-   //       // add
-   //       document.querySelector('#logo-text').classList.add('logo-text-animation')
-   //    }
-   //    else {
-   //       // remove
-   //       document.querySelector('#logo-text').classList.remove('logo-text-animation')
-   //    }
-   // }
-   //#endregion
-})
-
 </script>
 
 <template>
-   <n-layout class="h-100vh" has-sider>
+   <n-layout has-sider position="absolute">
       <n-layout-sider
          :collapsed="collapsed"
          :collapsed-width="64"
@@ -137,7 +164,7 @@ onMounted(() => {
          </n-layout>
          <n-layout-footer
             bordered
-            class="h-3em overflow-hidden"
+            class="h-2.4em overflow-hidden"
             position="absolute"
          >
             <n-flex :wrap="false" class="h-full over-hidden">
@@ -162,7 +189,7 @@ onMounted(() => {
 
                   </template>
                   <n-form label-placement="left">
-                     <n-button :bordered="false" class="no-border-btn">
+                     <n-button :bordered="false" class="no-border-btn" @click="logoutConfirm">
                         登出
                      </n-button>
                   </n-form>
@@ -181,7 +208,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@import "src/styles/no-border-btn.css";
+@import "@/styles/no-border-btn.css";
 
 #app {
 }

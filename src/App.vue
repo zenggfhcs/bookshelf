@@ -1,14 +1,18 @@
 <template>
-   <n-message-provider>
-      <router-view/>
-   </n-message-provider>
+   <n-modal-provider>
+      <n-dialog-provider>
+         <n-message-provider>
+            <router-view/>
+         </n-message-provider>
+      </n-dialog-provider>
+   </n-modal-provider>
 </template>
 
 <script setup>
-import {NMessageProvider} from "naive-ui";
-import {onMounted} from "vue";
+import {NModalProvider, NDialogProvider, NMessageProvider} from "naive-ui";
+import {onBeforeMount} from "vue";
 
-onMounted(() => {
+onBeforeMount(() => {
    document.documentElement.style.fontSize = '16px';
 })
 </script>

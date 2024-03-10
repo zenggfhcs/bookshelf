@@ -1,42 +1,42 @@
-import {TypeCheck} from "@/utils/Check.js";
 import {BaseEntity} from "@/model/BaseEntity.js";
 import {Filter} from "@/model/Filter.js";
+import {TypeCheck} from "@/utils/Check.js";
 
 export class Payload {
 
-   #entity;
+	#entity;
 
-   #filter;
+	#filter;
 
-   constructor() {
-   }
+	constructor() {
+	}
 
-   get entity() {
-      return this.#entity;
-   }
+	get entity() {
+		return this.#entity;
+	}
 
-   set entity(value) {
-      TypeCheck.typeCorrect("entity", BaseEntity, value);
-      this.#entity = value;
-   }
+	set entity(value) {
+		TypeCheck.typeCorrect("entity", BaseEntity, value);
+		this.#entity = value;
+	}
 
-   get filter() {
-      return this.#filter;
-   }
+	get filter() {
+		return this.#filter;
+	}
 
-   set filter(value) {
-      TypeCheck.typeCorrect("filter", Filter, value);
-      this.#filter = value;
-   }
+	set filter(value) {
+		TypeCheck.typeCorrect("filter", Filter, value);
+		this.#filter = value;
+	}
 
-   toString() {
-      return JSON.stringify(this.toJSON());
-   }
+	toString() {
+		return JSON.stringify(this.toJSON());
+	}
 
-   toJSON() {
-      return {
-         entity: this.entity,
-         filter: this.filter
-      };
-   }
+	toJSON() {
+		return {
+			entity: this.entity,
+			filter: this.filter
+		};
+	}
 }

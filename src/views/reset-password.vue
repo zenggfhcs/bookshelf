@@ -1,13 +1,13 @@
 <script setup>
-import {ref} from "vue";
-import {NButton, NCountdown, NFlex, NForm, NFormItem, NInput, NSpin, useMessage} from "naive-ui";
-import {ChevronBackOutline} from "@vicons/ionicons5"
-import {debounce} from "@/utils/debounce.js";
 import {Service} from "@/api/index.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
 import Bg from "@/components/bg.vue";
 import {REG_EMAIL} from "@/constant/RegularExpression.js";
+import {ResponseCode} from "@/constant/ResponseCode.js";
+import {debounce} from "@/utils/debounce.js";
 import {shuffleArray} from "@/utils/index.js";
+import {ChevronBackOutline} from "@vicons/ionicons5"
+import {NButton, NCountdown, NFlex, NForm, NFormItem, NInput, NSpin, useMessage} from "naive-ui";
+import {ref} from "vue";
 
 //#region all
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -25,7 +25,6 @@ const message = useMessage();
 
 /**
  * form model object
- * @type {Ref<UnwrapRef<{code: null, authenticationString: null, email: null, reenteredAuthenticationString: null}>>}
  */
 const model = ref({
    email: null,
@@ -36,36 +35,34 @@ const model = ref({
 
 /**
  * 确认密码的 ref，用于触发输入密码的 input 的验证
- * @type {Ref<UnwrapRef<null>>}
  */
 const reenteredRef = ref(null);
 
 /**
- * 加载标志，点击按键提交后进入加载，回调或超时后退出加载
- * @type {Ref<UnwrapRef<boolean>>}
+ * 加载标志
+ * ：
+ * 加载中为 true，否则 false
+ * @Default false
  */
 const loading = ref(false);
 
 /**
  * 验证码有效标识，获取过验证码，并且验证码有效为 true
  * 没有获取过验证码，或者验证码均已失效后，置为 false
- * @type {Ref<UnwrapRef<boolean>>}
  */
 const ObtainedCode = ref(false);
 
 /**
  * 邮箱验证结果标志
- * 通过验证 => true
- * 否则 => false
- * @type {Ref<UnwrapRef<boolean>>}
+ * ：
+ * 通过验证为 true，否则为 false
  */
 const emailValidated = ref(false);
 
 /**
  * 计时按钮格式返回
- * @param minutes
- * @param seconds
- * @returns {`再次获取(${string}:${string})`}
+ * @param minutes 分钟数
+ * @param seconds 秒数
  */
 const renderCountdown = ({minutes, seconds}) => {
    return `再次获取(${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")})`;
@@ -79,13 +76,11 @@ const countdownRef = ref();
 
 /**
  * 验证码，保存有效的验证码，验证码过期会被重置为 ''
- * @type {Ref<UnwrapRef<string>>}
  */
 const code = ref('');
 
 /**
  * 计时器时长
- * @type {Ref<UnwrapRef<number>>}
  */
 const duration = ref(3 /** 60*/ * 1000);
 
@@ -331,7 +326,7 @@ const register = debounce((e) => {
                      size="large"
                      type="success"
                      @click="register">
-                     注册
+                     重置密码
                   </n-button>
                </n-form-item>
             </n-form>
@@ -350,6 +345,6 @@ const register = debounce((e) => {
 </template>
 
 <style scoped>
-@import "/src/styles/form-item-input.css";
-@import "src/styles/no-border-btn.css";
+@import "@/styles/form-item-input.css";
+@import "@/styles/no-border-btn.css";
 </style>

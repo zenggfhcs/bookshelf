@@ -1,5 +1,10 @@
 <script setup>
-import {h, nextTick, onMounted, reactive, ref} from 'vue'
+import {Service} from "@/api/index.js";
+import {checkLoginState} from "@/constant/Provider.js";
+import {ResponseCode} from "@/constant/ResponseCode.js";
+import Write from "@/icons/Write.vue";
+import {gCol} from "@/utils/generate.js";
+import {Search} from "@vicons/ionicons5";
 import {
    NButton,
    NDataTable,
@@ -19,44 +24,52 @@ import {
    NSpin,
    useMessage
 } from 'naive-ui'
-import {Service} from "@/api/index.js";
-import {gCol} from "@/utils/generate.js";
-import {Search} from "@vicons/ionicons5";
-import Write from "@/icons/write.vue";
+import {h, nextTick, onMounted, reactive, ref} from 'vue'
 
 //#region all
 
-const message = useMessage();
-const loading = ref(false);
 onMounted(() => { // 加载数据
+   checkLoginState();
    find();
 })
+
+const message = useMessage();
+
+const messageOptions = {
+   duration: 10000
+}
+
+const loading = ref(false);
+
 const filter = {
    page: {
       start: 0,
       end: 10
    }
 }
+
 const entity = {}
 
-const data = Array.from({length: 50}).map((_, index) => {
-   return {
-      no: index,
-      bookName: 2,
-      borrower: 3
-   };
-})
+let formData = [];
 
 const pageCount = ref(0);
 
 const setPageCount = (count) => {
    pageCount.value = Math.ceil(count / pagination.pageSize);
 }
+
 const find = () => {
    loading.value = true;
    Service.Debits.list(entity, filter)
       .then(res => {
-         console.log(res);
+         const data = res.data;
+         if (!data || data?.code !== ResponseCode.SUCCESS) {
+            message.error(data?.msg);
+            return;
+         }
+         // console.log(data)
+         setPageCount(data?.data?.count);
+         formData = data?.data?.data;
       })
       .catch(err => {
          message.error(err.message);
@@ -66,17 +79,16 @@ const find = () => {
       });
 }
 
-
 const showDropdown = ref(false)
 
 const cols = [
-   gCol('id', 'no', {}),
+   gCol('id', 'id'),
    gCol('书籍', 'bookName'),
    gCol('借阅人', 'borrower'),
    gCol('借阅时间', 'borrowTime'),
    gCol('应还时间', 'returnDeadline'),
    gCol('状态', 'state'),
-   gCol('备注', 'remark')
+   gCol('备注', 'remark'),
 ]
 
 
@@ -89,17 +101,14 @@ const paginationReactive = reactive({
       value: 20,
    }, {label: '30 每页', value: 30,}, {label: '40 每页', value: 40,}, {label: '50 每页', value: 50,},],
    showQuickJumper: true,
-   // displayOrder:['quick-jumper', 'pages', 'size-picker'],
    onUpdatePageSize: (pageSize) => {
       paginationReactive.pageSize = pageSize;
       paginationReactive.onUpdatePage(1);
-      console.log('update 2')
    },
    onUpdatePage: (page) => {
       paginationReactive.page = page;
       filter.page.start = (page - 1) * paginationReactive.pageSize;
-      filter.page.end = filter.page.start + paginationReactive.pageSize;
-      console.log('update 1')
+      filter.page.end = paginationReactive.pageSize;
       find();
    }
 });
@@ -170,7 +179,7 @@ const rowProps = (row) => {
       <n-spin :show="loading">
          <n-data-table
             :columns="cols"
-            :data="data"
+            :data="formData"
             :row-props="rowProps"
             :single-line="false"
          />
@@ -402,11 +411,8 @@ const rowProps = (row) => {
    padding: 0;
 }
 
-.n-menu-item-content-header {
+.n-menu .n-menu-item-content .n-menu-item-content-header a {
    font-weight: 800 !important;
 }
 
-.n-button {
-   font-size: 16px;
-}
 </style>
