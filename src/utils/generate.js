@@ -1,5 +1,6 @@
 import {ParameterType} from "@/constant/Type.js";
 import {TypeCheck} from "@/utils/Check.js";
+import {copyMatchingProperties} from "@/utils/index.js";
 import {NIcon} from "naive-ui";
 import {h} from "vue";
 
@@ -42,7 +43,7 @@ export {
  * @param name 对应 router 配置里面的 name
  * @returns {{to: {name: string}}}
  */
-const generateProps = (name) => {
+const gProps = (name) => {
 	return {
 		to: {
 			name: `${name}`
@@ -52,33 +53,10 @@ const generateProps = (name) => {
 
 
 export {
-	generateProps,
+	gProps,
 }
 //#endregion
 
-//#region generate route item
-const generateRoute = (c, n, p, ch = undefined, r = undefined, ext = undefined) => {
-	const res = {
-		component: c,
-		name: n,
-		path: p,
-		children: ch,
-		redirect: r === undefined ? ch?.[0] : r,
-		hidden: true,
-		props: true
-	}
-	for (const prop in ext) {
-		// console.log(prop)
-		res[prop] = ext[prop];
-	}
-
-	return res;
-}
-
-export {
-	generateRoute
-}
-//#endregion
 
 //#region generate icon
 function renderIcon(icon) {
@@ -91,7 +69,7 @@ function expandIcon() {
 
 export {
 	renderIcon,
-	expandIcon
+	expandIcon,
 }
 //#endregion
 
@@ -101,7 +79,6 @@ export {
  * @param t title
  * @param k key
  * @param ext 额外的属性
- * @returns {{resizable: boolean, minWidth: number, title, key, ellipsis: {tooltip: boolean}}}
  */
 const gCol = (t, k, ext = undefined) => {
 	const res = {
@@ -115,14 +92,15 @@ const gCol = (t, k, ext = undefined) => {
 		ellipsis: {
 			tooltip: true
 		},
-		minWidth: 50,
-
+		minWidth: 30,
+		maxWidth: 400,
+		width: null,
+		render: null,
 		//#endregion
 	}
-	for (const prop in ext) {
-		// console.log(prop)
-		res[prop] = ext[prop];
-	}
+
+	copyMatchingProperties(ext, res);
+
 	return res;
 }
 

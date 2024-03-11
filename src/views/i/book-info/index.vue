@@ -1,14 +1,15 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {checkLoginState} from "@/constant/Provider.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
+import {transType} from "@/constant/pre-defined/log.js";
+import {mapOperations} from "@/constant/pre-defined/map.js";
+import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/Write.vue";
 import router from "@/router/Router.js";
+import {checkLoginState} from "@/utils/check-login-state.js";
 import {debounce} from "@/utils/debounce.js";
-import JsonViewer from "vue-json-viewer";
-import {gCol} from "@/utils/generate.js";
 import {timestampToDateTimeString} from "@/utils/index.js";
-import {Search} from "@vicons/ionicons5";
+import {inputValidator} from "@/utils/validator.js";
+import {AddCircle, Search} from "@vicons/ionicons5";
 import {
    NBackTop,
    NButton,
@@ -18,8 +19,6 @@ import {
    NFlex,
    NForm,
    NFormItem,
-   NGi,
-   NGrid,
    NIcon,
    NInput,
    NLayout,
@@ -33,29 +32,12 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
-
-const typeName = {
-   select: "查询",
-   update: "更新",
-   delete: "删除",
-   insert: "插入",
-}
-
-const serviceName = {
-   Publisher: "出版社",
-   Debit: "借阅记录",
-   User: "用户",
-   BookInfo: "书籍信息",
-   Book: "书籍"
-}
 //#region entity
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const entity = {
-   find: reactive({
-      id: '',
-      name: '',
-   }),
-}
+const entity = reactive({
+   id: '',
+   name: '',
+});
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -75,13 +57,11 @@ const messageOptions = {
 let tableData = [];
 
 const loadingFind = ref(false);
-
-const rowProps = row => {
+const rowProps = (row) => {
    return {
       onDblclick: (e) => {
          e.preventDefault();
-
-         router.push(`/`);
+         router.push(`/manage/publishers/${row?.id}`);
       }
    }
 }
@@ -98,10 +78,6 @@ const filter = reactive({
       start: 0,
       end: 10
    },
-   age: {
-      start: 0,
-      end: 255
-   },
    creationTime: {
       start: null,
       end: null,
@@ -112,10 +88,8 @@ const filter = reactive({
    },
 });
 
-
 const pre_find = () => {
    // todo
-
    filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
    filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
 
@@ -128,14 +102,13 @@ const find = () => {
 
    pre_find();
 
-   Service.Logs.list(entity.find, filter)
+   Service.BookInfos.list(entity, filter)
       .then(res => {
          const data = res.data;
          if (!data || data?.code !== ResponseCode.SUCCESS) {
             message.error(data?.msg, messageOptions);
             return;
          }
-
          itemCount.value = data?.data?.count;
          tableData = data?.data?.data;
       })
@@ -159,18 +132,8 @@ const clickFind = debounce(e => {
 
 //#region 分页组件
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-
-const getType = (elapsedTime) => {
-   if (elapsedTime > 1000) {
-      return "error";
-   }
-   if (elapsedTime > 50) {
-      return "warning";
-   }
-   return "info";
-}
-
-const render = {
+const ext = {
+   id: {maxWidth: 77, width: 50},
    type: {
       render: (row) => {
          return h(
@@ -179,64 +142,110 @@ const render = {
                style: {
                   marginRight: '.3em'
                },
-               type: 'info',
+               type: transType(row?.type),
                bordered: false
             },
             {
-               default: () => typeName[row?.type]
+               default: () => mapOperations.getByValue(row?.type)
             }
          );
       }
    },
-   serviceName: {
-      render: (row) => {
-         return h(
-            NTag,
-            {
-               style: {
-                  marginRight: '.3em'
-               },
-               type: 'info',
-               bordered: false
-            },
-            {
-               default: () => serviceName[row?.serviceName.split(".")?.[0]]
-            })
-      }
-   },
-   elapsedTime: {
-      render: (row) => {
-         return h(
-            NTag,
-            {
-              type: getType(row?.elapsedTime),
-               bordered: false,
-            },
-            {
-               default: () => row?.elapsedTime,
-            }
-         )
-      }
-   },
-   output: {
-      render: (row) => {
-         return h(
-            JsonViewer,
-            {
-               value: JSON.parse(row?.output)
-            }
-         )
-      }
-   }
 }
 
 const cols = [
-   gCol("id", "id",),
-   gCol("操作类型", "type", render.type),
-   gCol("数据名", "serviceName", render.serviceName),
-   gCol("数据-Id", "dataId"),
-   gCol("运行时间-毫秒值", "elapsedTime", render.elapsedTime),
-   gCol("操作者-Id", "createdBy"),
+   {
+      title: "id",
+      key: "id",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+      width: 100,
+      minWidth: 50,
+      render: (row) => h(
+         NTag,
+         {
+            type: "info",
+            bordered: false,
+         },
+         {
+            default: () => row?.id
+         }
+      ),
+   },
+   {
+      title: "名称",
+      key: "bookName",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   },
+   {
+      title: "作者",
+      key: "author",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   },
+   {
+      title: "类型",
+      key: "bookType",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   },
+   {
+      title: "正文语种",
+      key: "lang",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   },
+   {
+      title: "关键字",
+      key: "keyword",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   },
+   {
+      title: "价格",
+      key: "price",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   },
+   {
+      title: "库存",
+      key: "stock",
+      // 可拖动
+      resizable: true,
+      // 溢出省略
+      ellipsis: {
+         tooltip: true
+      },
+   }
 ]
 
 const itemCount = ref(0);
@@ -247,9 +256,9 @@ const paginationReactive = reactive({
    showSizePicker: true,
    pageSizes: [
       {label: "10 每页", value: 10,},
+      {label: "15 每页", value: 15,},
       {label: "20 每页", value: 20,},
-      {label: "30 每页", value: 30,},
-      {label: "50 每页", value: 50,}
+      {label: "30 每页", value: 30,}
    ],
    showQuickJumper: true,
    onUpdatePageSize: (pageSize) => {
@@ -268,14 +277,6 @@ const pagination = paginationReactive;
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-//#region input allow 验证函数
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const inputValidate = {
-   onlyAllowNumber: (s) => !s || /^\d+$/.test(s),
-   noSideSpace: (s) => !s.startsWith(' ') && !s.endsWith(' '),
-}
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
 //#region 生命周期钩子
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -290,9 +291,17 @@ onMounted(() => { // 加载数据
 //#endregion
 </script>
 
-<template class="relative">
-   <n-layout-header position="absolute" class="h-2.4em top-3em">
+<template>
+   <n-layout-header class="h-2.4em top-3em" position="absolute">
       <n-flex class="h-2.4em items-center" style="margin: 0.3em 1em;">
+         <router-link to="/manage/publishers/add">
+            <n-button>
+               <template #icon>
+                  <addCircle/>
+               </template>
+               添加
+            </n-button>
+         </router-link>
          <n-popover placement="top" trigger="click">
             <template #trigger>
                <n-button class="h-2.4em m-l-a">
@@ -305,42 +314,29 @@ onMounted(() => { // 加载数据
                </n-button>
             </template>
             <span class="font-size-1.2em font-800">精确查询</span>
-            <n-form :model="entity.find">
+            <n-form :model="entity">
                <n-divider class="m-1!"/>
-               <n-grid :cols="2" x-gap="12">
-                  <n-gi>
-                     <n-form-item label="id" path="id">
-                        <n-input v-model:value="entity.find.id" :allow-input="inputValidate.onlyAllowNumber"
-                                 clearable
-                                 placeholder="输入id"/>
-                     </n-form-item>
-                  </n-gi>
-                  <n-gi>
-                     <n-form-item label="出版社名称" path="name">
-                        <n-input v-model:value="entity.find.name" :allow-input="inputValidate.noSideSpace"
-                                 clearable placeholder="输入出版社名称"/>
-                     </n-form-item>
-                  </n-gi>
-               </n-grid>
+               <n-form-item label="id" path="id">
+                  <n-input v-model:value="entity.id" :allow-input="inputValidator.onlyAllowNumber"
+                           clearable
+                           placeholder="输入id"/>
+               </n-form-item>
+               <n-form-item label="出版社名称" path="name">
+                  <n-input v-model:value="entity.name" :allow-input="inputValidator.noSideSpace"
+                           clearable placeholder="输入出版社名称"/>
+               </n-form-item>
             </n-form>
             <n-form :model="filter">
                <span class="font-size-1.2em font-800">模糊查询</span>
                <n-divider class="m-1!"/>
-               <n-grid :cols="2" x-gap="12">
-                  <n-gi :span="2">
-                     <n-form-item label="创建时间">
-                        <n-date-picker update-value-on-close v-model:value="timestamp.creationTime" clearable
-                                       type="datetimerange"/>
-                     </n-form-item>
-                  </n-gi>
-
-                  <n-gi :span="2">
-                     <n-form-item label="最后修改时间">
-                        <n-date-picker update-value-on-close v-model:value="timestamp.lastUpdatedTime" clearable
-                                       type="datetimerange"/>
-                     </n-form-item>
-                  </n-gi>
-               </n-grid>
+               <n-form-item label="创建时间">
+                  <n-date-picker v-model:value="timestamp.creationTime" clearable type="datetimerange"
+                                 update-value-on-close/>
+               </n-form-item>
+               <n-form-item label="最后修改时间">
+                  <n-date-picker v-model:value="timestamp.lastUpdatedTime" clearable type="datetimerange"
+                                 update-value-on-close/>
+               </n-form-item>
             </n-form>
          </n-popover>
          <n-button class="h-2.4em" @click="clickFind">
@@ -353,33 +349,36 @@ onMounted(() => { // 加载数据
          </n-button>
       </n-flex>
    </n-layout-header>
-   <n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em"
+
+   <n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em left-0 right-0"
              content-style="padding: 0 1em .3em 1em;">
       <!--   返回顶部   -->
-      <n-back-top style="--n-height: 2.4em; --n-width: 2.4em;" :right="20" :bottom="2"/>
+      <n-back-top :bottom="2" :right="20"/>
       <!--   数据表   -->
       <n-spin :show="loadingFind">
          <n-data-table
             :columns="cols"
             :data="tableData"
-            :single-line="false"
             :row-props="rowProps"
+            :single-line="false"
          />
       </n-spin>
+
    </n-layout>
+
    <n-layout-footer class="h-2.4em" position="absolute">
       <n-flex :size="0" class="items-center mr4 h-100%" justify="center">
          <n-pagination
             v-model:page="pagination.page"
             v-model:page-size="pagination.pageSize"
             v-model:page-sizes="pagination.pageSizes"
+            :item-count="itemCount"
             :on-update-page="pagination.onUpdatePage"
             :on-update-page-size="pagination.onUpdatePageSize"
-            :item-count="itemCount"
+            class="text-center"
             show-quick-jumper
             show-size-picker
             size="large"
-            class="text-center"
          >
             <template #prefix="{ itemCount}">
                共 {{ itemCount }} 项
@@ -404,7 +403,5 @@ onMounted(() => { // 加载数据
 .n-date-picker {
    flex: 1;
 }
-.jv-code {
-   padding: 0 !important;
-}
-</style>/style>
+
+</style>

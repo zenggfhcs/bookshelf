@@ -5,7 +5,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 
 	// `baseURL` 将自动加在 `url` 前面，除非 `url` 是一个绝对 URL。
 	// 它可以通过设置一个 `baseURL` 便于为 axios 实例的方法传递相对 URL
-	baseURL: 'http://10.3.105.0:9090/', // `${BASE_URL}`,
+	baseURL: 'http://localhost:9090/', // `${BASE_URL}`,
 
 	// `transformRequest` 允许在向服务器发送前，修改请求数据
 	// 它只能用于 'PUT', 'POST' 和 'PATCH' 这几个请求方法
@@ -30,7 +30,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 
 	// `timeout` 指定请求超时的毫秒数。
 	// 如果请求时间超过 `timeout` 的值，则请求会被中断
-	timeout: 3 * 1000, // 默认值是 `0` (永不超时)
+	timeout: 5 * 1000, // 默认值是 `0` (永不超时)
 
 	// `withCredentials` 表示跨域请求时是否需要使用凭证
 	withCredentials: false, // default

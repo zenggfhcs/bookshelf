@@ -1,98 +1,88 @@
+//#region file des
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 import {MyRequest} from "@/api/MyRequest.js";
-import {Urls} from "@/api/UrlProvider.js"
-import {encodeByRSA} from "@/utils/RSATools.js";
+import {encodeByRSA} from "@/utils/rsa-tools.js";
+
+const ServiceName = {
+	BOOK_INFO: "bookInfos",
+	PUBLISHER: "publishers",
+	USER: "users",
+	DEBIT: "debits",
+	LOG: "logs",
+}
+
+//#region base api
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+class BaseService {
+	constructor(serviceName) {
+		this.list = (entity, filter) => MyRequest.post(`/${serviceName}/list/select`, {entity, filter});
+		this.add = (entity) => MyRequest.post(`/${serviceName}/list/create`, {entity});
+		this.get = (id) => MyRequest.post(`/${serviceName}/${id}/select`, {});
+		this.remove = (id) => MyRequest.post(`/${serviceName}/${id}/delete`, {});
+		this.update = (entity) => MyRequest.post(`/${serviceName}/${entity?.id}/update`, {entity});
+	}
+}
+
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region book info api
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const BookInfos = new BaseService(ServiceName.BOOK_INFO);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
 //#region publisher api
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const Publishers = {
-	list: (entity, filter) => {
-		const _payload = {entity, filter};
-		return MyRequest.post(Urls.PUBLISHER("list").R, _payload);
-	},
-	add: (entity) => {
-		const _payload = {entity}
-		return MyRequest.post(Urls.PUBLISHER("list").C, _payload);
-	},
-	remove: (id) => {
-		return MyRequest.post(Urls.PUBLISHER(id).D, {});
-	},
-	getToUpdate: (id) => {
-		return MyRequest.post(Urls.PUBLISHER(id).R, {});
-	},
-	update: (entity) => {
-		return MyRequest.post(Urls.PUBLISHER(entity.id).U, {entity});
-	}
-}
+const Publishers = new BaseService(ServiceName.PUBLISHER);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
 //#region user api
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
-const Users = {
-	login: (entity) => {
-		const _payload = {entity: entity};
-		return MyRequest.post(Urls.LOGIN, _payload);
-	},
-	register: (entity) => {
-		const _payload = {
-			entity: {
-				email: encodeByRSA(entity.email),
-				authenticationString: encodeByRSA(entity.authenticationString),
-			}
-		};
-		return MyRequest.post(Urls.REGISTER, _payload);
-	},
-	verifyRegister: (token) => {
-		const _payload = {
-			entity: {
-				token: token
-			}
+const Users = new BaseService(ServiceName.USER);
+
+Users.login = (entity) => {
+	return MyRequest.post("/login", {entity});
+};
+
+Users.register = (entity) => {
+	const _payload = {
+		entity: {
+			email: encodeByRSA(entity.email),
+			authenticationString: encodeByRSA(entity.authenticationString),
 		}
-		return MyRequest.post(Urls.VERIFY, _payload);
-	},
-	list: (entity, filter) => {
-		const _payload = {entity: entity, filter: filter};
-		return MyRequest.post(Urls.USER("list").R, _payload);
-	},
-	detail: () => {
+	};
+	return MyRequest.post("/register", _payload);
+};
 
-	},
-	add: () => {
-
-	},
-	remove: () => {
-
-	},
-	borrowing: () => {
-
-	},
-	return: () => {
-
+Users.verifyRegister = (token) => {
+	const _payload = {
+		entity: {
+			token: token
+		}
 	}
-}
+	return MyRequest.post("/verify", _payload);
+};
+
+Users.borrowing = null;
+
+Users.return = null;
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
 //#region debit api
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
-const Debits = {
-	list: (entity, filter) => {
-		const _payload = {entity: entity, filter: filter};
-
-		return MyRequest.post(Urls.DEBIT("list").R, _payload);
-	}
-}
-
+const Debits = new BaseService(ServiceName.DEBIT);
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
 //#region log api
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const Logs = {
-	list: (entity, filter) => {
-		return MyRequest.post(Urls.LOG("list").R, {entity, filter});
-	}
-}
+const Logs = new BaseService(ServiceName.LOG);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -100,22 +90,10 @@ const Service = {
 	Publishers,
 	Users,
 	Debits,
+	BookInfos,
 	Logs,
 }
-
 
 export {
 	Service
 }
-
-
-const gPayload = (entity = undefined, filter = undefined, pre = undefined) => {
-	const _payload = {};
-	if (entity)
-		_payload["entity"] = entity;
-	if (filter)
-		_payload["filter"] = filter;
-	return _payload;
-}
-
-

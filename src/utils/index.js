@@ -11,14 +11,6 @@ export {
 	shuffleArray
 }
 
-function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export {
-	sleep
-}
-
 
 const timestampToDateTimeString = (timestamp) => {
 	if (!timestamp) {
@@ -50,3 +42,14 @@ export {
 }
 
 
+function copyMatchingProperties(source, target) {
+	for (const key in source) {
+		if (target.hasOwnProperty(key)) {
+			target[key] = source[key];
+		}
+	}
+}
+
+export {
+	copyMatchingProperties
+}

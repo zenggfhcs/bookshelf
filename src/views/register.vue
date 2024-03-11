@@ -1,9 +1,10 @@
 <script setup>
 import {Service} from "@/api/index.js";
 import Bg from "@/components/bg.vue";
-import {REG_EMAIL} from "@/constant/RegularExpression.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
+import {REG_EMAIL} from "@/constant/regular-expression.js";
+import {ResponseCode} from "@/constant/response-code.js";
 import {debounce} from "@/utils/debounce.js";
+import {formValidator} from "@/utils/validator.js";
 import {NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
 import {ref} from "vue";
 
@@ -88,39 +89,35 @@ const rules = {
  */
 const register = debounce((e) => {
    e.preventDefault();                       // 父默认方法
-   formRef.value?.validate((errors) => {     // 验证表单
-      if (!errors) {                         // 验证通过
-         loading.value = true;
-         Service.Users.register(model.value)
-            .then(res => {
-               const data = res.data;
-               if (data?.code !== ResponseCode.SUCCESS) {
-                  message.error(data?.msg, {
-                     duration: 10000,
-                     closable: true
-                  });
-               } else {
-                  message.success("REGISTER_SUCCESS: 注册成功，验证链接已经发送到您的邮箱", {
-                     duration: 10000,
-                     closable: true
-                  })
-                  // todo 之后要做些什么呢？
-               }
-            })
-            .catch(err => {
-               message.error(err.message, {
+   formValidator(formRef, message, "注册失败", () => {
+      loading.value = true;
+      Service.Users.register(model.value)
+         .then(res => {
+            const data = res.data;
+            if (data?.code !== ResponseCode.SUCCESS) {
+               message.error(data?.msg, {
                   duration: 10000,
                   closable: true
                });
-            })
-            .finally(() => {
-               loading.value = false;
+            } else {
+               message.success("REGISTER_SUCCESS: 注册成功，验证链接已经发送到您的邮箱", {
+                  duration: 10000,
+                  closable: true
+               })
+               // todo 之后要做些什么呢？
+            }
+         })
+         .catch(err => {
+            message.error(err.message, {
+               duration: 10000,
+               closable: true
             });
-      } else {
-         message.error("login error");
-      }
-   });
-}, 555);
+         })
+         .finally(() => {
+            loading.value = false;
+         });
+   })
+});
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

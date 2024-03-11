@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import {NModalProvider, NDialogProvider, NMessageProvider} from "naive-ui";
+import {NDialogProvider, NMessageProvider, NModalProvider} from "naive-ui";
 import {onBeforeMount} from "vue";
 
 onBeforeMount(() => {

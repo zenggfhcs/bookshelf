@@ -4,7 +4,8 @@ import router from "@/router/Router.js";
 const checkLoginState = () => {
 	const token = localStorage.getItem(Header.TOKEN)
 	if (token === null || token === undefined || token === "") {
-		router.push("/login");
+		router.push("/login").then(() => {
+		}); // todo
 	}
 	console.log(token);
 }

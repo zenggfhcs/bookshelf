@@ -1,8 +1,8 @@
 <script setup>
 import {Service} from "@/api/index.js";
 import Bg from "@/components/bg.vue";
-import {REG_EMAIL} from "@/constant/RegularExpression.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
+import {REG_EMAIL} from "@/constant/regular-expression.js";
+import {ResponseCode} from "@/constant/response-code.js";
 import {debounce} from "@/utils/debounce.js";
 import {shuffleArray} from "@/utils/index.js";
 import {ChevronBackOutline} from "@vicons/ionicons5"

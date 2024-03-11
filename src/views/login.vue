@@ -1,10 +1,11 @@
 <script setup>
 import {Service} from "@/api/index.js";
 import Bg from "@/components/bg.vue";
-import {REG_EMAIL} from "@/constant/RegularExpression.js";
-import {ResponseCode} from "@/constant/ResponseCode.js";
+import {REG_EMAIL} from "@/constant/regular-expression.js";
+import {ResponseCode} from "@/constant/response-code.js";
 import router from "@/router/Router.js";
 import {debounce} from "@/utils/debounce.js";
+import {formValidator} from "@/utils/validator.js";
 import {NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
 import {onMounted, ref} from "vue";
 
@@ -55,30 +56,27 @@ const rules = {
  */
 const login = debounce((e) => {
    e.preventDefault();                       // 父默认方法
-   formRef.value?.validate((errors) => {     // 验证表单
-      if (!errors) {                         // 验证通过
-         loading.value = true;
-         Service.Users.login(model.value)
-            .then(res => {
-               const data = res.data;
-               if (data?.code === ResponseCode.SUCCESS) {
-                  // 登录
-                  localStorage.setItem("token", data?.data?.token);
-                  router.push("/");
-               } else {
-                  message.error(data?.msg);
-               }
-            })
-            .catch(err => {
-               message.error(err.message);
-            })
-            .finally(() => {
-               loading.value = false;
-            });
-      } else {
-         message.error("登录失误");
-      }
-   });
+
+   formValidator(formRef, message, "登录失败", () => {
+      loading.value = true;
+      Service.Users.login(model.value)
+         .then(res => {
+            const data = res.data;
+            if (data?.code === ResponseCode.SUCCESS) {
+               // 登录
+               localStorage.setItem("token", data?.data?.token);
+               router.push("/");
+            } else {
+               message.error(data?.msg);
+            }
+         })
+         .catch(err => {
+            message.error(err.message);
+         })
+         .finally(() => {
+            loading.value = false;
+         });
+   })
 }, 777);
 
 

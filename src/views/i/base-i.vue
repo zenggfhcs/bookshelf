@@ -9,7 +9,7 @@ import {
    MANAGE_PUBLISHER,
    MANAGE_USER
 } from "@/router/RouterValue.js";
-import {expandIcon, generateProps, renderIcon} from "@/utils/generate.js";
+import {expandIcon, gProps, renderIcon} from "@/utils/generate.js";
 import {OperationsRecord as LogManager} from "@vicons/carbon";
 
 import {
@@ -64,7 +64,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGE_DEBIT.name),
+            gProps(MANAGE_DEBIT.name),
             {default: () => '借阅记录'}
          ),
       key: 'm-debit',
@@ -73,7 +73,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGE_BOOK.name),
+            gProps(MANAGE_BOOK.name),
             {default: () => '书籍管理'}
          ),
       key: 'm-book',
@@ -82,7 +82,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGE_BOOK_INFO.name),
+            gProps(MANAGE_BOOK_INFO.name),
             {default: () => '书籍信息管理'}
          ),
       key: 'm-book-info',
@@ -91,7 +91,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGE_PUBLISHER.name),
+            gProps(MANAGE_PUBLISHER.name),
             {default: () => '出版社管理'}
          )
       ,
@@ -101,7 +101,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGE_USER.name),
+            gProps(MANAGE_USER.name),
             {default: () => '用户管理'}
          )
       ,
@@ -111,7 +111,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(MANAGE_LOG.name),
+            gProps(MANAGE_LOG.name),
             {default: () => '系统日志'}
          )
       ,

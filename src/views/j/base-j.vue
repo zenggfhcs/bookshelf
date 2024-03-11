@@ -1,7 +1,7 @@
 <script setup>
-import {checkLoginState} from "@/constant/Provider.js";
 import {HOME} from "@/router/RouterValue.js";
-import {expandIcon, generateProps, renderIcon} from "@/utils/generate.js";
+import {checkLoginState} from "@/utils/check-login-state.js";
+import {expandIcon, gProps, renderIcon} from "@/utils/generate.js";
 import {Home} from "@vicons/fa";
 import {NLayout, NLayoutHeader, NMenu} from 'naive-ui'
 import {h, onMounted} from "vue";
@@ -18,7 +18,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(HOME.name),
+            gProps(HOME.name),
             {default: () => '首页'}
          ),
       key: 'm-debit',
@@ -27,7 +27,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(HOME.name),
+            gProps(HOME.name),
             {default: () => '首页'}
          ),
       key: 'm-debit',
@@ -36,7 +36,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            generateProps(HOME.name),
+            gProps(HOME.name),
             {default: () => '首页'}
          ),
       key: 'm-debit',
