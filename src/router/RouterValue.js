@@ -1,38 +1,42 @@
 import Page404 from "@/views/error/404.vue";
 import BaseI from "@/views/i/base-i.vue";
+import BookInfoAdd from "@/views/i/book-info/add.vue";
+import BookInfoCheck from "@/views/i/book-info/check.vue";
 import BookInfoManager from "@/views/i/book-info/index.vue";
+import BookAdd from "@/views/i/book/add.vue";
 import BookManager from "@/views/i/book/books.vue";
+import BookCheck from "@/views/i/book/check.vue";
+import DebitCheck from "@/views/i/debit/check.vue";
 import DebitManager from "@/views/i/debit/index.vue";
+import I from "@/views/i/index.vue";
 import LogCheck from "@/views/i/log/check.vue";
 import LogManager from "@/views/i/log/index.vue";
-import Manager from "@/views/i/manager.vue";
 import PublisherAdd from "@/views/i/publisher/add.vue";
 import PublisherCheck from "@/views/i/publisher/check.vue";
 import PublisherManager from "@/views/i/publisher/index.vue";
+import UserAdd from "@/views/i/user/add.vue";
+import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
 import BaseJ from "@/views/j/base-j.vue";
+import J from "@/views/j/home.vue";
 import Login from "@/views/login.vue";
 import Register from "@/views/register.vue";
 import ResetPassword from "@/views/reset-password.vue";
 import Verify from "@/views/verify.vue";
 
+
 //#region g route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const gRoute = (c, n, p, ch = undefined, r = undefined, ext = undefined) => {
-	const res = {
-		component: c,
-		name: n,
-		path: p,
+const g = (component, name, path, props = undefined, ch = undefined, r = undefined) => {
+	return {
+		component: component,
+		name: name,
+		path: path,
+		props: props,
 		children: ch,
-		redirect: r === undefined ? ch?.[0] : r,
+		redirect: r,
 		hidden: true,
-		props: true
-	}
-	for (const prop in ext) {
-		res[prop] = ext[prop];
-	}
-
-	return res;
+	};
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -40,83 +44,138 @@ const gRoute = (c, n, p, ch = undefined, r = undefined, ext = undefined) => {
 //#region route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
+//#region 单页面
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const LOGIN = g(Login, "login", "/login", true);
+
+const REGISTER = g(Register, "register", "/register", true);
+
+const RESET_PASSWORD = g(ResetPassword, "resetPassword", "/reset-password", true);
+
+const VERIFY = g(Verify, "verify", "/verify", route => ({token: route.query.token}));
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region error
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const _404 = g(Page404, "404", "/error/404");
+
+const ERROR = g(Page404, "error", "/error", true, [_404], _404);
+
+const UNDEFINED = g(null, "undefined", "/:pathMatch(.*)*", true, [ERROR], ERROR);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region j
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const J_HOME = g(J, "jIndex", "/j/index", true);
+
+const BASE_J = g(BaseJ, "j", "/", true,
+	[
+		J_HOME
+	],
+	J_HOME
+);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region i
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 //#region book
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const MANAGE_BOOK = {
-	component: BookManager,
-	name: "bookManager",
-	path: "/manage/books",
-	hidden: true,
-	props: true,
-}
+const BOOK = g(BookManager, "bookManager", "/i/books", true);
 
-const BOOK_ADD = null // todo
+const BOOK_ADD = g(BookAdd, "bookAdd", "/i/books/add", true);
+
+const BOOK_CHECK = g(BookCheck, "bookCheck", "/i/books/:id", true);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region book info
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const BOOK_INFO = g(BookInfoManager, "bookInfoManager", "/i/bookInfos", true);
+
+const BOOK_INFO_ADD = g(BookInfoAdd, "bookInfoAdd", "/i/bookInfos/add", true);
+
+const BOOK_INFO_CHECK = g(BookInfoCheck, "bookInfoCheck", "/i/bookInfos/:id", true);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region debit
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const DEBIT = g(DebitManager, "debitManager", "/i/debits", true);
+
+const DEBIT_CHECK = g(DebitCheck, "debitCheck", "/i/debits/:id", true);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region log
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const LOG = g(LogManager, "logManager", "/i/logs", true);
+
+const LOG_CHECK = g(LogCheck, "logCheck", "/i/logs/:id", true);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region publisher
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const PUBLISHER_ADD = g(PublisherAdd, "publisherAdd", "/i/publishers/add");
+
+const PUBLISHER_CHECK = g(PublisherCheck, "publisherCheck", "/i/publishers/:id", true);
+
+const PUBLISHER = g(PublisherManager, "publisherManager", "/i/publishers");
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region user
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const USER = g(UserManager, "userManager", "/i/users");
+
+const USER_ADD = g(UserAdd, "userAdd", "/i/users/add", true);
+
+const USER_CHECK = g(UserCheck, "userCheck", "/i/users/:id", true);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+const I_HOME = g(I, "iIndex", "/i/index")
+
+const BASE_I = g(BaseI, "i", "/i", true,
+	[
+		I_HOME,
+		DEBIT, DEBIT_CHECK,
+		BOOK, BOOK_CHECK, BOOK_ADD,
+		BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
+		PUBLISHER, PUBLISHER_CHECK, PUBLISHER_ADD,
+		USER, USER_CHECK, USER_ADD,
+		LOG, LOG_CHECK,
+	],
+	I_HOME
+);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-/* ============================ route object ============================ */
-const LOGIN = gRoute(Login, "login", "/login");
-
-const REGISTER = gRoute(Register, "register", "/register");
-
-const RESET_PASSWORD = gRoute(ResetPassword, "resetPassword", "/reset-password");
-
-
-const VERIFY = gRoute(Verify, "verify", "/verify", undefined, undefined, {props: route => ({token: route.query.token})});
-
-//#region Manager
-const MANAGE_HOME = gRoute(Manager, "manage-home", "/manage/index")
-const MANAGE_DEBIT = gRoute(DebitManager, "debitManager", "/manage/debits");
-
-const MANAGE_BOOK_INFO = gRoute(BookInfoManager, "bookInfoManager", "/manage/bookInfos");
-
-const PUBLISHER_ADD = gRoute(PublisherAdd, "publisherAdd", "/manage/publishers/add");
-const PUBLISHER_CHECK = gRoute(PublisherCheck, "publisherCheck", "/manage/publishers/:id");
-const MANAGE_PUBLISHER = gRoute(PublisherManager, "publisherManager", "/manage/publishers");
-const MANAGE_USER = gRoute(UserManager, "userManager", "/manage/users");
-
-const LOG_CHECK = gRoute(LogCheck, "logCheck", "/manage/logs/:id");
-const MANAGE_LOG = gRoute(LogManager, "logManager", "/manage/logs");
-
-const MANAGE = gRoute(BaseI, "manage", "/manage", [
-	MANAGE_HOME,
-	MANAGE_DEBIT,
-	MANAGE_BOOK,
-	MANAGE_BOOK_INFO,
-	MANAGE_PUBLISHER, PUBLISHER_CHECK, PUBLISHER_ADD,
-	MANAGE_USER,
-	MANAGE_LOG, LOG_CHECK,
-]);
-//#endregion
-
-//#region User
-const HOME = gRoute(BaseJ, "user", "/", []);
-//#endregion
-
-/* ============================ route object ============================ */
-
-//#region error result router
-const _404 = gRoute(Page404, "404", "/error/404");
-const ERROR = gRoute(Page404, "error", "/error", [_404]);
-const UNDEFINED = gRoute(null, "undefined", "/:pathMatch(.*)*", [_404]);
-//#endregion
 
 //#region export route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 export {
+	// common
 	LOGIN,
-	MANAGE_DEBIT,
-	MANAGE_USER,
-	MANAGE_BOOK,
-	MANAGE_BOOK_INFO,
-	MANAGE_PUBLISHER,
-	MANAGE_LOG,
-	LOG_CHECK,
+
+	// i
+	DEBIT,
+	USER,
+	BOOK,
+	BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
+	PUBLISHER,
+	LOG, LOG_CHECK,
 	PUBLISHER_CHECK, PUBLISHER_ADD,
-	HOME
+
+	// j
+	J_HOME
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -130,54 +189,11 @@ export const PredefinedRoutes = [
 	VERIFY,
 	RESET_PASSWORD,
 	LOG_CHECK,
-	MANAGE,
-	HOME,
-	ERROR,
+	BASE_I,
+	BASE_J,
 	UNDEFINED,
 ]
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-
-// /**
-//  * route 预定义类
-//  */
-// class RouteItem {
-//
-//    #component;
-//    #name;
-//    #path;
-//    #children;
-//
-//    // #
-//
-//    /**
-//     *
-//     * @param component
-//     * @param name
-//     * @param path
-//     */
-//    constructor(component, name, path = `/${name}`) {
-//       this.#component = component;
-//       this.#name = name;
-//       this.#path = path;
-//       this.#children = [];
-//    }
-//
-//    get name() {
-//       return this.#name;
-//    }
-//
-//    get path() {
-//       return this.#path;
-//    }
-//
-//    get component() {
-//       return this.#component;
-//    }
-//
-//    addChildren(val) {
-//       this.#children.push(val);
-//    }
-// }
 

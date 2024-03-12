@@ -2,7 +2,8 @@
 import {Service} from "@/api/index.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
-import router from "@/router/Router.js";
+import {goto} from "@/router/goto.js";
+import {PUBLISHER} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
 import {formatTime} from "@/utils/format.js";
 import {copyMatchingProperties} from "@/utils/index.js";
@@ -26,10 +27,6 @@ import {onBeforeMount, reactive, ref} from "vue";
 const props = defineProps(['id']);
 
 const message = useMessage();
-
-const backPrevent = () => {
-   router.push(`/manage/publishers`);
-}
 
 const msgReactive = message.create("查找日志信息", {type: "loading"});
 
@@ -153,8 +150,7 @@ const remove = () => {
 
          message.success("删除成功", messageOptions);
 
-         backPrevent();
-
+         goto(PUBLISHER);
       })
       .catch(err => {
          message.error(err.message, messageOptions);
@@ -250,8 +246,8 @@ onBeforeMount(() => {
          <tr>
             <td>备注</td>
             <td>
-               <n-input v-model:value="info.remark" :allow-input="inputValidator.noSideSpace" clearable maxlength="255"
-                        placeholder="输入备注" type="textarea"/>
+               <n-input v-model:value="info.remark" :allow-input="inputValidator.noSideSpace" autosize clearable
+                        maxlength="255" placeholder="输入备注" type="textarea"/>
             </td>
          </tr>
 
@@ -382,7 +378,7 @@ onBeforeMount(() => {
       >
          <n-space vertical>
          <span>
-            您是否要删除该出版社？
+            您是否要删除？
          </span>
             <n-flex justify="right">
                <n-button type="error" @click="remove">
@@ -402,7 +398,7 @@ onBeforeMount(() => {
       >
          <n-space vertical>
             <span>
-               您是否要对该出版社进行以下修改？
+               您是否要进行以下修改？
             </span>
             <n-table :single-line="false">
                <tbody>

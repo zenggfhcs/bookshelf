@@ -1,13 +1,13 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {transType} from "@/constant/pre-defined/log.js";
-import {mapOperations} from "@/constant/pre-defined/map.js";
+import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/Write.vue";
 import router from "@/router/Router.js";
+import {BOOK_INFO_ADD, BOOK_INFO_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
+import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
-import {timestampToDateTimeString} from "@/utils/index.js";
 import {inputValidator} from "@/utils/validator.js";
 import {AddCircle, Search} from "@vicons/ionicons5";
 import {
@@ -44,10 +44,6 @@ const entity = reactive({
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-
-const messageOptions = {
-   duration: 10000
-}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -61,7 +57,12 @@ const rowProps = (row) => {
    return {
       onDblclick: (e) => {
          e.preventDefault();
-         router.push(`/manage/publishers/${row?.id}`);
+         router.push({
+            name: BOOK_INFO_CHECK.name,
+            params: {
+               id: row?.id
+            }
+         });
       }
    }
 }
@@ -132,27 +133,6 @@ const clickFind = debounce(e => {
 
 //#region 分页组件
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const ext = {
-   id: {maxWidth: 77, width: 50},
-   type: {
-      render: (row) => {
-         return h(
-            NTag,
-            {
-               style: {
-                  marginRight: '.3em'
-               },
-               type: transType(row?.type),
-               bordered: false
-            },
-            {
-               default: () => mapOperations.getByValue(row?.type)
-            }
-         );
-      }
-   },
-}
-
 const cols = [
    {
       title: "id",
@@ -227,7 +207,7 @@ const cols = [
       },
    },
    {
-      title: "价格",
+      title: "价格-元",
       key: "price",
       // 可拖动
       resizable: true,
@@ -257,8 +237,8 @@ const paginationReactive = reactive({
    pageSizes: [
       {label: "10 每页", value: 10,},
       {label: "15 每页", value: 15,},
-      {label: "20 每页", value: 20,},
-      {label: "30 每页", value: 30,}
+      {label: "30 每页", value: 30,},
+      {label: "50 每页", value: 50,},
    ],
    showQuickJumper: true,
    onUpdatePageSize: (pageSize) => {
@@ -294,7 +274,7 @@ onMounted(() => { // 加载数据
 <template>
    <n-layout-header class="h-2.4em top-3em" position="absolute">
       <n-flex class="h-2.4em items-center" style="margin: 0.3em 1em;">
-         <router-link to="/manage/publishers/add">
+         <router-link :to="BOOK_INFO_ADD.path">
             <n-button>
                <template #icon>
                   <addCircle/>

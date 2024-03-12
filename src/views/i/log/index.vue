@@ -1,13 +1,14 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {getTagTypeByElapsedTime, transType} from "@/constant/pre-defined/log.js";
+import {messageOptions} from "@/constant/options.js";
 import {logPDM, mapOperations} from "@/constant/pre-defined/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/Write.vue";
 import router from "@/router/Router.js";
+import {LOG_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
+import {getTagTypeByElapsedTime, timestampToDateTimeString, transType} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
-import {timestampToDateTimeString} from "@/utils/index.js";
 import {inputValidator} from "@/utils/validator.js";
 import {Search} from "@vicons/ionicons5";
 import {
@@ -38,10 +39,6 @@ import {h, onMounted, reactive, ref} from "vue"
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-
-const messageOptions = {
-   duration: 10000
-}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -70,7 +67,12 @@ const rowProps = row => {
    return {
       onDblclick: (e) => {
          e.preventDefault();
-         router.push(`/manage/logs/${row?.id}`);
+         router.push({
+            name: LOG_CHECK.name,
+            params: {
+               id: row?.id,
+            }
+         });
       }
    }
 }
@@ -332,7 +334,6 @@ const pagination = reactive({
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-
 //#region 生命周期钩子
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 /**
@@ -344,9 +345,10 @@ onMounted(() => { // 加载数据
 })
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
+
 </script>
 
-<template class="relative">
+<template>
    <n-layout-header class="h-2.4em top-3em" position="absolute">
       <n-flex class="h-2.4em items-center" justify="right" style="margin: 0.3em 1em;">
          <n-popover placement="top" trigger="click">

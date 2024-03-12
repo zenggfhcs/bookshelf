@@ -3,9 +3,10 @@ import {Service} from "@/api/index.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/Write.vue";
 import router from "@/router/Router.js";
+import {PUBLISHER_ADD, PUBLISHER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
+import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
-import {timestampToDateTimeString} from "@/utils/index.js";
 import {inputValidator} from "@/utils/validator.js";
 import {AddCircle, Search} from "@vicons/ionicons5";
 import {
@@ -184,11 +185,17 @@ const cols = [
 ]
 
 const loadingFind = ref(false);
+
 const rowProps = (row) => {
    return {
       onDblclick: (e) => {
          e.preventDefault();
-         router.push(`/manage/publishers/${row?.id}`);
+         router.push({
+            name: PUBLISHER_CHECK.name,
+            params: {
+               id: row?.id
+            }
+         });
       }
    }
 }
@@ -274,7 +281,7 @@ const clickFind = debounce(e => {
 
 const itemCount = ref(0);
 
-const paginationReactive = reactive({
+const pagination = reactive({
    page: 1,
    pageSize: 10,
    showSizePicker: true,
@@ -286,21 +293,19 @@ const paginationReactive = reactive({
    ],
    showQuickJumper: true,
    onUpdatePageSize: (pageSize) => {
-      paginationReactive.pageSize = pageSize;
-      paginationReactive.onUpdatePage(1);
+      pagination.pageSize = pageSize;
+      pagination.onUpdatePage(1);
    },
    onUpdatePage: (page) => {
-      paginationReactive.page = page;
-      filter.page.start = (page - 1) * paginationReactive.pageSize;
-      filter.page.end = paginationReactive.pageSize;
+      pagination.page = page;
+      filter.page.start = (page - 1) * pagination.pageSize;
+      filter.page.end = pagination.pageSize;
       find();
    }
 });
 
-const pagination = paginationReactive;
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
-
 
 //#region 生命周期钩子
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -313,12 +318,13 @@ onMounted(() => { // 加载数据
 })
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
+
 </script>
 
 <template>
    <n-layout-header class="h-2.4em top-3em" position="absolute">
       <n-flex class="h-2.4em items-center" style="margin: 0.3em 1em;">
-         <router-link to="/manage/publishers/add">
+         <router-link :to="PUBLISHER_ADD.path">
             <n-button>
                <template #icon>
                   <addCircle/>

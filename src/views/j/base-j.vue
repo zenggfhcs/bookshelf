@@ -1,5 +1,5 @@
 <script setup>
-import {HOME} from "@/router/RouterValue.js";
+import {J_HOME} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {expandIcon, gProps, renderIcon} from "@/utils/generate.js";
 import {Home} from "@vicons/fa";
@@ -18,25 +18,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(HOME.name),
-            {default: () => '首页'}
-         ),
-      key: 'm-debit',
-      icon: renderIcon(Home)
-   }, {
-      label: () =>
-         h(
-            RouterLink,
-            gProps(HOME.name),
-            {default: () => '首页'}
-         ),
-      key: 'm-debit',
-      icon: renderIcon(Home)
-   }, {
-      label: () =>
-         h(
-            RouterLink,
-            gProps(HOME.name),
+            gProps(J_HOME.name),
             {default: () => '首页'}
          ),
       key: 'm-debit',

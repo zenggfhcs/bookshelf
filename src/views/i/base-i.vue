@@ -1,15 +1,12 @@
 <script setup>
+import {Header} from "@/api/Header.js";
 import BookBrain from "@/icons/book-brain.vue";
 import IconPublisher from "@/icons/icon-publisher.vue";
-import {
-   MANAGE_BOOK,
-   MANAGE_BOOK_INFO,
-   MANAGE_DEBIT,
-   MANAGE_LOG,
-   MANAGE_PUBLISHER,
-   MANAGE_USER
-} from "@/router/RouterValue.js";
+import router from "@/router/Router.js";
+import {BOOK, BOOK_INFO, DEBIT, LOG, LOGIN, PUBLISHER, USER} from "@/router/RouterValue.js";
+import {checkLoginState} from "@/utils/check-login-state.js";
 import {expandIcon, gProps, renderIcon} from "@/utils/generate.js";
+import {sleep} from "@/utils/sleep.js";
 import {OperationsRecord as LogManager} from "@vicons/carbon";
 
 import {
@@ -36,10 +33,12 @@ import {h, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
 onMounted(() => {
+   checkLoginState();
 })
 
 
 const dialog = useDialog();
+
 const message = useMessage();
 
 const logoutConfirm = () => {
@@ -49,10 +48,16 @@ const logoutConfirm = () => {
       positiveText: '确定',
       negativeText: '不确定',
       onPositiveClick: () => {
-         message.success('确定')
+         // 退出
+
+         localStorage.removeItem(Header.TOKEN);
+         message.success("成功退出登录");
+
+         sleep();
+         router.push(LOGIN.path);
       },
       onNegativeClick: () => {
-         message.error('不确定')
+         // 不退出，什么也不做
       }
    })
 }
@@ -64,7 +69,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(MANAGE_DEBIT.name),
+            gProps(DEBIT.name),
             {default: () => '借阅记录'}
          ),
       key: 'm-debit',
@@ -73,7 +78,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(MANAGE_BOOK.name),
+            gProps(BOOK.name),
             {default: () => '书籍管理'}
          ),
       key: 'm-book',
@@ -82,7 +87,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(MANAGE_BOOK_INFO.name),
+            gProps(BOOK_INFO.name),
             {default: () => '书籍信息管理'}
          ),
       key: 'm-book-info',
@@ -91,7 +96,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(MANAGE_PUBLISHER.name),
+            gProps(PUBLISHER.name),
             {default: () => '出版社管理'}
          )
       ,
@@ -101,7 +106,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(MANAGE_USER.name),
+            gProps(USER.name),
             {default: () => '用户管理'}
          )
       ,
@@ -111,7 +116,7 @@ const menuOptions = [
       label: () =>
          h(
             RouterLink,
-            gProps(MANAGE_LOG.name),
+            gProps(LOG.name),
             {default: () => '系统日志'}
          )
       ,

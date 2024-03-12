@@ -5,19 +5,26 @@ const typeMap = {
 	create: "success",
 }
 
-const transType = value => typeMap[value];
-
-const getTagTypeByElapsedTime = (elapsedTime) => {
-	if (elapsedTime > 1000) {
-		return "error";
-	}
-	if (elapsedTime > 50) {
-		return "warning";
-	}
-	return "info";
+export {
+	typeMap
 }
+
+const elapsedTimeLevel = [
+	{
+		value: 1000,
+		type: "warning",
+	},
+	{
+		value: 50,
+		type: "info",
+	},
+	{
+		value: 0,
+		type: "success",
+	}
+]
 
 export {
-	transType,
-	getTagTypeByElapsedTime
+	elapsedTimeLevel
 }
+

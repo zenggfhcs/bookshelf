@@ -1,8 +1,8 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {getTagTypeByElapsedTime, transType} from "@/constant/pre-defined/log.js";
 import {mapOperations} from "@/constant/pre-defined/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
+import {getTagTypeByElapsedTime, transType} from "@/utils/convert.js";
 import {copyMatchingProperties} from "@/utils/index.js";
 import {sleep} from "@/utils/sleep.js";
 import {NLayout, NTable, NTag, useMessage} from "naive-ui";
@@ -25,7 +25,6 @@ const info = reactive({
    creationTime: null,
    dataId: null,
    elapsedTime: null,
-   remark: null,
 });
 
 const creator = reactive({
@@ -135,6 +134,30 @@ onMounted(() => {
             </td>
          </tr>
          <tr>
+            <td>数据-ID</td>
+            <td>{{ info.dataId }}</td>
+         </tr>
+         <tr>
+            <td>操作持续时间-毫秒</td>
+            <td>
+               <n-tag :type="getTagTypeByElapsedTime(info.elapsedTime)">
+                  {{ info.elapsedTime }}
+               </n-tag>
+            </td>
+         </tr>
+         <tr>
+            <td>输入</td>
+            <td>
+               <JsonViewer :value="JSON.parse( info.input)" class="p-0"/>
+            </td>
+         </tr>
+         <tr>
+            <td>输出</td>
+            <td>
+               <JsonViewer :value="JSON.parse( info.output)" class="p-0"/>
+            </td>
+         </tr>
+         <tr>
             <td>操作者</td>
             <td style="--n-td-padding: 0;">
                <n-table :bordered="false">
@@ -189,34 +212,6 @@ onMounted(() => {
                   {{ info.creationTime?.toString().replace("T", " ") }}
                </n-tag>
             </td>
-         </tr>
-         <tr>
-            <td>数据-ID</td>
-            <td>{{ info.dataId }}</td>
-         </tr>
-         <tr>
-            <td>操作持续时间-毫秒</td>
-            <td>
-               <n-tag :type="getTagTypeByElapsedTime(info.elapsedTime)">
-                  {{ info.elapsedTime }}
-               </n-tag>
-            </td>
-         </tr>
-         <tr>
-            <td>输入</td>
-            <td>
-               <JsonViewer :value="JSON.parse( info.input)" class="p-0"/>
-            </td>
-         </tr>
-         <tr>
-            <td>输出</td>
-            <td>
-               <JsonViewer :value="JSON.parse( info.output)" class="p-0"/>
-            </td>
-         </tr>
-         <tr>
-            <td>备注</td>
-            <td>{{ info.remark }}</td>
          </tr>
          </tbody>
       </n-table>

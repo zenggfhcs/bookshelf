@@ -3,7 +3,8 @@
 import {Service} from "@/api/index.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
-import router from "@/router/Router.js";
+import {goto} from "@/router/goto.js";
+import {PUBLISHER} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
 import {inputValidator} from "@/utils/validator.js";
 import {
@@ -20,10 +21,6 @@ import {
    useMessage
 } from "naive-ui";
 import {reactive, ref} from "vue";
-
-const backPrevent = () => {
-   router.push(`/manage/publishers`);
-}
 
 const message = useMessage();
 
@@ -71,7 +68,7 @@ const add = debounce((e) => {
             message.success("添加成功", messageOptions);
             showAdd.value = false;
 
-            backPrevent();
+            goto(PUBLISHER);
          })
          .catch(err => {
             message.error(err.message, messageOptions);
