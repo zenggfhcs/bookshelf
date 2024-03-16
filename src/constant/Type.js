@@ -36,7 +36,7 @@ const User = 'users';
 /**
  * 资源类型
  *
- * @type {{Debit: string, User: string, Log: string, Book: string, BookInfo: string, Publisher: string}}
+ * @type {{Debit: string, User: string, LogIcon: string, Book: string, BookInfo: string, Publisher: string}}
  */
 export const ResourceType = {
 	Book,

@@ -1,6 +1,7 @@
 import {ParameterType} from "@/constant/Type.js";
 import {TypeCheck} from "@/utils/Check.js";
-import {copyMatchingProperties} from "@/utils/index.js";
+import {copyMatchingProperties, shuffleArray} from "@/utils/index.js";
+import {randomInt} from "@/utils/random.js";
 import {NIcon} from "naive-ui";
 import {h} from "vue";
 
@@ -59,8 +60,8 @@ export {
 
 
 //#region generate icon
-function renderIcon(icon) {
-	return () => h(NIcon, null, {default: () => h(icon)})
+function renderIcon(icon, props = undefined) {
+	return () => h(NIcon, props, {default: () => h(icon)})
 }
 
 function expandIcon() {
@@ -92,10 +93,6 @@ const gCol = (t, k, ext = undefined) => {
 		ellipsis: {
 			tooltip: true
 		},
-		minWidth: 30,
-		maxWidth: 400,
-		width: null,
-		render: null,
 		//#endregion
 	}
 
@@ -108,3 +105,23 @@ export {
 	gCol
 }
 //#endregion
+
+
+/**
+ * 生成验证码
+ * @returns {string}
+ */
+const generateCode = () => {
+	let code = '';
+	const l = randomInt(randomInt(3)) + 7;
+	while (code.length < l) {
+		code += (Math.ceil(Math.random() * 10000000))
+			.toString(16);
+	}
+	code = shuffleArray(('!@#$%^&*()_+' + code).split("")).join("");
+	return code.substring(0, l);
+}
+
+export {
+	generateCode
+}

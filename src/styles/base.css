@@ -60,7 +60,6 @@
     box-sizing: inherit; /* 选择继承 */
     margin: 0;
     font-weight: normal;
-    font-family: monospace;
 }
 
 a {

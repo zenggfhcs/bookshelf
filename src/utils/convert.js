@@ -7,7 +7,8 @@
 //#region 时间戳转 yyyy-MM-ddTHH:mm:ss
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
-import {elapsedTimeLevel, typeMap} from "@/constant/pre-defined/log.js";
+import {elapsedTimeLevel, LOG_TYPE_MAP} from "@/constant/pre-defined/log.js";
+import {ageLevel, GENDER_MAP, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP} from "@/constant/pre-defined/user.js";
 
 const timestampToDateTimeString = (timestamp) => {
 	if (!timestamp) {
@@ -39,16 +40,31 @@ export {timestampToDateTimeString};
 //#endregion
 
 
-const transType = value => typeMap[value];
-
-export {transType};
-
-const getTagTypeByElapsedTime = (elapsedTime) => {
-	for (const item of elapsedTimeLevel) {
-		if (item.value <= elapsedTime) {
-			return item.type;
+const getTagType = {
+	byLogType: value => LOG_TYPE_MAP[value],
+	byElapsedTime: (elapsedTime) => {
+		for (const item of elapsedTimeLevel) {
+			if (item.value <= elapsedTime) {
+				return item.type;
+			}
 		}
-	}
-	return "error";
+		return "error";
+	},
+	byUserRole: value => USER_TAG_TYPE_MAP[value],
+	byAge: (age) => {
+		for (const item of ageLevel) {
+			if (item.value <= age) {
+				return item.type;
+			}
+		}
+		return "default";
+	},
+	byGender: (g) => GENDER_TAG_TYPE_MAP[g]
 }
-export {getTagTypeByElapsedTime};
+
+export {
+	getTagType
+}
+
+const convertGender = (g) => GENDER_MAP[g];
+export {convertGender}

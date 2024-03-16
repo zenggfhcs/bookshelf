@@ -4,60 +4,90 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-import DefaultMap from "@/model/DefaultMap.js";
+import BiMap from "@/model/BiMap.js";
 
-const labelMap = new DefaultMap();
-
-const valueMap = new DefaultMap();
-
-const g = (v, l) => {
-	if (labelMap.has(l) || valueMap.has(v))
-		throw new Error(`已经存在 label：${l} 或者 value：${v}`);
-	labelMap.set(l, v);
-	valueMap.set(v, l);
+const g = (l, v, map = undefined) => {
+	if (map) {
+		map.set(l, v);
+	}
 	return {
 		label: l,
 		value: v,
 	}
 };
 
-const mapOperations = {
-	getByLabel: (l) => labelMap.get(l),
-	getByValue: (v) => valueMap.get(v),
-};
+//#region log type
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const TYPE_MAP = new BiMap();
 
-const select = g("select", "查询");
-const update = g("update", "修改");
-const create = g("create", "新增");
-const remove = g("delete", "删除");
+const select = g("查询", "select", TYPE_MAP);
+const update = g("修改", "update", TYPE_MAP);
+const create = g("新增", "create", TYPE_MAP);
+const remove = g("删除", "delete", TYPE_MAP);
 
-const publisher = g("Publisher", "出版社");
-const debit = g("Debit", "借阅记录");
-const user = g("User", "用户");
-const bookInfo = g("BookInfo", "书籍信息");
-const book = g("Book", "书籍");
-
-
-const logPDM = {
+const LOG_PRE_DEFINED_TYPE = [
 	select,
 	update,
 	create,
 	remove,
-	/* -- -- */
+]
+
+export {
+	LOG_PRE_DEFINED_TYPE,
+	TYPE_MAP,
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region log service name
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const SERVICE_NAME_MAP = new BiMap();
+
+const publisher = g("出版社", "Publisher", SERVICE_NAME_MAP);
+const user = g("用户", "User", SERVICE_NAME_MAP);
+const debit = g("借阅记录", "Debit", SERVICE_NAME_MAP);
+const bookInfo = g("书籍信息", "BookInfo", SERVICE_NAME_MAP);
+const book = g("书籍", "Book", SERVICE_NAME_MAP);
+
+const LOG_PRE_DEFINED_SERVICE_NAME = [
 	publisher,
 	debit,
 	user,
 	bookInfo,
 	book,
-}
+]
+
 
 export {
-	logPDM,
+	SERVICE_NAME_MAP,
+	LOG_PRE_DEFINED_SERVICE_NAME,
 }
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+
+//#region role map
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const ROLE_MAP = new BiMap();
+
+const root = g("超级管理员", "root", ROLE_MAP);
+const admin = g("管理员", "admin", ROLE_MAP);
+const common = g("普通用户", "common", ROLE_MAP);
+const limit = g("受限用户", "limit", ROLE_MAP);
+
+const ROLE_PRE_DEFINED = [
+	root,
+	admin,
+	common,
+	limit
+]
 
 export {
-	mapOperations,
+	ROLE_MAP,
+	ROLE_PRE_DEFINED,
 }
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
 /*
  可以通过 label 或者 value 查询到对应的
@@ -67,18 +97,18 @@ export {
 
 /* ============================ code massage map ============================ */
 const data = [
-	g(400, '错误请求'),
-	g(401, '未授权，请重新登录'),
-	g(403, '拒绝访问'),
-	g(404, '请求错误,未找到该资源'),
-	g(405, '请求方法未允许'),
-	g(408, '请求超时'),
-	g(500, '服务器端出错'),
-	g(501, '网络未实现'),
-	g(502, '网络错误'),
-	g(503, '服务不可用'),
-	g(504, '网络超时'),
-	g(505, 'http版本不支持该请求'),
+	g('错误请求', 400),
+	g('未授权，请重新登录', 401),
+	g('拒绝访问', 403),
+	g('请求错误,未找到该资源', 404),
+	g('请求方法未允许', 405),
+	g('请求超时', 408),
+	g('服务器端出错', 500),
+	g('网络未实现', 501),
+	g('网络错误', 502),
+	g('服务不可用', 503),
+	g('网络超时', 504),
+	g('http版本不支持该请求', 505),
 ];
 
 /* ============================ code massage map ============================ */

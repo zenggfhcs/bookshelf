@@ -8,49 +8,49 @@ import {onMounted} from "vue";
 
 
 const query = defineProps({
-   token: String
+	token: String
 })
 onMounted(() => {
-   start();
+	start();
 })
 
 const message = useMessage();
 
 const msgReactive = message.create("", {
-   duration: 10000
+	duration: 10000
 })
 
 const updateMessage = (type, content) => {
-   msgReactive.type = type;
-   msgReactive.content = content;
+	msgReactive.type = type;
+	msgReactive.content = content;
 }
 
 
 const start = async () => {
 
-   updateMessage("success", "连接成功");
-   await sleep();
+	updateMessage("success", "连接成功");
+	await sleep();
 
-   updateMessage("info", "发起验证");
-   await sleep();
+	updateMessage("info", "发起验证");
+	await sleep();
 
-   updateMessage("loading", "验证中");
-   await sleep();
+	updateMessage("loading", "验证中");
+	await sleep();
 
-   Service.Users.verifyRegister(query.token)
-      .then(res => {
-         const data = res.data;
-         if (data?.code !== ResponseCode.SUCCESS) {
-            updateMessage("error", "VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)");
-         } else {
-            updateMessage("success", "验证通过");
-         }
-      })
-      .catch(err => {
-         updateMessage("error", err.message);
-      })
-      .finally(() => {
-      });
+	Service.Users.verifyRegister(query.token)
+		.then(res => {
+			const data = res.data;
+			if (data?.code !== ResponseCode.SUCCESS) {
+				updateMessage("error", "VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)");
+			} else {
+				updateMessage("success", "验证通过");
+			}
+		})
+		.catch(err => {
+			updateMessage("error", err.message);
+		})
+		.finally(() => {
+		});
 
 }
 </script>

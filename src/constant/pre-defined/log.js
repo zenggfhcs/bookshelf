@@ -1,4 +1,4 @@
-const typeMap = {
+const LOG_TYPE_MAP = {
 	select: "info",
 	update: "warning",
 	delete: "error",
@@ -6,7 +6,7 @@ const typeMap = {
 }
 
 export {
-	typeMap
+	LOG_TYPE_MAP
 }
 
 const elapsedTimeLevel = [

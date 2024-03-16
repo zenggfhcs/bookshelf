@@ -22,10 +22,9 @@ export {
  * @param target 复制目标
  */
 function copyMatchingProperties(source, target) {
-	for (const key in source) {
-		if (target.hasOwnProperty(key)) {
-			target[key] = source[key];
-		}
+	for (const key in target) {
+		console.log(key);
+		target[key] = source?.[key];
 	}
 }
 

@@ -2,7 +2,7 @@
 import {defineConfig} from 'unocss'
 
 export default defineConfig({
-   rules: [
-      [/^m-v-(.+)$/, ([_, num]) => ({ margin: `${num} 0` })],
-   ]
+	rules: [
+		[/^v-c-(.+)$/, ([_, v]) => ({color: `var(--${v})`})],
+	]
 })

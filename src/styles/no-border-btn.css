@@ -1,3 +1,4 @@
 .no-border-btn:hover {
-    background-color: #f2f2f2;
+    background-color: var(--n-text-color);
+    color: var(--n-ripple-color);
 }
