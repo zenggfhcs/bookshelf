@@ -73,7 +73,7 @@ const ROLE_MAP = new BiMap();
 const root = g("超级管理员", "root", ROLE_MAP);
 const admin = g("管理员", "admin", ROLE_MAP);
 const common = g("普通用户", "common", ROLE_MAP);
-const limit = g("受限用户", "limit", ROLE_MAP);
+const limit = g("受限用户", "limited", ROLE_MAP);
 
 const ROLE_PRE_DEFINED = [
 	root,

@@ -1,13 +1,7 @@
-<script setup>
-
-const props = defineProps(['color']);
-
-</script>
-
 <template>
-	<svg id="Uploaded to svgrepo.com" :fill="props.color" version="1.1"
+	<svg id="Uploaded to svgrepo.com" class="fill"
 	     viewBox="0 0 32 32" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
-	     xmlns:xlink="http://www.w3.org/1999/xlink"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+	><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 		<g id="SVGRepo_iconCarrier">
          <path
@@ -15,4 +9,5 @@ const props = defineProps(['color']);
 </template>
 
 <style scoped>
+@import url(@/styles/fill.css);
 </style>

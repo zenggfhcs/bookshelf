@@ -22,30 +22,28 @@ import {
 } from "naive-ui";
 import {reactive, ref} from "vue";
 
-const message = useMessage();
+const addFormRef = ref(null);
 
-//#region add
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const entity = reactive({
 	name: '',
 	remark: '',
 })
 
-const showAdd = ref(false);
-
 const loadingAdd = ref(false);
 
-const addFormRef = ref(null);
+const message = useMessage();
+
+const showAdd = ref(false);
 
 const addRule = {
 	name: {
-		required: true,
 		trigger: ["input", "blur"],
+		required: true,
 		validator(rule, value) {
 			if (value === undefined || value === null || value.length === 0) {
 				return new Error("请输入");
 			}
-		}
+		},
 	}
 }
 
@@ -77,22 +75,19 @@ const add = debounce((e) => {
 				loadingAdd.value = false;
 			})
 	})
-}, 777);
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
+});
 </script>
 
 <template>
 	<n-layout-header>
-		<n-flex style="margin: .3em 1em">
+		<n-flex class="items-center m-l-1em m-r-1em">
 			<h1 class="m-r-a">添加出版社</h1>
 			<n-button type="success" @click="add">
 				确定
 			</n-button>
 		</n-flex>
 	</n-layout-header>
-	<n-layout>
+	<n-layout content-style="padding: .3em 1em">
 
 		<n-flex justify="center">
 			<div class="w-30em">

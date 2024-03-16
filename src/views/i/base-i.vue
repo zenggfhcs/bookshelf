@@ -6,11 +6,11 @@ import moon from "@/icons/moon.vue";
 import PublisherIcon from "@/icons/publisher.vue";
 import sun from "@/icons/sun.vue";
 import router from "@/router/Router.js";
-import {BOOK, BOOK_INFO, DEBIT, LOG, LOGIN, PUBLISHER, USER} from "@/router/RouterValue.js";
+import {BASE_I, BOOK, BOOK_INFO, DEBIT, LOG, LOGIN, PUBLISHER, USER} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {expandIcon, gProps, renderIcon} from "@/utils/generate.js";
+import {gProps} from "@/utils/generate.js";
+import {expandIcon, renderIcon} from "@/utils/render.js";
 import {sleep} from "@/utils/sleep.js";
-
 import {
 	Book as BookManagerIcon,
 	BookOpen as BookInfoManagerIcon,
@@ -18,9 +18,7 @@ import {
 	UsersCog as UserManagerIcon
 } from "@vicons/fa";
 import {
-	darkTheme,
 	NButton,
-	NConfigProvider,
 	NFlex,
 	NForm,
 	NIcon,
@@ -38,20 +36,24 @@ import {
 import {h, onMounted, ref, shallowRef} from "vue";
 import {RouterLink} from "vue-router";
 
-onMounted(() => {
-	checkLoginState();
-})
+const props = defineProps(['switchTheme', 'isDark']);
 
-
+//#region message
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-ref(sun);
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region theme
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const isDark = ref(false);
 
 const theme = shallowRef(null);
-const handleThemeChange = (value) => {
-	isDark.value = value;
-}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
+//#region logout
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const showLogout = ref(false);
 
 const logout = () => {
@@ -60,8 +62,11 @@ const logout = () => {
 	sleep();
 	router.push(LOGIN.path);
 }
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
-
+//#region menu
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const collapsed = ref(false);
 
 const menuOptions = [
@@ -124,134 +129,143 @@ const menuOptions = [
 		icon: renderIcon(LogIcon)
 	}
 ]
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
+//#region 生命周期函数
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+onMounted(() => {
+	checkLoginState();
+})
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 </script>
 
 <template>
-	<n-config-provider :theme="isDark ? darkTheme : null">
-		<n-layout has-sider position="absolute">
-			<n-layout-sider
-				:collapsed="collapsed"
-				:collapsed-width="64"
-				:width="240"
-				bordered
-				collapse-mode="width"
-				show-trigger
-				@collapse="collapsed = true"
-				@expand="collapsed = false"
-			>
-				<n-layout-header bordered class="h-3em">
-					<n-flex :size="0" :wrap="false">
-						<a href="/manage">
-							<div class="logo">
-								<BookBrain/>
-							</div>
-						</a>
-						<div class="logo-text-box">
-							<div id="logo-text" class="logo-text v-c-n-text-color">
-								BookBrain
-							</div>
+	<n-layout has-sider position="absolute">
+		<n-layout-sider
+			:collapsed="collapsed"
+			:collapsed-width="64"
+			:width="240"
+			bordered
+			collapse-mode="width"
+			show-trigger
+			@collapse="collapsed = true"
+			@expand="collapsed = false"
+		>
+			<n-layout-header bordered class="h-3em">
+				<n-flex :size="0" :wrap="false">
+					<router-link :to="BASE_I">
+						<div class="logo">
+							<BookBrain class="w-2.4em h-2.4em" color=""/>
 						</div>
+					</router-link>
+					<div class="logo-text-box">
+						<div id="logo-text" class="logo-text v-c-n-text-color">
+							BookBrain
+						</div>
+					</div>
 
-					</n-flex>
-				</n-layout-header>
-				<n-layout class="absolute top-3em bottom-2.4em left-0 right-0">
-					<n-scrollbar>
-						<n-menu
-							:collapsed="collapsed"
-							:collapsed-icon-size="22"
-							:collapsed-width="64"
-							:expand-icon="expandIcon"
-							:options="menuOptions"
-							class="font-size-1.2rem font-800"
-						/>
-					</n-scrollbar>
-				</n-layout>
-				<n-layout-footer
-					bordered
-					class="h-2.4em overflow-hidden"
-					position="absolute"
-				>
-					<n-flex :wrap="false" class="h-full over-hidden items-center">
-						<n-popover trigger="click">
-							<template #trigger>
-								<n-button circle class="m-l-15px m-r-15px" secondary strong>
-									<template #icon>
-										<n-icon :component="isDark ? moon : sun"/>
-									</template>
-								</n-button>
-							</template>
-							<n-form class="flex flex-col" label-placement="left">
-								<n-button :bordered="false" class="no-border-btn" @click="isDark = false">
-									<template #icon>
-										<n-icon :component="sun"/>
-									</template>
-									日间模式
-								</n-button>
-								<n-button :bordered="false" class="no-border-btn" @click="isDark = true">
-									<template #icon>
-										<n-icon :component="moon"/>
-									</template>
-									夜间模式
-								</n-button>
-							</n-form>
-						</n-popover>
-					</n-flex>
+				</n-flex>
+			</n-layout-header>
+			<n-layout class="absolute top-3em bottom-2.4em left-0 right-0">
+				<n-scrollbar>
+					<n-menu
+						:collapsed="collapsed"
+						:collapsed-icon-size="22"
+						:collapsed-width="64"
+						:expand-icon="expandIcon"
+						:options="menuOptions"
+						class="font-size-1.2rem font-800"
+					/>
+				</n-scrollbar>
+			</n-layout>
+			<n-layout-footer
+				bordered
+				class="h-2.4em overflow-hidden"
+				position="absolute"
+			>
+				<n-flex :wrap="false" class="h-full over-hidden items-center">
+					<n-popover trigger="click">
+						<template #trigger>
+							<n-button circle class="m-l-15px m-r-15px" secondary strong>
+								<template #icon>
+									<n-icon :component="props.isDark ? moon : sun"/>
+								</template>
+							</n-button>
+						</template>
+						<n-form class="flex flex-col" label-placement="left"
+						        style="--n-color: v-bind(); --n-text-color: v-bind();">
+							<n-button :bordered="false" class="no-border-btn"
+							          @click="props.switchTheme(false)">
+								<template #icon>
+									<n-icon :component="sun"/>
+								</template>
+								日间模式
+							</n-button>
+							<n-button :bordered="false" class="no-border-btn" @click="props.switchTheme(true)">
+								<template #icon>
+									<n-icon :component="moon"/>
+								</template>
+								夜间模式
+							</n-button>
+						</n-form>
+					</n-popover>
+				</n-flex>
 
-				</n-layout-footer>
-			</n-layout-sider>
-			<n-layout>
-				<n-layout-header bordered class="h-3em">
-					<n-flex :wrap="false" class="mr4" justify="end">
-						<n-popover class="p-0" trigger="click">
-							<template #trigger>
-								<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
+			</n-layout-footer>
+		</n-layout-sider>
+		<n-layout>
+			<n-layout-header bordered class="h-3em">
+				<n-flex :wrap="false" class="mr4" justify="end">
+					<n-popover class="p-0" placement="left-start" trigger="click">
+						<template #trigger>
+							<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
                         <span class="font-800 font-size-1em"
                               style="font-family: inter,sans-serif;">ME</span>
-								</n-button>
-							</template>
-							<n-form label-placement="left">
-								<n-button :bordered="false" class="no-border-btn" @click="showLogout = true">
-									登出
-								</n-button>
-							</n-form>
-						</n-popover>
+							</n-button>
+						</template>
+						<n-form label-placement="left">
+							<n-button :bordered="false" class="no-border-btn" @click="showLogout = true">
+								登出
+							</n-button>
+						</n-form>
+					</n-popover>
 
-					</n-flex>
-				</n-layout-header>
-				<n-layout class=" absolute top-3em bottom-0 left-0 right-0">
-					<router-view v-slot="{ Component}">
-						<component :is="Component"/>
-					</router-view>
-				</n-layout>
+				</n-flex>
+			</n-layout-header>
+			<n-layout class=" absolute top-3em bottom-0 left-0 right-0">
+				<router-view v-slot="{ Component}">
+					<component :is="Component"/>
+				</router-view>
+			</n-layout>
 
-				<n-modal
-					id="logout-modal"
-					v-model:show="showLogout"
-					preset="dialog"
-					style="--n-font-size: 16px;"
-					title="退出二次确认"
-					transform-origin="center"
-					type="warning"
-				>
-					<n-space vertical>
+			<n-modal
+				id="logout-modal"
+				v-model:show="showLogout"
+				preset="dialog"
+				style="--n-font-size: 16px;"
+				title="退出二次确认"
+				transform-origin="center"
+				type="warning"
+			>
+				<n-space vertical>
          <span>
             您是否要退出登录？
          </span>
-						<n-flex justify="right">
-							<n-button type="warning" @click="logout">
-								确定
-							</n-button>
-						</n-flex>
-					</n-space>
-				</n-modal>
-			</n-layout>
+					<n-flex justify="right">
+						<n-button type="warning" @click="logout">
+							确定
+						</n-button>
+					</n-flex>
+				</n-space>
+			</n-modal>
 		</n-layout>
-	</n-config-provider>
+	</n-layout>
 </template>
 
 <style scoped>
-@import "@/styles/no-border-btn.css";
+@import url("@/styles/no-border-btn.css");
 
 .logo {
 	flex: 0 0 auto;

@@ -7,6 +7,7 @@ import {MyRequest} from "@/api/MyRequest.js";
 import {encodeByRSA} from "@/utils/rsa-tools.js";
 
 const ServiceName = {
+	BOOK: "books",
 	BOOK_INFO: "bookInfos",
 	PUBLISHER: "publishers",
 	USER: "users",
@@ -26,6 +27,12 @@ class BaseService {
 	}
 }
 
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region book api
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const Books = new BaseService(ServiceName.BOOK);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -91,6 +98,7 @@ const Service = {
 	Users,
 	Debits,
 	BookInfos,
+	Books,
 	Logs,
 }
 

@@ -1,22 +1,14 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {messageOptions} from "@/constant/options.js";
-import {
-	LOG_PRE_DEFINED_SERVICE_NAME,
-	LOG_PRE_DEFINED_TYPE,
-	SERVICE_NAME_MAP,
-	TYPE_MAP
-} from "@/constant/pre-defined/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
-import {LOG_CHECK} from "@/router/RouterValue.js";
+import {PUBLISHER_ADD, PUBLISHER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {getTagType, timestampToDateTimeString} from "@/utils/convert.js";
+import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
-import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
-import {Search} from "@vicons/ionicons5";
+import {AddCircle, Search} from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
@@ -28,28 +20,47 @@ import {
 	NFormItem,
 	NIcon,
 	NInput,
-	NInputGroup,
-	NInputNumber,
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
 	NPagination,
 	NPopover,
-	NSelect,
 	NSpin,
 	NTag,
 	useMessage
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
+// todo alter
+
+// todo filter
+
+// todo search
+
+//#region entity
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const entity = reactive({
+	id: '',
+	name: '',
+	place: '',
+})
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
+
+const messageOptions = {
+	duration: 10000
+}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
 //#region 数据表信息
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
+let tableData = [];
 const cols = [
 	{
 		title: "id",
@@ -74,134 +85,23 @@ const cols = [
 		),
 	},
 	{
-		title: "操作类型",
-		key: "type",
+		title: "出版社名称",
+		key: "name",
 		// 可拖动
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true
 		},
-		width: 100,
-		minWidth: 50,
-		render: (row) => h(
-			NTag,
-			{
-				type: getTagType.byLogType(row?.type),
-				bordered: false
-			},
-			{
-				default: () => TYPE_MAP.getByValue(row?.type)
-			}
-		),
+		//render: (row) => h()
 	},
 	{
-		title: "数据类型",
-		key: "serviceName",
-		// 可拖动
+		title: "出版地",
+		key: "place",
 		resizable: true,
-		// 溢出省略
 		ellipsis: {
 			tooltip: true
 		},
-		width: 100,
-		minWidth: 50,
-		render: (row) => h(
-			NTag,
-			{
-				type: 'warning',
-				style: {
-					width: '5em',
-					justifyContent: 'center',
-				},
-				bordered: false
-			},
-			{
-				default: () => SERVICE_NAME_MAP.getByValue(row?.serviceName)
-			}
-		),
-	},
-	{
-		title: "数据 id",
-		key: "dataId",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		width: 100,
-		minWidth: 50,
-		render: (row) => {
-			if (!row?.dataId || row?.dataId === '')
-				return renderCell();
-			return h(
-				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.dataId
-				}
-			)
-		},
-	},
-	{
-		title: "运行时间-毫秒",
-		key: "elapsedTime",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		width: 100,
-		minWidth: 50,
-		render: (row) => h(
-			NTag,
-			{
-				type: getTagType.byElapsedTime(row?.elapsedTime),
-				bordered: false,
-			},
-			{
-				default: () => row?.elapsedTime,
-			}
-		),
-	},
-	{
-		title: "记录时刻",
-		key: "creationTime",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		width: 100,
-		minWidth: 50,
-		render: (row) => h(
-			NTag,
-			{
-				type: "primary",
-				bordered: false
-			},
-			{
-				default: () => row?.creationTime.replace("T", " ")
-			}
-		),
-	},
-	{
-		title: "操作者 id",
-		key: "createdBy",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		width: 100,
-		minWidth: 50,
 		render: (row) => h(
 			NTag,
 			{
@@ -209,28 +109,116 @@ const cols = [
 				bordered: false
 			},
 			{
+				default: () => row?.place
+			}
+		)
+	},
+	{
+		title: "备注",
+		key: "remark",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+		width: 200,
+		minWidth: 50,
+		maxWidth: 300,
+		//render: (row) => h()
+	},
+	{
+		title: "创建时间",
+		key: "creationTime",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+		render: (row) => h(
+			NTag,
+			{
+				type: "primary",
+				bordered: false,
+			},
+			{
+				default: () => row?.creationTime?.toString().replace("T", " ")
+			}
+		),
+	},
+	{
+		title: "创建者",
+		key: "createdBy",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+		render: (row) => h(
+			NTag,
+			{
+				type: "info",
+				bordered: false,
+			},
+			{
 				default: () => row?.createdBy
+			}
+		),
+	},
+	{
+		title: "最后更新时间",
+		key: "lastUpdatedTime",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+		render: (row) => h(
+			NTag,
+			{
+				type: "primary",
+				bordered: false,
+			},
+			{
+				default: () => row?.lastUpdatedTime?.toString().replace("T", " ")
+			}
+		),
+	},
+	{
+		title: "更新者-id",
+		key: "updatedBy",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+		render: (row) => h(
+			NTag,
+			{
+				type: "info",
+				bordered: false,
+			},
+			{
+				default: () => row?.updatedBy
 			}
 		),
 	},
 ]
 
-let tableData = [];
-
 const loadingFind = ref(false);
 
-const typeOptions = LOG_PRE_DEFINED_TYPE;
-
-const serviceNameOptions = LOG_PRE_DEFINED_SERVICE_NAME;
-
-const rowProps = row => {
+const rowProps = (row) => {
 	return {
 		onDblclick: (e) => {
 			e.preventDefault();
 			router.push({
-				name: LOG_CHECK.name,
+				name: PUBLISHER_CHECK.name,
 				params: {
-					id: row?.id,
+					id: row?.id
 				}
 			});
 		}
@@ -238,15 +226,9 @@ const rowProps = row => {
 }
 //#region query
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const entity = reactive({
-	id: '',
-	type: '',
-	serviceName: '',
-
-});
-
 const timestamp = reactive({
 	creationTime: null,
+	lastUpdatedTime: null,
 })
 
 const filter = reactive({
@@ -254,30 +236,36 @@ const filter = reactive({
 		start: 0,
 		end: 10
 	},
+	age: {
+		start: 0,
+		end: 255
+	},
 	creationTime: {
 		start: null,
 		end: null,
 	},
-	elapsedTime: {
+	lastUpdatedTime: {
 		start: null,
 		end: null,
-	}
+	},
 });
 
+
 const preQuery = () => {
-	// todo pre query
+	// todo
+
 	filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
 	filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
+
+	filter.lastUpdatedTime.start = timestampToDateTimeString(timestamp.lastUpdatedTime?.[0]);
+	filter.lastUpdatedTime.end = timestampToDateTimeString(timestamp.lastUpdatedTime?.[1]);
 }
 
-// todo 修改条件后查找，不会改变页码，会导致查页错误、查出数据为空
-// 预计实现方式：
 const query = () => {
+	preQuery();
 	loadingFind.value = true;
 
-	preQuery();
-
-	Service.Logs.list(entity, filter)
+	Service.Books.list(entity, filter)
 		.then(res => {
 			const data = res.data;
 			if (!data || data?.code !== ResponseCode.SUCCESS) {
@@ -287,6 +275,7 @@ const query = () => {
 
 			itemCount.value = data?.data?.count;
 			tableData = data?.data?.data;
+
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -309,7 +298,6 @@ const clickFind = debounce(e => {
 //#region 分页组件
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
-
 const itemCount = ref(0);
 
 const pagination = reactive({
@@ -318,9 +306,9 @@ const pagination = reactive({
 	showSizePicker: true,
 	pageSizes: [
 		{label: "10 每页", value: 10,},
+		{label: "15 每页", value: 15,},
 		{label: "20 每页", value: 20,},
-		{label: "30 每页", value: 30,},
-		{label: "50 每页", value: 50,}
+		{label: "30 每页", value: 30,}
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -334,6 +322,7 @@ const pagination = reactive({
 		query();
 	}
 });
+
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -353,10 +342,18 @@ onMounted(() => { // 加载数据
 
 <template>
 	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-2.4em items-center" justify="right" style="margin: 0.3em 1em;">
+		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em;">
+			<router-link :to="PUBLISHER_ADD.path">
+				<n-button>
+					<template #icon>
+						<addCircle/>
+					</template>
+					添加
+				</n-button>
+			</router-link>
 			<n-popover placement="top" trigger="click">
 				<template #trigger>
-					<n-button class="h-2.4em">
+					<n-button class="h-2.4em m-l-a">
 						<template #icon>
 							<n-icon>
 								<write/>
@@ -373,37 +370,27 @@ onMounted(() => { // 加载数据
 						         clearable
 						         placeholder="输入id"/>
 					</n-form-item>
-					<n-form-item label="操作类型" path="type">
-						<n-select v-model:value="entity.type" :options="typeOptions" clearable
-						          placeholder="选择操作类型"/>
-					</n-form-item>
+					<n-form-item label="出版社名称" path="name">
+						<n-input v-model:value="entity.name" :allow-input="inputValidator.noSideSpace"
+						         clearable placeholder="输入出版社名称"/>
 
-					<n-form-item label="数据类型" path="serviceName">
-						<n-select v-model:value="entity.serviceName" :options="serviceNameOptions" clearable
-						          placeholder="选择数据类型"/>
+					</n-form-item>
+					<n-form-item label="出版地" path="name">
+						<n-input v-model:value="entity.place" :allow-input="inputValidator.noSideSpace"
+						         clearable placeholder="输入出版地，如 '北京'"/>
 					</n-form-item>
 				</n-form>
 				<n-form :model="filter">
 					<span class="font-size-1.2em font-800">模糊查询</span>
 					<n-divider class="m-1!"/>
-
-					<n-form-item label="记录时间">
+					<n-form-item label="创建时间">
 						<n-date-picker v-model:value="timestamp.creationTime" clearable type="datetimerange"
 						               update-value-on-close/>
 					</n-form-item>
-
-					<n-form-item label="运行时间-毫秒">
-						<n-input-group>
-							<n-input-number v-model:value="filter.elapsedTime.start" :max="filter.elapsedTime.end" :min="0"
-							                :style="{ width: '50%' }"
-							                clearable/>
-							<n-input-number v-model:value="filter.elapsedTime.end" :max="100000"
-							                :min="filter.elapsedTime.start"
-							                :style="{ width: '50%' }"
-							                clearable/>
-						</n-input-group>
+					<n-form-item label="最后修改时间">
+						<n-date-picker v-model:value="timestamp.lastUpdatedTime" clearable type="datetimerange"
+						               update-value-on-close/>
 					</n-form-item>
-
 				</n-form>
 			</n-popover>
 			<n-button class="h-2.4em" @click="clickFind">
@@ -417,23 +404,24 @@ onMounted(() => { // 加载数据
 		</n-flex>
 	</n-layout-header>
 
-	<n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em"
+	<n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em left-0 right-0"
 	          content-style="padding: .3em 1em;">
 		<!--   返回顶部   -->
-		<n-back-top :bottom="2" :right="20" style="--n-height: 2.4em; --n-width: 2.4em;"/>
+		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
 		<n-spin :show="loadingFind">
 			<n-data-table
 				:columns="cols"
 				:data="tableData"
-				:render-cell="renderCell"
 				:row-props="rowProps"
-				:single-line="false" striped
+				:single-line="false"
 			/>
 		</n-spin>
+
 	</n-layout>
+
 	<n-layout-footer class="h-2.4em" position="absolute">
-		<n-flex :size="8" class="items-center mr4 h-100%" justify="center">
+		<n-flex :size="0" class="items-center mr4 h-100%" justify="center">
 			<n-pagination
 				v-model:page="pagination.page"
 				v-model:page-size="pagination.pageSize"
@@ -461,11 +449,13 @@ onMounted(() => { // 加载数据
 </template>
 
 <style scoped>
+
 .n-menu .n-menu-item-content .n-menu-item-content-header a {
-	font-weight: 800;
+	font-weight: 800 !important;
 }
 
 .n-date-picker {
 	flex: 1;
 }
-</style>/style>
+
+</style>

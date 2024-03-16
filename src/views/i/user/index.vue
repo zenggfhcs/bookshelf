@@ -4,12 +4,13 @@ import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/pre-defined/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
-import {USER_ADD, USER_CHECK} from "@/router/RouterValue.js";
+import {USER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {convertGender, getTagType, timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
+import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
-import {AddCircle, Search} from "@vicons/ionicons5";
+import {Search} from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
@@ -85,7 +86,11 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		//render: (row) => h()
+		render: (row) => {
+			if (!row?.displayName)
+				return renderCell();
+			return row?.displayName;
+		}
 	},
 	{
 		title: "用户名",
@@ -96,15 +101,19 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		render: (row) => h(
-			NTag,
-			{
-				bordered: false,
-			},
-			{
-				default: () => `${row?.surname} ${row?.name}`
-			}
-		)
+		render: (row) => {
+			if (!(row?.surname || row?.name))
+				return renderCell();
+			return h(
+				NTag,
+				{
+					bordered: false,
+				},
+				{
+					default: () => `${row?.surname} ${row?.name}`
+				}
+			)
+		}
 	},
 	{
 		title: "邮箱",
@@ -136,16 +145,20 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		render: (row) => h(
-			NTag,
-			{
-				bordered: false,
-				type: "error"
-			},
-			{
-				default: () => row?.phoneNumber
-			}
-		)
+		render: (row) => {
+			if (!row?.phoneNumber || row?.phoneNumber === '')
+				return renderCell();
+			return h(
+				NTag,
+				{
+					bordered: false,
+					type: "error"
+				},
+				{
+					default: () => row?.phoneNumber
+				}
+			)
+		}
 
 	},
 	{
@@ -254,8 +267,8 @@ const filter = reactive({
 		end: 10
 	},
 	age: {
-		start: 0,
-		end: 255
+		start: null,
+		end: null
 	},
 	creationTime: {
 		start: null,
@@ -381,15 +394,7 @@ onMounted(() => { // 加载数据
 
 <template>
 	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em;">
-			<router-link :to="USER_ADD.path">
-				<n-button>
-					<template #icon>
-						<addCircle/>
-					</template>
-					添加
-				</n-button>
-			</router-link>
+		<n-flex class="h-2.4em items-center m-l-1em m-r-1em">
 			<n-popover trigger="click">
 				<template #trigger>
 					<n-button class="m-.3em h-2.4em m-l-a">
@@ -489,7 +494,7 @@ onMounted(() => { // 加载数据
 	</n-layout-header>
 
 	<n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em left-0 right-0"
-	          content-style="padding:.3em 1em;">
+	          content-style="padding: .3em 1em;">
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->

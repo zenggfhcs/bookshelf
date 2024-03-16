@@ -4,8 +4,8 @@ import BookInfoAdd from "@/views/i/book-info/add.vue";
 import BookInfoCheck from "@/views/i/book-info/check.vue";
 import BookInfoManager from "@/views/i/book-info/index.vue";
 import BookAdd from "@/views/i/book/add.vue";
-import BookManager from "@/views/i/book/books.vue";
 import BookCheck from "@/views/i/book/check.vue";
+import BookManager from "@/views/i/book/index.vue";
 import DebitCheck from "@/views/i/debit/check.vue";
 import DebitManager from "@/views/i/debit/index.vue";
 import I from "@/views/i/index.vue";
@@ -14,15 +14,15 @@ import LogManager from "@/views/i/log/index.vue";
 import PublisherAdd from "@/views/i/publisher/add.vue";
 import PublisherCheck from "@/views/i/publisher/check.vue";
 import PublisherManager from "@/views/i/publisher/index.vue";
-import UserAdd from "@/views/i/user/add.vue";
 import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
 import BaseJ from "@/views/j/base-j.vue";
 import J from "@/views/j/home.vue";
-import Login from "@/views/login.vue";
-import Register from "@/views/register.vue";
-import ResetPassword from "@/views/reset-password.vue";
-import Verify from "@/views/verify.vue";
+import Public from "@/views/p/base-p.vue";
+import Login from "@/views/p/login.vue";
+import Register from "@/views/p/register.vue";
+import ResetPassword from "@/views/p/reset-password.vue";
+import Verify from "@/views/p/verify.vue";
 
 
 //#region g route item
@@ -44,7 +44,7 @@ const g = (component, name, path, props = undefined, ch = undefined, r = undefin
 //#region route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
-//#region 单页面
+//#region public
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const LOGIN = g(Login, "login", "/login", true);
 
@@ -53,6 +53,8 @@ const REGISTER = g(Register, "register", "/register", true);
 const RESET_PASSWORD = g(ResetPassword, "resetPassword", "/reset-password", true);
 
 const VERIFY = g(Verify, "verify", "/verify", route => ({token: route.query.token}));
+
+const PUBLIC = g(Public, "public", "/p", true, [LOGIN, REGISTER, RESET_PASSWORD, VERIFY], LOGIN);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -132,8 +134,6 @@ const PUBLISHER = g(PublisherManager, "publisherManager", "/i/publishers");
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const USER = g(UserManager, "userManager", "/i/users");
 
-const USER_ADD = g(UserAdd, "userAdd", "/i/users/add", true);
-
 const USER_CHECK = g(UserCheck, "userCheck", "/i/users/:id", true);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -147,7 +147,7 @@ const BASE_I = g(BaseI, "i", "/i", true,
 		BOOK, BOOK_CHECK, BOOK_ADD,
 		BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
 		PUBLISHER, PUBLISHER_CHECK, PUBLISHER_ADD,
-		USER, USER_CHECK, USER_ADD,
+		USER, USER_CHECK,
 		LOG, LOG_CHECK,
 	],
 	I_HOME
@@ -164,10 +164,14 @@ const BASE_I = g(BaseI, "i", "/i", true,
 export {
 	// common
 	LOGIN,
+	REGISTER,
+	RESET_PASSWORD,
+	VERIFY,
 
 	// i
-	DEBIT,
-	USER, USER_CHECK, USER_ADD,
+	BASE_I,
+	DEBIT, DEBIT_CHECK,
+	USER, USER_CHECK,
 	BOOK,
 	BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
 	PUBLISHER,
@@ -184,10 +188,7 @@ export {
 //#region export routes
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 export const PredefinedRoutes = [
-	LOGIN,
-	REGISTER,
-	VERIFY,
-	RESET_PASSWORD,
+	PUBLIC,
 	BASE_I,
 	BASE_J,
 	UNDEFINED,

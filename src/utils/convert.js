@@ -36,6 +36,14 @@ function padZero(num) {
 }
 
 export {timestampToDateTimeString};
+
+const timeFormat = (time) => {
+	return time?.toString().replace("T", " ");
+}
+
+export {
+	timeFormat
+}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -68,3 +76,12 @@ export {
 
 const convertGender = (g) => GENDER_MAP[g];
 export {convertGender}
+
+const nullToEmptyString = (s) => {
+	if (s) return s;
+	return "";
+}
+
+export {
+	nullToEmptyString
+}

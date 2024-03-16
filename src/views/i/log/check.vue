@@ -104,8 +104,8 @@ onMounted(() => {
 </script>
 
 <template>
-	<n-layout-header class="absolute top-0 h-3em left-0 right-0">
-		<n-flex class="items-center" style="margin: 0 1em;">
+	<n-layout-header class="h-3em" position="absolute">
+		<n-flex class="items-center h-3em" style="margin: 0 1em;">
 			<h1>日志信息</h1>
 		</n-flex>
 	</n-layout-header>
@@ -139,7 +139,7 @@ onMounted(() => {
 				</td>
 			</tr>
 			<tr>
-				<td>数据-ID</td>
+				<td>数据 id</td>
 				<td>{{ info.dataId }}</td>
 			</tr>
 			<tr>

@@ -10,9 +10,6 @@ import {onMounted} from "vue";
 const query = defineProps({
 	token: String
 })
-onMounted(() => {
-	start();
-})
 
 const message = useMessage();
 
@@ -23,19 +20,17 @@ const msgReactive = message.create("", {
 const updateMessage = (type, content) => {
 	msgReactive.type = type;
 	msgReactive.content = content;
+	sleep();
 }
 
 
 const start = async () => {
 
 	updateMessage("success", "连接成功");
-	await sleep();
 
 	updateMessage("info", "发起验证");
-	await sleep();
 
 	updateMessage("loading", "验证中");
-	await sleep();
 
 	Service.Users.verifyRegister(query.token)
 		.then(res => {
@@ -53,6 +48,11 @@ const start = async () => {
 		});
 
 }
+
+onMounted(() => {
+	sleep();
+	start();
+})
 </script>
 
 <template>

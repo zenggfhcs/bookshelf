@@ -2,8 +2,6 @@ import {ParameterType} from "@/constant/Type.js";
 import {TypeCheck} from "@/utils/Check.js";
 import {copyMatchingProperties, shuffleArray} from "@/utils/index.js";
 import {randomInt} from "@/utils/random.js";
-import {NIcon} from "naive-ui";
-import {h} from "vue";
 
 
 //#region generate property
@@ -59,21 +57,6 @@ export {
 //#endregion
 
 
-//#region generate icon
-function renderIcon(icon, props = undefined) {
-	return () => h(NIcon, props, {default: () => h(icon)})
-}
-
-function expandIcon() {
-	return h(NIcon, null, {default: () => h(null)})
-}
-
-export {
-	renderIcon,
-	expandIcon,
-}
-//#endregion
-
 //#region g col item
 /**
  * 生成表格头
@@ -111,17 +94,17 @@ export {
  * 生成验证码
  * @returns {string}
  */
-const generateCode = () => {
+const gCode = () => {
 	let code = '';
 	const l = randomInt(randomInt(3)) + 7;
 	while (code.length < l) {
 		code += (Math.ceil(Math.random() * 10000000))
 			.toString(16);
 	}
-	code = shuffleArray(('!@#$%^&*()_+' + code).split("")).join("");
+	code = shuffleArray(code.split("")).join("");
 	return code.substring(0, l);
 }
 
 export {
-	generateCode
+	gCode
 }

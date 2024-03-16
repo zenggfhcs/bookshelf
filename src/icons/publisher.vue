@@ -1,11 +1,5 @@
-<script setup>
-
-const props = defineProps(['color']);
-
-</script>
-
 <template>
-	<svg id="Layer_1" :fill="props.color" enable-background="new 0 0 256 253" height="800px"
+	<svg id="Layer_1" class="fill" enable-background="new 0 0 256 253" height="800px"
 	     version="1.1" viewBox="0 0 256 253" width="800px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
 <path d="M171.028,118.607v80.347v0.083c-5.459,0-9.877,4.417-9.877,9.877c0,5.459,4.417,9.877,9.877,9.877v3.834h-70.887v-0.042
 	C92.848,222.291,87,216.376,87,209c0-0.625,0-77,0-77c0-7.543,6.307-13.393,13.85-13.393H171.028z M102.391,190.952h3.834v-64.844
@@ -19,5 +13,5 @@ const props = defineProps(['color']);
 </template>
 
 <style scoped>
-
+@import url(@/styles/fill.css);
 </style>

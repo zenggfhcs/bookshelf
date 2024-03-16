@@ -8,7 +8,7 @@ const USER_TAG_TYPE_MAP = {
 	"root": "error",
 	"admin": "warning",
 	"common": "success",
-	"limit": "default",
+	"limited": "default",
 }
 
 export {
