@@ -1,4 +1,5 @@
 <script setup>
+import Archive from "@/icons/archive.vue";
 import {debounce} from "@/utils/debounce.js";
 import {inputValidator} from "@/utils/validator.js";
 import {
@@ -16,6 +17,11 @@ import {
 	NSpace,
 	NTable,
 	NTag,
+	NIcon,
+	NUpload,
+	NUploadDragger,
+	NText,
+	NP,
 	useMessage
 } from "naive-ui";
 import {h, onBeforeMount, reactive, ref} from "vue";
@@ -131,7 +137,7 @@ onBeforeMount(() => {
 			<!--			todo 优化布局，-->
 			<tbody class="trc">
 			<tr>
-				<td>ISBN</td>
+				<td class="w-33%">ISBN</td>
 				<td>
 					<n-input v-model:value="info.isbn" :allow-input="inputValidator.noSideSpace"
 					         clearable maxlength="32" placeholder="输入"/>
@@ -166,8 +172,25 @@ onBeforeMount(() => {
 				<td>封面链接</td>
 				<td>
 					<!--               <img :src="info.cover" alt="书籍图片链接">-->
-					<n-upload>
-
+					<n-upload
+						multiple
+						directory-dnd
+						action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+						:max="5"
+					>
+						<n-upload-dragger>
+							<div style="margin-bottom: 12px">
+								<n-icon size="64" :depth="3">
+									<Archive/>
+								</n-icon>
+							</div>
+							<n-text style="font-size: 16px">
+								点击或者拖动文件到该区域来上传
+							</n-text>
+							<n-p depth="3" style="margin: 8px 0 0 0">
+								请不要上传敏感数据，比如你的银行卡号和密码，信用卡号有效期和安全码
+							</n-p>
+						</n-upload-dragger>
 					</n-upload>
 					<n-input v-model:value="info.cover" :allow-input="inputValidator.noSideSpace"
 					         clearable placeholder="输入"/>

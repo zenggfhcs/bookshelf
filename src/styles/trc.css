@@ -1,0 +1,4 @@
+.trc tr > td:first-child {
+    text-align: right;
+    vertical-align: top;
+}

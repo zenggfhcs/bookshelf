@@ -33,10 +33,11 @@ import {
 	NSpace,
 	useMessage,
 } from 'naive-ui';
-import {h, onMounted, ref, shallowRef} from "vue";
+import {h, onMounted, onBeforeUnmount, ref, shallowRef} from "vue";
 import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
+
 
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -68,6 +69,23 @@ const logout = () => {
 //#region menu
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const collapsed = ref(false);
+
+const currentValueRef = ref("");
+
+const currentValueKey = "i-menu-value";
+
+{
+	const _ = localStorage.getItem(currentValueKey);
+	if (_) {
+		currentValueRef.value = _;
+	}
+}
+
+const updateCurrentValue = value => {
+	console.log(value);
+	currentValueRef.value = value;
+	// localStorage.setItem(currentValueKey, currentValueRef.value);
+}
 
 const menuOptions = [
 	{
@@ -137,6 +155,11 @@ const menuOptions = [
 onMounted(() => {
 	checkLoginState();
 })
+
+// todo 刷新时，该函数不生效
+onBeforeUnmount(() => {
+	localStorage.setItem(currentValueKey, currentValueRef.value);
+})
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 </script>
@@ -171,6 +194,8 @@ onMounted(() => {
 			<n-layout class="absolute top-3em bottom-2.4em left-0 right-0">
 				<n-scrollbar>
 					<n-menu
+						:value="currentValueRef"
+						@update-value="updateCurrentValue"
 						:collapsed="collapsed"
 						:collapsed-icon-size="22"
 						:collapsed-width="64"

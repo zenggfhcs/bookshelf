@@ -174,11 +174,11 @@ const cols = [
 			return h(
 				NTag,
 				{
-					type: getTagType.byUserRole(row?.role.name),
+					type: getTagType.byUserRole(row?.role?.name),
 					bordered: false,
 				},
 				{
-					default: () => ROLE_MAP.getByValue(row?.role.name)
+					default: () => ROLE_MAP.getByValue(row?.role?.name)
 				}
 			)
 

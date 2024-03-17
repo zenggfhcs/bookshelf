@@ -17,7 +17,7 @@ import {
 	NInputGroupLabel,
 	NLayout,
 	NLayoutHeader,
-	NSpin,
+	NTable,
 	useMessage
 } from "naive-ui";
 import {reactive, ref} from "vue";
@@ -27,6 +27,7 @@ const addFormRef = ref(null);
 const entity = reactive({
 	name: '',
 	remark: '',
+	place: ''
 })
 
 const loadingAdd = ref(false);
@@ -37,6 +38,15 @@ const showAdd = ref(false);
 
 const addRule = {
 	name: {
+		trigger: ["input", "blur"],
+		required: true,
+		validator(rule, value) {
+			if (value === undefined || value === null || value.length === 0) {
+				return new Error("请输入");
+			}
+		},
+	},
+	place: {
 		trigger: ["input", "blur"],
 		required: true,
 		validator(rule, value) {
@@ -82,38 +92,55 @@ const add = debounce((e) => {
 	<n-layout-header>
 		<n-flex class="items-center m-l-1em m-r-1em">
 			<h1 class="m-r-a">添加出版社</h1>
-			<n-button type="success" @click="add">
+			<n-button type="success" @click="add" :loading="loadingAdd">
 				确定
 			</n-button>
 		</n-flex>
 	</n-layout-header>
-	<n-layout content-style="padding: .3em 1em">
-
-		<n-flex justify="center">
-			<div class="w-30em">
-				<n-spin :show="loadingAdd">
-					<n-form ref="addFormRef" :model="entity" :rules="addRule" label-align="right" label-placement="left"
-					        label-width="auto" style="--n-font-size: 16px;">
-						<n-form-item label="出版社名称" path="name">
+	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
+	          content-style="padding: .3em 1em">
+		<n-form ref="addFormRef" :model="entity" :rules="addRule"
+		        label-placement="left">
+			<n-table :single-line="false" class="w-100%">
+				<!--			todo 优化布局，-->
+				<tbody class="trc">
+				<tr>
+					<td class="w-43%">出版社名称</td>
+					<td>
+						<n-form-item path="name">
 							<n-input-group>
 								<n-input v-model:value="entity.name" :allow-input="inputValidator.noSideSpace" clearable
 								         maxlength="32" placeholder="输入出版社名称"/>
 								<n-input-group-label>出版社</n-input-group-label>
 							</n-input-group>
 						</n-form-item>
-
-						<n-form-item label="备注" path="remark">
+					</td>
+				</tr>
+				<tr>
+					<td>出版社所在地</td>
+					<td>
+						<n-form-item path="place">
+							<n-input v-model:value="entity.place" :allow-input="inputValidator.noSideSpace"
+							         maxlength="16" placeholder="输入出版社所在地"/>
+						</n-form-item>
+					</td>
+				</tr>
+				<tr>
+					<td>备注</td>
+					<td>
+						<n-form-item path="remark">
 							<n-input v-model:value="entity.remark" :allow-input="inputValidator.noSideSpace" clearable
 							         maxlength="255" placeholder="输入备注"
-							         type="textarea"/>
+							         type="textarea" autosize/>
 						</n-form-item>
-					</n-form>
-				</n-spin>
-			</div>
-		</n-flex>
+					</td>
+				</tr>
+				</tbody>
+			</n-table>
+		</n-form>
 	</n-layout>
 </template>
 
 <style scoped>
-
+@import url(@/styles/trc.css);
 </style>
