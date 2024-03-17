@@ -33,7 +33,7 @@ import {
 	NSpace,
 	useMessage,
 } from 'naive-ui';
-import {h, onMounted, onBeforeUnmount, ref, shallowRef} from "vue";
+import {h, onBeforeUnmount, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
@@ -42,14 +42,6 @@ const props = defineProps(['switchTheme', 'isDark']);
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region theme
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const isDark = ref(false);
-
-const theme = shallowRef(null);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -194,14 +186,14 @@ onBeforeUnmount(() => {
 			<n-layout class="absolute top-3em bottom-2.4em left-0 right-0">
 				<n-scrollbar>
 					<n-menu
-						:value="currentValueRef"
-						@update-value="updateCurrentValue"
 						:collapsed="collapsed"
 						:collapsed-icon-size="22"
 						:collapsed-width="64"
 						:expand-icon="expandIcon"
 						:options="menuOptions"
+						:value="currentValueRef"
 						class="font-size-1.2rem font-800"
+						@update-value="updateCurrentValue"
 					/>
 				</n-scrollbar>
 			</n-layout>
@@ -275,9 +267,9 @@ onBeforeUnmount(() => {
 				type="warning"
 			>
 				<n-space vertical>
-         <span>
-            您是否要退出登录？
-         </span>
+					<span>
+						您是否要退出登录？
+					</span>
 					<n-flex justify="right">
 						<n-button type="warning" @click="logout">
 							确定

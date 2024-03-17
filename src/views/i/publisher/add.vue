@@ -92,7 +92,7 @@ const add = debounce((e) => {
 	<n-layout-header>
 		<n-flex class="items-center m-l-1em m-r-1em">
 			<h1 class="m-r-a">添加出版社</h1>
-			<n-button type="success" @click="add" :loading="loadingAdd">
+			<n-button :loading="loadingAdd" type="success" @click="add">
 				确定
 			</n-button>
 		</n-flex>
@@ -129,9 +129,9 @@ const add = debounce((e) => {
 					<td>备注</td>
 					<td>
 						<n-form-item path="remark">
-							<n-input v-model:value="entity.remark" :allow-input="inputValidator.noSideSpace" clearable
-							         maxlength="255" placeholder="输入备注"
-							         type="textarea" autosize/>
+							<n-input v-model:value="entity.remark" :allow-input="inputValidator.noSideSpace" autosize
+							         clearable maxlength="255"
+							         placeholder="输入备注" type="textarea"/>
 						</n-form-item>
 					</td>
 				</tr>

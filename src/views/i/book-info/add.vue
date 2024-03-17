@@ -7,21 +7,21 @@ import {
 	NDatePicker,
 	NDynamicTags,
 	NFlex,
+	NIcon,
 	NInput,
 	NInputGroup,
 	NInputGroupLabel,
 	NInputNumber,
 	NLayout,
 	NLayoutHeader,
+	NP,
 	NSelect,
 	NSpace,
 	NTable,
 	NTag,
-	NIcon,
+	NText,
 	NUpload,
 	NUploadDragger,
-	NText,
-	NP,
 	useMessage
 } from "naive-ui";
 import {h, onBeforeMount, reactive, ref} from "vue";
@@ -173,14 +173,14 @@ onBeforeMount(() => {
 				<td>
 					<!--               <img :src="info.cover" alt="书籍图片链接">-->
 					<n-upload
-						multiple
-						directory-dnd
-						action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
 						:max="5"
+						action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+						directory-dnd
+						multiple
 					>
 						<n-upload-dragger>
 							<div style="margin-bottom: 12px">
-								<n-icon size="64" :depth="3">
+								<n-icon :depth="3" size="64">
 									<Archive/>
 								</n-icon>
 							</div>
