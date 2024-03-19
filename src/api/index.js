@@ -75,6 +75,16 @@ Users.verifyRegister = (token) => {
 	return MyRequest.post("/verify", _payload);
 };
 
+Users.resetPassword = (entity) => {
+	const _payload = {
+		entity: {
+			email: encodeByRSA(entity.email),
+			authenticationString: encodeByRSA(entity.authenticationString),
+		}
+	};
+	return MyRequest.post("/users/reset/password", _payload);
+}
+
 Users.borrowing = null;
 
 Users.return = null;
@@ -93,6 +103,7 @@ const Logs = new BaseService(ServiceName.LOG);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+
 const Service = {
 	Publishers,
 	Users,
@@ -102,6 +113,18 @@ const Service = {
 	Logs,
 }
 
+
+//#region mail
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const Mail = {
+	sendCode(entity) {
+		return MyRequest.post("/send/code", {entity});
+	}
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 export {
-	Service
+	Service,
+	Mail
 }

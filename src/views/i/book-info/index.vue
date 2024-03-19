@@ -32,6 +32,11 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
+const props = defineProps(['updateMenuItem']);
+
+props.updateMenuItem("i-book-info");
+
+
 //#region entity
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const entity = reactive({
@@ -297,7 +302,7 @@ onMounted(() => { // 加载数据
 					<template #icon>
 						<addCircle/>
 					</template>
-					添加
+					新增
 				</n-button>
 			</router-link>
 			<n-popover placement="top" trigger="click">

@@ -1,12 +1,13 @@
 <script setup>
 
 import {Service} from "@/api/index.js";
+import {BREADCRUMB_PUBLISHER_ADD} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
 import {PUBLISHER} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
-import {inputValidator} from "@/utils/validator.js";
+import {formValidator, inputValidator} from "@/utils/validator.js";
 import {
 	NButton,
 	NFlex,
@@ -21,6 +22,12 @@ import {
 	useMessage
 } from "naive-ui";
 import {reactive, ref} from "vue";
+
+const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
+{
+	props.updateMenuItem("i-publisher");
+	props.updateBreadcrumbArray(BREADCRUMB_PUBLISHER_ADD);
+}
 
 const addFormRef = ref(null);
 
@@ -59,11 +66,7 @@ const addRule = {
 
 const add = debounce((e) => {
 	e.preventDefault();
-	addFormRef.value?.validate((errors) => {
-		if (errors) {
-			message.error("添加失败", messageOptions);
-			return;
-		}
+	formValidator(addFormRef, message, () => {
 		loadingAdd.value = true;
 		Service.Publishers.add(entity)
 			.then(res => {
@@ -72,8 +75,7 @@ const add = debounce((e) => {
 					message.error(data?.msg, messageOptions);
 					return;
 				}
-
-				message.success("添加成功", messageOptions);
+				message.success("新增成功", messageOptions);
 				showAdd.value = false;
 
 				goto(PUBLISHER);
@@ -91,7 +93,7 @@ const add = debounce((e) => {
 <template>
 	<n-layout-header>
 		<n-flex class="items-center m-l-1em m-r-1em">
-			<h1 class="m-r-a">添加出版社</h1>
+			<h1 class="m-r-a">新增出版社</h1>
 			<n-button :loading="loadingAdd" type="success" @click="add">
 				确定
 			</n-button>

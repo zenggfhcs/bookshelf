@@ -6,7 +6,8 @@ import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
 import {LOGIN} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
-import {NButton, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
+import {formValidator} from "@/utils/validator.js";
+import {NButton, NDivider, NForm, NFormItem, NInput, NLayout, useMessage} from "naive-ui";
 import {ref} from "vue";
 
 
@@ -87,61 +88,44 @@ const rules = {
  * @param e event
  */
 const register = debounce((e) => {
-		e.preventDefault();                       // 父默认方法
-		formRef.value?.validate((errors) => {
-			if (errors) {
-				message.error("表单没有通过验证，请检查表单项", messageOptions);
-				return;
-			}
-			loading.value = true;
-			Service.Users.register(model.value)
-				.then(res => {
-					const data = res.data;
-					if (data?.code !== ResponseCode.SUCCESS) {
-						message.error(data?.msg, messageOptions);
-						return
-					}
-					message.success("注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...", messageOptions)
-					setTimeout(() => {
-						goto(LOGIN);
-					}, 3000);
-				})
-				.catch(err => {
-					message.error(err.message, {
-						duration: 10000,
-						closable: true
-					});
-				})
-				.finally(() => {
-					loading.value = false;
+	e.preventDefault();                       // 父默认方法
+	formValidator(formRef, message, () => {
+		loading.value = true;
+		Service.Users.register(model.value)
+			.then(res => {
+				const data = res.data;
+				if (data?.code !== ResponseCode.SUCCESS) {
+					message.error(data?.msg, messageOptions);
+					return
+				}
+				message.success("注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...", messageOptions)
+				setTimeout(() => {
+					goto(LOGIN);
+				}, 3000);
+			})
+			.catch(err => {
+				message.error(err.message, {
+					duration: 10000,
+					closable: true
 				});
-		});
+			})
+			.finally(() => {
+				loading.value = false;
+			});
 	})
-;
+});
 
 </script>
 <template>
-	<div class="w-100%">
+	<n-layout>
 		<div class="text-center font-800 font-size-1.5em" style="font-family: Inter serif;">创建您的账户</div>
-		<div class="text-center m-b-4">
+		<div class="text-center">
 			<span>已经有账户了?</span>
 			<router-link :to="LOGIN" class="p-0 m-0 font-size-1rem font-800 color-emerald">
 				在此登入
 			</router-link>
 		</div>
-		<n-grid :cols="11" class="items-center text-center h-2em m-b-4" x-gap="4">
-			<n-gi span="5">
-				<div class="w-100% h-.2 bg-#8c98a4"></div>
-			</n-gi>
-			<n-gi class="font-size-1.3em" span="1">
-				OR
-			</n-gi>
-			<n-gi span="5">
-				<div class="w-100% h-.2 bg-#8c98a4"></div>
-			</n-gi>
-		</n-grid>
-	</div>
-	<n-spin :show="loading" class="w-100%">
+		<n-divider>OR</n-divider>
 		<n-form
 			id="login-form"
 			ref="formRef"
@@ -172,7 +156,6 @@ const register = debounce((e) => {
 				<n-input
 					ref="reenteredRef"
 					v-model:value="model.reenteredAuthenticationString"
-					:disabled="!model.authenticationString"
 					:maxlength="17"
 					:minlength="7"
 					placeholder="请再次正确输入您的密码"
@@ -182,7 +165,7 @@ const register = debounce((e) => {
 			</n-form-item>
 			<n-form-item>
 				<n-button
-					:disabled="!model.email"
+					:loading="loading"
 					class="w-100%"
 					size="large"
 					type="success"
@@ -191,9 +174,13 @@ const register = debounce((e) => {
 				</n-button>
 			</n-form-item>
 		</n-form>
-	</n-spin>
+	</n-layout>
 </template>
 
 <style scoped>
 @import "/src/styles/form-item-input.css";
+
+.n-layout .n-divider:not(.n-divider--vertical) {
+	margin: .3em 0;
+}
 </style>

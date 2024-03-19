@@ -26,6 +26,10 @@ import {
 } from "naive-ui";
 import {h, onBeforeMount, reactive, ref} from "vue";
 
+const props = defineProps(['updateMenuItem']);
+
+props.updateMenuItem("i-book-info");
+
 const message = useMessage();
 
 const keywords = ref([]);
@@ -127,12 +131,13 @@ onBeforeMount(() => {
 			<h1 class="m-r-a">出版社信息</h1>
 			<n-button type="success"
 			          @click="add">
-				添加
+				新增
 			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .3em 1em">
+		<!--	todo add form -->
 		<n-table :single-line="false" class="w-100%">
 			<!--			todo 优化布局，-->
 			<tbody class="trc">

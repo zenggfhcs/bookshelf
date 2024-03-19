@@ -17,13 +17,12 @@ import PublisherManager from "@/views/i/publisher/index.vue";
 import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
 import BaseJ from "@/views/j/base-j.vue";
-import J from "@/views/j/home.vue";
+import J from "@/views/j/index.vue";
 import Public from "@/views/p/base-p.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
 import Verify from "@/views/p/verify.vue";
-
 
 //#region g route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -169,10 +168,10 @@ export {
 	VERIFY,
 
 	// i
-	BASE_I,
+	BASE_I, I_HOME,
 	DEBIT, DEBIT_CHECK,
 	USER, USER_CHECK,
-	BOOK,
+	BOOK, BOOK_CHECK, BOOK_ADD,
 	BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
 	PUBLISHER,
 	LOG, LOG_CHECK,

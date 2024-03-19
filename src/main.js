@@ -4,6 +4,8 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import 'virtual:uno.css'
 
+// todo 使用 vuex，保留表格状态
+
 const app = createApp(App)
 
 app.use(router)

@@ -14,4 +14,8 @@
 
 <style scoped>
 @import url(@/styles/fill.css);
+
+.n-menu-item-content--selected .n-icon svg {
+	fill: var(--n-item-text-color-active);
+}
 </style>

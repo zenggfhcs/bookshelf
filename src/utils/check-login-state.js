@@ -5,9 +5,10 @@ const checkLoginState = () => {
 	const token = localStorage.getItem(Header.TOKEN)
 	if (token === null || token === undefined || token === "") {
 		router.push("/login").then(() => {
-		}); // todo
+		});
 	}
-	console.log(token);
+	// console.log(token);
+	// todo 最后的最后，检查一遍
 }
 
 export {

@@ -7,7 +7,9 @@ import {sleep} from "@/utils/sleep.js";
 import {NFlex, NLayout, NLayoutHeader, NTable, NTag, useMessage} from "naive-ui";
 import {onMounted, reactive} from "vue";
 
-const props = defineProps(['id']);
+const props = defineProps(['id', 'updateMenuItem']);
+
+props.updateMenuItem('i-debit');
 
 const message = useMessage();
 

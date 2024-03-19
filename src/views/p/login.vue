@@ -1,12 +1,12 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {messageOptions} from "@/constant/options.js";
 import {REG_EMAIL} from "@/constant/regular-expression.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import router from "@/router/Router.js";
 import {REGISTER, RESET_PASSWORD} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
-import {NButton, NForm, NFormItem, NGi, NGrid, NInput, NSpin, useMessage} from "naive-ui";
+import {formValidator} from "@/utils/validator.js";
+import {NButton, NDivider, NForm, NFormItem, NInput, NLayout, useMessage} from "naive-ui";
 import {onMounted, ref} from "vue";
 
 onMounted(() => {
@@ -56,12 +56,7 @@ const rules = {
  */
 const login = debounce((e) => {
 	e.preventDefault();                       // 父默认方法
-
-	formRef?.value?.validate((errors) => {
-		if (errors) {
-			message.error("表单没有通过验证，请检查表单项", messageOptions);
-			return;
-		}
+	formValidator(formRef, message, () => {
 		loading.value = true;
 		Service.Users.login(model.value)
 			.then(res => {
@@ -80,33 +75,23 @@ const login = debounce((e) => {
 			.finally(() => {
 				loading.value = false;
 			});
-	});
+	})
 });
 
 
 </script>
 
 <template>
-	<div class="w-100%">
-		<div class="text-center font-800 font-size-1.5em" style="font-family: Inter serif;">登录您的账户</div>
-		<div class="text-center m-b-4">
+	<n-layout>
+		<div class="text-center">
+			<span class="font-800 font-size-1.5em">登录您的账户</span>
+		</div>
+		<div class="text-center">
 			<span>还没有账户吗?</span>
 			<router-link :to="REGISTER" class="p-0 m-0 font-size-1rem font-800 color-emerald">在此注册
 			</router-link>
 		</div>
-		<n-grid :cols="11" class="items-center text-center h-2em m-b-4" x-gap="4">
-			<n-gi span="5">
-				<div class="w-100% h-.2 bg-#8c98a4"></div>
-			</n-gi>
-			<n-gi class="font-size-1.3em" span="1">
-				OR
-			</n-gi>
-			<n-gi span="5">
-				<div class="w-100% h-.2 bg-#8c98a4"></div>
-			</n-gi>
-		</n-grid>
-	</div>
-	<n-spin :show="loading" class="w-100%">
+		<n-divider>OR</n-divider>
 		<n-form
 			id="login-form"
 			ref="formRef"
@@ -118,7 +103,7 @@ const login = debounce((e) => {
 					v-model:value="model.email"
 					:maxlength="32"
 					:minlength="5"
-					placeholder="请正确输入您的邮箱"
+					placeholder="输入邮箱"
 					@keydown.enter.prevent
 				/>
 			</n-form-item>
@@ -129,7 +114,7 @@ const login = debounce((e) => {
 						:maxlength="17"
 						:minlength="7"
 						autocapitalize="on"
-						placeholder="请正确输入您的密码"
+						placeholder="输入密码"
 						show-password-on="mousedown"
 						type="password"
 						@keydown.enter.prevent
@@ -141,7 +126,7 @@ const login = debounce((e) => {
 			</n-form-item>
 			<n-form-item>
 				<n-button
-					:disabled="!model.email"
+					:loading="loading"
 					class="w-100%"
 					size="large"
 					type="success"
@@ -150,9 +135,20 @@ const login = debounce((e) => {
 				</n-button>
 			</n-form-item>
 		</n-form>
-	</n-spin>
+	</n-layout>
 </template>
 
 <style scoped>
 @import "/src/styles/form-item-input.css";
+
+.n-layout .n-divider:not(.n-divider--vertical) {
+	margin: .3em 0;
+}
+
+/*
+
+input:-internal-autofill-selected
+
+*/
+
 </style>

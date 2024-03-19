@@ -33,6 +33,10 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
+const props = defineProps(['updateMenuItem']);
+
+props.updateMenuItem("i-debit");
+
 //#region entity
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const entity = reactive({

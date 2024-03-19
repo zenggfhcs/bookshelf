@@ -7,8 +7,8 @@
 //#region 时间戳转 yyyy-MM-ddTHH:mm:ss
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
-import {elapsedTimeLevel, LOG_TYPE_MAP} from "@/constant/pre-defined/log.js";
-import {ageLevel, GENDER_MAP, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP} from "@/constant/pre-defined/user.js";
+import {elapsedTimeLevel, LOG_TYPE_MAP} from "@/constant/log.js";
+import {ageLevel, GENDER_MAP, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP} from "@/constant/user.js";
 
 const timestampToDateTimeString = (timestamp) => {
 	if (!timestamp) {

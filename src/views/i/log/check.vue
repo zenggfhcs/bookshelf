@@ -1,6 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/pre-defined/map.js";
+import {SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {getTagType} from "@/utils/convert.js";
 import {copyMatchingProperties} from "@/utils/index.js";
@@ -9,7 +9,9 @@ import {NFlex, NLayout, NLayoutHeader, NTable, NTag, useMessage} from "naive-ui"
 import {onMounted, reactive} from "vue";
 import JsonViewer from "vue-json-viewer";
 
-const props = defineProps(['id']);
+const props = defineProps(['id', 'updateMenuItem']);
+
+props.updateMenuItem('i-log');
 
 const message = useMessage();
 

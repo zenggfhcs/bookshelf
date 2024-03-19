@@ -1,12 +1,7 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/map.js";
 import {messageOptions} from "@/constant/options.js";
-import {
-	LOG_PRE_DEFINED_SERVICE_NAME,
-	LOG_PRE_DEFINED_TYPE,
-	SERVICE_NAME_MAP,
-	TYPE_MAP
-} from "@/constant/pre-defined/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
@@ -41,6 +36,10 @@ import {
 	useMessage
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
+
+const props = defineProps(['updateMenuItem']);
+
+props.updateMenuItem("i-log");
 
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */

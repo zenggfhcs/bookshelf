@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {BREADCRUMB_PUBLISHER_INDEX} from "@/constant/breadcrumb.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
@@ -29,7 +30,9 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui"
-import {h, onMounted, reactive, ref} from "vue"
+import {h, onActivated, onMounted, reactive, ref} from "vue"
+
+const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
 //#region entity
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -55,6 +58,7 @@ const messageOptions = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 let tableData = [];
+
 const cols = [
 	{
 		title: "id",
@@ -274,6 +278,10 @@ const find = () => {
 			tableData.map(item => {
 				item.name = /^(.*?)出?版?社?$/.exec(item.name)?.[1];
 			})
+
+			tableData.forEach((item, index) => {
+				item.key = index
+			});
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -284,7 +292,6 @@ const find = () => {
 };
 
 const clickFind = debounce(e => {
-	e.preventDefault();
 	find();
 })
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -336,6 +343,10 @@ onMounted(() => { // 加载数据
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+onActivated(() => {
+	props.updateMenuItem("i-publisher");
+	props.updateBreadcrumbArray(BREADCRUMB_PUBLISHER_INDEX);
+})
 </script>
 
 <template>
@@ -346,7 +357,7 @@ onMounted(() => { // 加载数据
 					<template #icon>
 						<addCircle/>
 					</template>
-					添加
+					新增
 				</n-button>
 			</router-link>
 			<n-popover placement="top" trigger="click">

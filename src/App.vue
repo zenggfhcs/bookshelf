@@ -1,14 +1,18 @@
 <script setup>
-import {darkTheme, dateZhCN, NConfigProvider, NDialogProvider, NMessageProvider, NModalProvider, zhCN} from "naive-ui";
-import {onBeforeMount, ref} from "vue";
-
-onBeforeMount(() => {
-	document.documentElement.style.fontSize = '16px';
-})
+import {
+	darkTheme,
+	dateZhCN,
+	NConfigProvider,
+	NDialogProvider,
+	NMessageProvider,
+	NModalProvider,
+	NWatermark,
+	zhCN
+} from "naive-ui";
+import {onBeforeMount, onBeforeUnmount, ref} from "vue";
 
 // 是暗色主题
 const isDark = ref(false);
-
 {
 	let _ = localStorage.getItem("isDark"); // 刷新时读取
 	if (_) {
@@ -25,11 +29,37 @@ const isDark = ref(false);
 const switchTheme = (v = !isDark.value) => {
 	if (isDark.value === v) return;
 	isDark.value = v;
+	// todo 可能有性能影响，替代方案是在 onBeforeUnmount 中执行，但是刷新页面时没有执行，达不到预期
 	localStorage.setItem("isDark", isDark.value?.toString());
 }
+
+//#region 生命周期
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+onBeforeMount(() => {
+	document.documentElement.style.fontSize = '16px';
+})
+
+// todo error 刷新不执行
+onBeforeUnmount(() => {
+	localStorage.setItem("isDark", isDark.value?.toString());
+})
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 </script>
 
 <template>
+	<n-watermark
+		:font-size="16"
+		:height="384"
+		:line-height="16"
+		:rotate="-15"
+		:width="384"
+		:x-offset="12"
+		:y-offset="70"
+		content="大家艰苦一下，牛奶和面包都会有的"
+		cross
+		fullscreen
+	/>
 	<n-config-provider :date-locale="dateZhCN" :locale="zhCN" :theme="isDark ? darkTheme : null">
 		<n-modal-provider>
 			<n-dialog-provider>
@@ -47,4 +77,8 @@ const switchTheme = (v = !isDark.value) => {
 	</n-config-provider>
 </template>
 
-<style scoped></style>
+<style>
+a {
+	color: var(--n-text-color);
+}
+</style>

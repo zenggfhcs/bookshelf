@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {BREADCRUMB_PUBLISHER_CHECK} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
@@ -20,11 +21,14 @@ import {
 	NSpace,
 	NTable,
 	NTag,
+	NTd,
+	NTr,
 	useMessage
 } from "naive-ui";
-import {onBeforeMount, reactive, ref} from "vue";
+import {onActivated, onBeforeMount, reactive, ref} from "vue";
 
-const props = defineProps(['id']);
+const props = defineProps(['id', 'updateMenuItem', 'updateBreadcrumbArray']);
+
 
 const message = useMessage();
 
@@ -212,6 +216,11 @@ const update = debounce((e) => {
 onBeforeMount(() => {
 	find(id);
 })
+
+onActivated(() => {
+	props.updateMenuItem("i-publisher");
+	props.updateBreadcrumbArray(BREADCRUMB_PUBLISHER_CHECK);
+})
 </script>
 
 <template>
@@ -230,154 +239,155 @@ onBeforeMount(() => {
 	</n-layout-header>
 	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .3em 1em">
+		<!--	todo add form -->
 		<n-table :single-line="false" class="w-100%">
 			<tbody class="trc">
-			<tr>
-				<td class="w-43%">id</td>
-				<td>
+			<n-tr>
+				<n-td class="w-43%">id</n-td>
+				<n-td>
 					<n-tag :bordered="false" type="info">
 						{{ info.id }}
 					</n-tag>
-				</td>
-			</tr>
-			<tr>
-				<td>名称</td>
-				<td>
+				</n-td>
+			</n-tr>
+			<n-tr>
+				<n-td>名称</n-td>
+				<n-td>
 					<n-input-group>
 						<n-input v-model:value="info.name" :allow-input="inputValidator.noSideSpace" clearable
 						         maxlength="32" placeholder="输入出版社名称"/>
 						<n-input-group-label>出版社</n-input-group-label>
 					</n-input-group>
-				</td>
-			</tr>
-			<tr>
-				<td>出版地</td>
-				<td>
+				</n-td>
+			</n-tr>
+			<n-tr>
+				<n-td>出版地</n-td>
+				<n-td>
 					<n-input v-model:value="info.place" :allow-input="inputValidator.noSideSpace" clearable
 					         maxlength="32" placeholder="输入出版社名称"/>
-				</td>
-			</tr>
-			<tr>
-				<td>备注</td>
-				<td>
+				</n-td>
+			</n-tr>
+			<n-tr>
+				<n-td>备注</n-td>
+				<n-td>
 					<n-input v-model:value="info.remark" :allow-input="inputValidator.noSideSpace" autosize clearable
 					         maxlength="255" placeholder="输入备注" type="textarea"/>
-				</td>
-			</tr>
+				</n-td>
+			</n-tr>
 
-			<tr>
-				<td>创建者</td>
-				<td style="--n-td-padding: 0;">
+			<n-tr>
+				<n-td>创建者</n-td>
+				<n-td style="--n-n-td-padding: 0;">
 					<n-table :bordered="false" :single-line="false">
 						<tbody>
-						<tr>
-							<td class="w-30">id</td>
-							<td>
+						<n-tr>
+							<n-td class="w-30">id</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="info">
 									{{ creator.id }}
 								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>用户昵称</td>
-							<td>{{ creator.displayName }}</td>
-						</tr>
-						<tr>
-							<td>用户名</td>
-							<td>
+							</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>用户昵称</n-td>
+							<n-td>{{ creator.displayName }}</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>用户名</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="primary">
 									{{ creator.surname }}
 								</n-tag>
 								<n-tag :bordered="false" class="m-l-1" type="primary">
 									{{ creator.name }}
 								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>邮箱</td>
-							<td>
+							</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>邮箱</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="error">
 									{{ creator.email }}
 								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>电话</td>
-							<td>
+							</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>电话</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="error">
 									{{ creator.phoneNumber }}
 								</n-tag>
-							</td>
-						</tr>
+							</n-td>
+						</n-tr>
 						</tbody>
 					</n-table>
-				</td>
-			</tr>
-			<tr>
-				<td>创建时间</td>
-				<td>
+				</n-td>
+			</n-tr>
+			<n-tr>
+				<n-td>创建时间</n-td>
+				<n-td>
 					<n-tag :bordered="false" type="primary">
 						{{ formatTime(info.creationTime) }}
 					</n-tag>
-				</td>
-			</tr>
-			<tr>
-				<td>更新者</td>
-				<td style="--n-td-padding: 0;">
+				</n-td>
+			</n-tr>
+			<n-tr>
+				<n-td>更新者</n-td>
+				<n-td style="--n-n-td-padding: 0;">
 					<n-table :bordered="false" :single-line="false">
 						<tbody class="trc">
-						<tr>
-							<td class="w-30">id</td>
-							<td>
+						<n-tr>
+							<n-td class="w-30">id</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="info">
 									{{ updater.id }}
 								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>用户昵称</td>
-							<td>{{ updater.displayName }}</td>
-						</tr>
-						<tr>
-							<td>用户名</td>
-							<td>
+							</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>用户昵称</n-td>
+							<n-td>{{ updater.displayName }}</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>用户名</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="primary">
 									{{ updater.surname }}
 								</n-tag>
 								<n-tag :bordered="false" class="m-l-1" type="primary">
 									{{ updater.name }}
 								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>邮箱</td>
-							<td>
+							</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>邮箱</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="error">
 									{{ updater.email }}
 								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>电话</td>
-							<td>
+							</n-td>
+						</n-tr>
+						<n-tr>
+							<n-td>电话</n-td>
+							<n-td>
 								<n-tag :bordered="false" type="error">
 									{{ updater.phoneNumber }}
 								</n-tag>
-							</td>
-						</tr>
+							</n-td>
+						</n-tr>
 						</tbody>
 					</n-table>
-				</td>
-			</tr>
+				</n-td>
+			</n-tr>
 
-			<tr>
-				<td>最后更新时间</td>
-				<td>
+			<n-tr>
+				<n-td>最后更新时间</n-td>
+				<n-td>
 					<n-tag :bordered="false" type="warning">
 						{{ formatTime(info.lastUpdatedTime) }}
 					</n-tag>
-				</td>
-			</tr>
+				</n-td>
+			</n-tr>
 			</tbody>
 		</n-table>
 		<!--   删除面板   -->
@@ -417,62 +427,62 @@ onBeforeMount(() => {
             </span>
 				<n-table :single-line="false">
 					<tbody>
-					<tr>
-						<td class="w-6em">修改内容</td>
-						<td>原有值</td>
-						<td>新值</td>
-					</tr>
-					<tr v-if="info.name !== source.name">
-						<td class="text-center">
+					<n-tr>
+						<n-td class="w-6em">修改内容</n-td>
+						<n-td>原有值</n-td>
+						<n-td>新值</n-td>
+					</n-tr>
+					<n-tr v-if="info.name !== source.name">
+						<n-td class="text-center">
 							<n-tag :bordered="false" type="info">
 								名称
 							</n-tag>
-						</td>
-						<td>
+						</n-td>
+						<n-td>
 							<n-tag :bordered="false" type="success">
 								{{ source.name }}
 							</n-tag>
-						</td>
-						<td>
+						</n-td>
+						<n-td>
 							<n-tag :bordered="false" type="warning">
 								{{ info.name }}
 							</n-tag>
-						</td>
-					</tr>
-					<tr v-if="info.place !== source.place">
-						<td class="text-center">
+						</n-td>
+					</n-tr>
+					<n-tr v-if="info.place !== source.place">
+						<n-td class="text-center">
 							<n-tag :bordered="false" type="info">
 								出版地
 							</n-tag>
-						</td>
-						<td>
+						</n-td>
+						<n-td>
 							<n-tag :bordered="false" type="success">
 								{{ source.place }}
 							</n-tag>
-						</td>
-						<td>
+						</n-td>
+						<n-td>
 							<n-tag :bordered="false" type="warning">
 								{{ info.place }}
 							</n-tag>
-						</td>
-					</tr>
-					<tr v-if="info.remark !== source.remark">
-						<td class="text-center">
+						</n-td>
+					</n-tr>
+					<n-tr v-if="info.remark !== source.remark">
+						<n-td class="text-center">
 							<n-tag :bordered="false" type="info">
 								备注
 							</n-tag>
-						</td>
-						<td>
+						</n-td>
+						<n-td>
 							<n-tag :bordered="false" type="success">
 								{{ source.remark }}
 							</n-tag>
-						</td>
-						<td>
+						</n-td>
+						<n-td>
 							<n-tag :bordered="false" type="warning">
 								{{ info.remark }}
 							</n-tag>
-						</td>
-					</tr>
+						</n-td>
+					</n-tr>
 					</tbody>
 				</n-table>
 				<n-flex justify="right">

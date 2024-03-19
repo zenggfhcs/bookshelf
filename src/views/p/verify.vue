@@ -1,11 +1,12 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {messageOptions} from "@/constant/options.js";
+import {REG_BASE64} from "@/constant/regular-expression.js";
 import {ResponseCode} from "@/constant/response-code.js";
 
 import {sleep} from "@/utils/sleep.js";
-import {useMessage} from "naive-ui";
+import {NInput, useMessage} from "naive-ui";
 import {onMounted} from "vue";
-
 
 const query = defineProps({
 	token: String
@@ -13,9 +14,7 @@ const query = defineProps({
 
 const message = useMessage();
 
-const msgReactive = message.create("", {
-	duration: 10000
-})
+const msgReactive = message.create("", messageOptions);
 
 const updateMessage = (type, content) => {
 	msgReactive.type = type;
@@ -50,13 +49,19 @@ const start = async () => {
 }
 
 onMounted(() => {
+	const _qt = query.token
+	if (!(_qt && REG_BASE64.test(_qt))) {
+		updateMessage("error", "无效的token");
+		return;
+	}
 	sleep();
-	start();
+	if (_qt)
+		start();
 })
 </script>
 
 <template>
-
+	<n-input autosize placeholder="可以输入点什么，但没有别的意义" type="textarea"/>
 </template>
 
 <style scoped>

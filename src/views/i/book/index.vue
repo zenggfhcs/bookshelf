@@ -3,7 +3,7 @@ import {Service} from "@/api/index.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
-import {PUBLISHER_ADD, PUBLISHER_CHECK} from "@/router/RouterValue.js";
+import {BOOK_ADD, BOOK_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
@@ -29,7 +29,11 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui"
-import {h, onMounted, reactive, ref} from "vue"
+import {h, onMounted, reactive, ref} from "vue";
+
+const props = defineProps(['updateMenuItem']);
+
+props.updateMenuItem("i-book");
 
 // todo alter
 
@@ -216,7 +220,7 @@ const rowProps = (row) => {
 		onDblclick: (e) => {
 			e.preventDefault();
 			router.push({
-				name: PUBLISHER_CHECK.name,
+				name: BOOK_CHECK.name,
 				params: {
 					id: row?.id
 				}
@@ -343,12 +347,12 @@ onMounted(() => { // 加载数据
 <template>
 	<n-layout-header class="h-3em" position="absolute">
 		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em;">
-			<router-link :to="PUBLISHER_ADD.path">
+			<router-link :to="BOOK_ADD.path">
 				<n-button>
 					<template #icon>
 						<addCircle/>
 					</template>
-					添加
+					新增
 				</n-button>
 			</router-link>
 			<n-popover placement="top" trigger="click">

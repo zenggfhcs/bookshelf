@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -24,7 +24,6 @@
     "postcss": "^8.4.35",
     "vue": "^3.4.21",
     "vue-json-viewer": "^3.0.4",
-    "vue-router": "^4.3.0",
-    "vuex": "^4.1.0"
+    "vue-router": "^4.3.0"
   }
 }

@@ -1,12 +1,13 @@
 <script setup>
 import {Header} from "@/api/Header.js";
 import BookBrain from "@/icons/book-brain.vue";
+import WorkBenchIcon from "@/icons/home.vue";
 import LogIcon from "@/icons/log.vue";
 import moon from "@/icons/moon.vue";
 import PublisherIcon from "@/icons/publisher.vue";
 import sun from "@/icons/sun.vue";
 import router from "@/router/Router.js";
-import {BASE_I, BOOK, BOOK_INFO, DEBIT, LOG, LOGIN, PUBLISHER, USER} from "@/router/RouterValue.js";
+import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, LOG, LOGIN, PUBLISHER, USER} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {gProps} from "@/utils/generate.js";
 import {expandIcon, renderIcon} from "@/utils/render.js";
@@ -18,6 +19,8 @@ import {
 	UsersCog as UserManagerIcon
 } from "@vicons/fa";
 import {
+	NBreadcrumb,
+	NBreadcrumbItem,
 	NButton,
 	NFlex,
 	NForm,
@@ -33,15 +36,24 @@ import {
 	NSpace,
 	useMessage,
 } from 'naive-ui';
-import {h, onBeforeUnmount, onMounted, ref} from "vue";
+import {h, KeepAlive, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
 
-
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region 面包屑
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const breadcrumbArray = ref([]);
+
+const updateBreadcrumbArray = (array) => {
+	breadcrumbArray.value = array;
+}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -62,21 +74,10 @@ const logout = () => {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const collapsed = ref(false);
 
-const currentValueRef = ref("");
+const menuItemValue = ref("");
 
-const currentValueKey = "i-menu-value";
-
-{
-	const _ = localStorage.getItem(currentValueKey);
-	if (_) {
-		currentValueRef.value = _;
-	}
-}
-
-const updateCurrentValue = value => {
-	console.log(value);
-	currentValueRef.value = value;
-	// localStorage.setItem(currentValueKey, currentValueRef.value);
+const updateMenuItem = (itemValue) => {
+	menuItemValue.value = itemValue;
 }
 
 const menuOptions = [
@@ -84,10 +85,20 @@ const menuOptions = [
 		label: () =>
 			h(
 				RouterLink,
+				gProps(I_HOME.name),
+				{default: () => '工作台'}
+			),
+		key: 'i-index',
+		icon: renderIcon(WorkBenchIcon)
+	},
+	{
+		label: () =>
+			h(
+				RouterLink,
 				gProps(DEBIT.name),
 				{default: () => '借阅记录'}
 			),
-		key: 'm-debit',
+		key: 'i-debit',
 		icon: renderIcon(DebitManagerIcon)
 	}, {
 		label: () =>
@@ -96,7 +107,7 @@ const menuOptions = [
 				gProps(BOOK.name),
 				{default: () => '书籍管理'}
 			),
-		key: 'm-book',
+		key: 'i-book',
 		icon: renderIcon(BookManagerIcon)
 	}, {
 		label: () =>
@@ -105,7 +116,7 @@ const menuOptions = [
 				gProps(BOOK_INFO.name),
 				{default: () => '书籍信息管理'}
 			),
-		key: 'm-book-info',
+		key: 'i-book-info',
 		icon: renderIcon(BookInfoManagerIcon)
 	}, {
 		label: () =>
@@ -115,7 +126,7 @@ const menuOptions = [
 				{default: () => '出版社管理'}
 			)
 		,
-		key: 'm-publisher',
+		key: 'i-publisher',
 		icon: renderIcon(PublisherIcon)
 	}, {
 		label: () =>
@@ -125,7 +136,7 @@ const menuOptions = [
 				{default: () => '用户管理'}
 			)
 		,
-		key: 'm-user',
+		key: 'i-user',
 		icon: renderIcon(UserManagerIcon)
 	}, {
 		label: () =>
@@ -135,7 +146,7 @@ const menuOptions = [
 				{default: () => '系统日志'}
 			)
 		,
-		key: 'log',
+		key: 'i-log',
 		icon: renderIcon(LogIcon)
 	}
 ]
@@ -147,17 +158,13 @@ const menuOptions = [
 onMounted(() => {
 	checkLoginState();
 })
-
-// todo 刷新时，该函数不生效
-onBeforeUnmount(() => {
-	localStorage.setItem(currentValueKey, currentValueRef.value);
-})
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 </script>
 
 <template>
-	<n-layout has-sider position="absolute">
+	<n-layout has-sider position="absolute"
+	          style="--n-color: v-bind(); --n-text-color: v-bind(); --n-item-text-color-active: v-bind(); --n-text-color-hover: v-bind();">
 		<n-layout-sider
 			:collapsed="collapsed"
 			:collapsed-width="64"
@@ -186,14 +193,13 @@ onBeforeUnmount(() => {
 			<n-layout class="absolute top-3em bottom-2.4em left-0 right-0">
 				<n-scrollbar>
 					<n-menu
+						v-model:value="menuItemValue"
 						:collapsed="collapsed"
 						:collapsed-icon-size="22"
 						:collapsed-width="64"
 						:expand-icon="expandIcon"
 						:options="menuOptions"
-						:value="currentValueRef"
 						class="font-size-1.2rem font-800"
-						@update-value="updateCurrentValue"
 					/>
 				</n-scrollbar>
 			</n-layout>
@@ -211,8 +217,7 @@ onBeforeUnmount(() => {
 								</template>
 							</n-button>
 						</template>
-						<n-form class="flex flex-col" label-placement="left"
-						        style="--n-color: v-bind(); --n-text-color: v-bind();">
+						<n-form class="flex flex-col" label-placement="left">
 							<n-button :bordered="false" class="no-border-btn"
 							          @click="props.switchTheme(false)">
 								<template #icon>
@@ -220,7 +225,8 @@ onBeforeUnmount(() => {
 								</template>
 								日间模式
 							</n-button>
-							<n-button :bordered="false" class="no-border-btn" @click="props.switchTheme(true)">
+							<n-button :bordered="false" class="no-border-btn"
+							          @click="props.switchTheme(true)">
 								<template #icon>
 									<n-icon :component="moon"/>
 								</template>
@@ -234,10 +240,15 @@ onBeforeUnmount(() => {
 		</n-layout-sider>
 		<n-layout>
 			<n-layout-header bordered class="h-3em">
-				<n-flex :wrap="false" class="mr4" justify="end">
+				<n-flex :wrap="false" class="m-r-4 items-center m-l-4">
+					<n-breadcrumb>
+						<n-breadcrumb-item v-for="item in breadcrumbArray">
+							<router-link :to="item?.path">{{ item?.label }}</router-link>
+						</n-breadcrumb-item>
+					</n-breadcrumb>
 					<n-popover class="p-0" placement="left-start" trigger="click">
 						<template #trigger>
-							<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
+							<n-button class="m-l-a m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
                         <span class="font-800 font-size-1em"
                               style="font-family: inter,sans-serif;">ME</span>
 							</n-button>
@@ -253,7 +264,10 @@ onBeforeUnmount(() => {
 			</n-layout-header>
 			<n-layout class=" absolute top-3em bottom-0 left-0 right-0">
 				<router-view v-slot="{ Component}">
-					<component :is="Component"/>
+					<keep-alive>
+						<component :is="Component" :updateBreadcrumbArray="updateBreadcrumbArray"
+						           :updateMenuItem="updateMenuItem"/>
+					</keep-alive>
 				</router-view>
 			</n-layout>
 

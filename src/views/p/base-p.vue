@@ -11,10 +11,10 @@ const props = defineProps(['switchTheme', 'isDark']);
 
 </script>
 <template>
-	<n-layout class="z--2" position="absolute">
+	<n-layout :native-scrollbar="false" class="z--2" position="absolute">
 		<bg/>
 		<n-flex justify="center">
-			<n-flex class="w-100 p-8 m-t-16 b-rd-4 v-tc-n-color" justify="center">
+			<n-flex :size="0" class="w-100 p-8 m-t-16 b-rd-4 v-tc-n-color" justify="center">
 				<n-grid class="w-100%" cols="7">
 					<n-gi/>
 					<n-gi>
@@ -30,7 +30,9 @@ const props = defineProps(['switchTheme', 'isDark']);
 					</n-gi>
 					<n-gi/>
 				</n-grid>
-				<router-view class="z-1"/>
+				<n-layout class="z-1">
+					<router-view/>
+				</n-layout>
 			</n-flex>
 		</n-flex>
 	</n-layout>

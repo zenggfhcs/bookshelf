@@ -1,6 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/pre-defined/map.js";
+import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
@@ -38,6 +38,10 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
+
+const props = defineProps(['updateMenuItem']);
+
+props.updateMenuItem("i-user");
 
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -371,6 +375,7 @@ const pagination = reactive({
 		pagination.page = page;
 		filter.page.start = (page - 1) * pagination.pageSize;
 		filter.page.end = pagination.pageSize;
+		console.log(1)
 		query();
 	}
 });

@@ -1,3 +1,16 @@
 .fill {
     fill: var(--n-text-color);
 }
+
+.n-menu-item-content--selected .n-icon svg {
+    fill: var(--n-item-text-color-active);
+}
+
+.n-menu-item-content--selected .n-icon svg path {
+    fill: var(--n-item-text-color-active);
+}
+
+.n-button:not(.n-button--disabled):hover .n-button__icon svg,
+.n-button:not(.n-button--disabled):focus .n-button__icon svg {
+    fill: var(--n-text-color-hover);
+}

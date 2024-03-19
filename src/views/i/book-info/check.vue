@@ -29,7 +29,9 @@ import {
 import {h, onBeforeMount, reactive, ref} from "vue";
 
 
-const props = defineProps(['id']);
+const props = defineProps(['id', 'updateMenuItem']);
+
+props.updateMenuItem("i-book-info");
 
 const message = useMessage();
 
@@ -322,6 +324,7 @@ onBeforeMount(() => {
 	</n-layout-header>
 	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .3em 1em">
+		<!--		todo add form-->
 		<n-table :single-line="false" class="w-100%">
 			<!--			todo 优化布局，-->
 			<tbody class="trc">
