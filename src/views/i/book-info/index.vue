@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_BOOK_INFO} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import write from "@/icons/write.vue";
@@ -32,9 +33,12 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(['updateMenuItem', "updateBreadcrumbArray"]);
 
-props.updateMenuItem("i-book-info");
+{
+	props.updateMenuItem("i-book-info");
+	props.updateBreadcrumbArray(B_BOOK_INFO);
+}
 
 
 //#region entity

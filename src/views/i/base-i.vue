@@ -36,7 +36,7 @@ import {
 	NSpace,
 	useMessage,
 } from 'naive-ui';
-import {h, KeepAlive, onMounted, ref} from "vue";
+import {h, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
@@ -262,12 +262,10 @@ onMounted(() => {
 
 				</n-flex>
 			</n-layout-header>
-			<n-layout class=" absolute top-3em bottom-0 left-0 right-0">
+			<n-layout class="absolute top-3em bottom-0 left-0 right-0 overflow-hidden">
 				<router-view v-slot="{ Component}">
-					<keep-alive>
-						<component :is="Component" :updateBreadcrumbArray="updateBreadcrumbArray"
-						           :updateMenuItem="updateMenuItem"/>
-					</keep-alive>
+					<component :is="Component" :updateBreadcrumbArray="updateBreadcrumbArray"
+					           :updateMenuItem="updateMenuItem"/>
 				</router-view>
 			</n-layout>
 

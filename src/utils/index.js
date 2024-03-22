@@ -23,7 +23,6 @@ export {
  */
 function copyMatchingProperties(source, target) {
 	for (const key in target) {
-		console.log(key);
 		target[key] = source?.[key];
 	}
 }

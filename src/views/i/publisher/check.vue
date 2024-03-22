@@ -1,6 +1,7 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {BREADCRUMB_PUBLISHER_CHECK} from "@/constant/breadcrumb.js";
+import NoData from "@/components/no-data.vue";
+import {B_PUBLISHER_CHECK} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
@@ -8,31 +9,15 @@ import {PUBLISHER} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
 import {formatTime} from "@/utils/format.js";
 import {copyMatchingProperties} from "@/utils/index.js";
-import {inputValidator} from "@/utils/validator.js";
-import {
-	NButton,
-	NFlex,
-	NInput,
-	NInputGroup,
-	NInputGroupLabel,
-	NLayout,
-	NLayoutHeader,
-	NModal,
-	NSpace,
-	NTable,
-	NTag,
-	NTd,
-	NTr,
-	useMessage
-} from "naive-ui";
-import {onActivated, onBeforeMount, reactive, ref} from "vue";
+import {NButton, NFlex, NLayout, NLayoutHeader, NModal, NSpace, NTable, NTag, NTd, NTr, useMessage} from "naive-ui";
+import {onBeforeMount, reactive, ref} from "vue";
 
 const props = defineProps(['id', 'updateMenuItem', 'updateBreadcrumbArray']);
 
 
 const message = useMessage();
 
-const msgReactive = message.create("查找日志信息", {type: "loading"});
+const msgReactive = message.create("查找信息", {type: "loading"});
 
 let id = props.id;
 
@@ -109,7 +94,7 @@ const findUser = (id, target) => {
 		})
 }
 
-const find = (id) => {
+const query = (id) => {
 	Service.Publishers.get(id)
 		.then(res => {
 			const _returnData = res.data;
@@ -177,31 +162,43 @@ const showUpdate = ref(false);
 
 const updateFormRef = ref(null);
 
+const updateRule = {
+	name: {
+		trigger: ['input', 'blur'],
+		required: true,
+		message: "不能为空",
+	},
+	place: {
+		trigger: ['input', 'blur'],
+		required: true,
+		message: "不能为空",
+	}
+}
+
 const isModified = () => {
-	return (info.name === source.name && info.remark === source.remark && info.place === source.place) || info.name === '';
+	return !((info.name === source.name && info.remark === source.remark && info.place === source.place));
 }
 
 const update = debounce((e) => {
 	e.preventDefault();
 
+	// todo 修改 entity
 	const _entity = {
 		id: info.id,
 		name: info.name,
 		remark: info.remark,
 		revision: info.revision,
 	}
+
 	Service.Publishers.update(_entity)
 		.then(res => {
 			const _returnData = res.data;
-
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
 				message.error(_returnData?.msg, messageOptions);
 				return;
 			}
-
 			message.success("修改成功", messageOptions);
-
-			find(id); // 修改之后，刷新一下
+			query(id); // 修改之后，刷新一下
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -212,16 +209,20 @@ const update = debounce((e) => {
 });
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
-
+//#region 生命周期钩子
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 onBeforeMount(() => {
-	find(id);
+	query(id);
 })
 
-onActivated(() => {
+{
 	props.updateMenuItem("i-publisher");
-	props.updateBreadcrumbArray(BREADCRUMB_PUBLISHER_CHECK);
-})
+	props.updateBreadcrumbArray(B_PUBLISHER_CHECK(props.id));
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 </script>
+
 
 <template>
 	<n-layout-header class="top-0 h-3em" position="absolute">
@@ -230,8 +231,7 @@ onActivated(() => {
 			<n-button type="error" @click="showRemove = true">
 				删除
 			</n-button>
-			<n-button :disabled="isModified()"
-			          type="warning"
+			<n-button type="warning"
 			          @click="showUpdate = true">
 				修改
 			</n-button>
@@ -239,7 +239,7 @@ onActivated(() => {
 	</n-layout-header>
 	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .3em 1em">
-		<!--	todo add form -->
+
 		<n-table :single-line="false" class="w-100%">
 			<tbody class="trc">
 			<n-tr>
@@ -253,32 +253,32 @@ onActivated(() => {
 			<n-tr>
 				<n-td>名称</n-td>
 				<n-td>
-					<n-input-group>
-						<n-input v-model:value="info.name" :allow-input="inputValidator.noSideSpace" clearable
-						         maxlength="32" placeholder="输入出版社名称"/>
-						<n-input-group-label>出版社</n-input-group-label>
-					</n-input-group>
+					<n-text>
+						{{ info.name }}
+					</n-text>
 				</n-td>
 			</n-tr>
 			<n-tr>
 				<n-td>出版地</n-td>
 				<n-td>
-					<n-input v-model:value="info.place" :allow-input="inputValidator.noSideSpace" clearable
-					         maxlength="32" placeholder="输入出版社名称"/>
+					<n-tag :bordered="false" type="info">
+						{{ info.place }}
+					</n-tag>
 				</n-td>
 			</n-tr>
 			<n-tr>
 				<n-td>备注</n-td>
 				<n-td>
-					<n-input v-model:value="info.remark" :allow-input="inputValidator.noSideSpace" autosize clearable
-					         maxlength="255" placeholder="输入备注" type="textarea"/>
+					<n-text v-if="info.remark" style="overflow-wrap: anywhere">
+						{{ info.remark }}
+					</n-text>
+					<NoData v-else/>
 				</n-td>
 			</n-tr>
-
 			<n-tr>
 				<n-td>创建者</n-td>
-				<n-td style="--n-n-td-padding: 0;">
-					<n-table :bordered="false" :single-line="false">
+				<n-td :style="info.createdBy ? '--n-td-padding: 0;' : ''">
+					<n-table v-if="info.createdBy" :bordered="false" :single-line="false">
 						<tbody>
 						<n-tr>
 							<n-td class="w-30">id</n-td>
@@ -321,6 +321,7 @@ onActivated(() => {
 						</n-tr>
 						</tbody>
 					</n-table>
+					<NoData v-else/>
 				</n-td>
 			</n-tr>
 			<n-tr>
@@ -333,8 +334,8 @@ onActivated(() => {
 			</n-tr>
 			<n-tr>
 				<n-td>更新者</n-td>
-				<n-td style="--n-n-td-padding: 0;">
-					<n-table :bordered="false" :single-line="false">
+				<n-td :style="info.updatedBy ? '--n-td-padding: 0;' : ''">
+					<n-table v-if="info.updatedBy" :bordered="false" :single-line="false">
 						<tbody class="trc">
 						<n-tr>
 							<n-td class="w-30">id</n-td>
@@ -377,9 +378,9 @@ onActivated(() => {
 						</n-tr>
 						</tbody>
 					</n-table>
+					<NoData v-else/>
 				</n-td>
 			</n-tr>
-
 			<n-tr>
 				<n-td>最后更新时间</n-td>
 				<n-td>
@@ -390,6 +391,8 @@ onActivated(() => {
 			</n-tr>
 			</tbody>
 		</n-table>
+
+
 		<!--   删除面板   -->
 		<n-modal
 			id="remove-modal"
@@ -497,7 +500,5 @@ onActivated(() => {
 </template>
 
 <style scoped>
-.trc tr > td:first-child {
-	text-align: right;
-}
+@import url(@/styles/trc.css);
 </style>

@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_LOG_CHECK} from "@/constant/breadcrumb.js";
 import {SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {getTagType} from "@/utils/convert.js";
@@ -9,7 +10,7 @@ import {NFlex, NLayout, NLayoutHeader, NTable, NTag, useMessage} from "naive-ui"
 import {onMounted, reactive} from "vue";
 import JsonViewer from "vue-json-viewer";
 
-const props = defineProps(['id', 'updateMenuItem']);
+const props = defineProps(['id', 'updateMenuItem', 'updateBreadcrumbArray']);
 
 props.updateMenuItem('i-log');
 
@@ -72,8 +73,8 @@ const findLogCreator = () => {
 }
 
 
-const findLog = () => {
-	Service.Logs.get(props.id)
+const query = (id) => {
+	Service.Logs.get(id)
 		.then(res => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
@@ -101,8 +102,13 @@ const findLog = () => {
 //#endregion
 
 onMounted(() => {
-	findLog();
+	query(props.id);
 })
+
+{
+	props.updateMenuItem("i-log");
+	props.updateBreadcrumbArray(B_LOG_CHECK(props.id));
+}
 </script>
 
 <template>

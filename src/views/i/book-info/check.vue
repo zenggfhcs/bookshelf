@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_BOOK_INFO_CHECK} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
@@ -29,9 +30,12 @@ import {
 import {h, onBeforeMount, reactive, ref} from "vue";
 
 
-const props = defineProps(['id', 'updateMenuItem']);
+const props = defineProps(['id', 'updateMenuItem', "updateBreadcrumbArray"]);
 
-props.updateMenuItem("i-book-info");
+{
+	props.updateMenuItem("i-book-info");
+	props.updateBreadcrumbArray(B_BOOK_INFO_CHECK(props.id));
+}
 
 const message = useMessage();
 

@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import NoData from "@/components/no-data.vue";
 import {ResponseCode} from "@/constant/response-code.js";
 import {timeFormat} from "@/utils/convert.js";
 import {copyMatchingProperties} from "@/utils/index.js";
@@ -8,8 +9,9 @@ import {NFlex, NLayout, NLayoutHeader, NTable, NTag, useMessage} from "naive-ui"
 import {onMounted, reactive} from "vue";
 
 const props = defineProps(['id', 'updateMenuItem']);
-
-props.updateMenuItem('i-debit');
+{
+	props.updateMenuItem('i-debit');
+}
 
 const message = useMessage();
 
@@ -74,8 +76,8 @@ const queryUser = (id, target) => {
 }
 
 
-const query = () => {
-	Service.Logs.get(props.id)
+const query = (id) => {
+	Service.Logs.get(id)
 		.then(res => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
@@ -100,7 +102,7 @@ const query = () => {
 //#endregion
 
 onMounted(() => {
-	query();
+	query(props.id);
 })
 </script>
 
@@ -144,8 +146,9 @@ onMounted(() => {
 			</tr>
 			<tr>
 				<td>操作者</td>
-				<td style="--n-td-padding: 0;">
-					<n-table :bordered="false">
+				<td :style="info.createdBy? '--n-td-padding: 0;' : ''">
+
+					<n-table v-if="info.createdBy" :bordered="false">
 						<tbody>
 						<tr>
 							<td class="w-30">id</td>
@@ -188,6 +191,7 @@ onMounted(() => {
 						</tr>
 						</tbody>
 					</n-table>
+					<NoData v-else/>
 				</td>
 			</tr>
 			<tr>
@@ -200,8 +204,8 @@ onMounted(() => {
 			</tr>
 			<tr>
 				<td>更新者</td>
-				<td style="--n-td-padding: 0;">
-					<n-table :bordered="false">
+				<td :style="info.updatedBy ? '--n-td-padding: 0;' : ''">
+					<n-table v-if="info.updatedBy" :bordered="false">
 						<tbody>
 						<tr>
 							<td class="w-30">id</td>
@@ -244,14 +248,16 @@ onMounted(() => {
 						</tr>
 						</tbody>
 					</n-table>
+					<NoData v-else/>
 				</td>
 			</tr>
 			<tr>
-				<td>最后时间</td>
+				<td>最后更新时间</td>
 				<td>
-					<n-tag :bordered="false" type="primary">
+					<n-tag v-if="info.lastUpdatedTime" :bordered="false" type="primary">
 						{{ timeFormat(info.lastUpdatedTime) }}
 					</n-tag>
+					<NoData v-else/>
 				</td>
 			</tr>
 			</tbody>

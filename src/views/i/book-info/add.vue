@@ -1,4 +1,5 @@
 <script setup>
+import {B_BOOK_INFO_ADD} from "@/constant/breadcrumb.js";
 import Archive from "@/icons/archive.vue";
 import {debounce} from "@/utils/debounce.js";
 import {inputValidator} from "@/utils/validator.js";
@@ -26,9 +27,12 @@ import {
 } from "naive-ui";
 import {h, onBeforeMount, reactive, ref} from "vue";
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(['updateMenuItem', "updateBreadcrumbArray"]);
 
-props.updateMenuItem("i-book-info");
+{
+	props.updateMenuItem("i-book-info");
+	props.updateBreadcrumbArray(B_BOOK_INFO_ADD);
+}
 
 const message = useMessage();
 
@@ -185,7 +189,7 @@ onBeforeMount(() => {
 					>
 						<n-upload-dragger>
 							<div style="margin-bottom: 12px">
-								<n-icon :depth="3" size="64">
+								<n-icon depth="3" size="64">
 									<Archive/>
 								</n-icon>
 							</div>
@@ -292,7 +296,5 @@ onBeforeMount(() => {
 </template>
 
 <style scoped>
-.trc tr > td:first-child {
-	text-align: right;
-}
+@import url(@/styles/trc.css);
 </style>

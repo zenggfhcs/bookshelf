@@ -1,16 +1,3 @@
-import {createStore} from "vuex";
+import {defineStore} from "pinia";
 
-const store = createStore({
-	state() {
-		return {
-			count: 0
-		}
-	},
-	mutations: {
-		increment(state) {
-			state.count++;
-		}
-	}
-})
-
-export default store
+const useLogStore = defineStore('log', {});

@@ -1,6 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
-import {BREADCRUMB_PUBLISHER_INDEX} from "@/constant/breadcrumb.js";
+import {B_PUBLISHER_INDEX} from "@/constant/breadcrumb.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
@@ -8,6 +8,7 @@ import {PUBLISHER_ADD, PUBLISHER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
+import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
 import {AddCircle, Search} from "@vicons/ionicons5";
 import {
@@ -30,7 +31,7 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui"
-import {h, onActivated, onMounted, reactive, ref} from "vue"
+import {h, onMounted, reactive, ref} from "vue"
 
 const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
@@ -117,9 +118,7 @@ const cols = [
 		// 可拖动
 		resizable: true,
 		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
+		ellipsis: true,
 		width: 200,
 		minWidth: 50,
 		maxWidth: 300,
@@ -154,16 +153,21 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		render: (row) => h(
-			NTag,
-			{
-				type: "info",
-				bordered: false,
-			},
-			{
-				default: () => row?.createdBy
+		render: (row) => {
+			if (!row?.createdBy) {
+				return renderCell();
 			}
-		),
+			return h(
+				NTag,
+				{
+					type: "info",
+					bordered: false,
+				},
+				{
+					default: () => row?.createdBy
+				}
+			);
+		}
 	},
 	{
 		title: "最后更新时间",
@@ -194,16 +198,21 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		render: (row) => h(
-			NTag,
-			{
-				type: "info",
-				bordered: false,
-			},
-			{
-				default: () => row?.updatedBy
+		render: (row) => {
+			if (!row?.updatedBy) {
+				return renderCell();
 			}
-		),
+			return h(
+				NTag,
+				{
+					type: "info",
+					bordered: false,
+				},
+				{
+					default: () => row?.updatedBy
+				}
+			)
+		}
 	},
 ]
 
@@ -343,10 +352,10 @@ onMounted(() => { // 加载数据
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-onActivated(() => {
+{
 	props.updateMenuItem("i-publisher");
-	props.updateBreadcrumbArray(BREADCRUMB_PUBLISHER_INDEX);
-})
+	props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
+}
 </script>
 
 <template>
@@ -368,7 +377,7 @@ onActivated(() => {
 								<write/>
 							</n-icon>
 						</template>
-						修改条件
+						筛选
 					</n-button>
 				</template>
 				<span class="font-size-1.2em font-800">精确查询</span>

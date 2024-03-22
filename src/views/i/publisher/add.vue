@@ -1,7 +1,7 @@
 <script setup>
 
 import {Service} from "@/api/index.js";
-import {BREADCRUMB_PUBLISHER_ADD} from "@/constant/breadcrumb.js";
+import {B_PUBLISHER_ADD} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
@@ -26,7 +26,7 @@ import {reactive, ref} from "vue";
 const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 {
 	props.updateMenuItem("i-publisher");
-	props.updateBreadcrumbArray(BREADCRUMB_PUBLISHER_ADD);
+	props.updateBreadcrumbArray(B_PUBLISHER_ADD);
 }
 
 const addFormRef = ref(null);
@@ -47,20 +47,12 @@ const addRule = {
 	name: {
 		trigger: ["input", "blur"],
 		required: true,
-		validator(rule, value) {
-			if (value === undefined || value === null || value.length === 0) {
-				return new Error("请输入");
-			}
-		},
+		message: "不能为空",
 	},
 	place: {
 		trigger: ["input", "blur"],
 		required: true,
-		validator(rule, value) {
-			if (value === undefined || value === null || value.length === 0) {
-				return new Error("请输入");
-			}
-		},
+		message: "不能为空",
 	}
 }
 

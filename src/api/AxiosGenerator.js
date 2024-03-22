@@ -18,8 +18,10 @@ const PRE_DEFINED_AXIOS = axios.create({
 	// `transformResponse` 在传递给 then/catch 前，允许修改响应数据
 	transformResponse: [function (data) {
 		// 对接收的 data 进行任意转换处理
-		console.log(data);
-		return JSON.parse(data);
+		const jsonData = JSON.parse(data);
+		// todo 调试使用
+		console.log(jsonData);
+		return jsonData;
 	}],
 
 	// 自定义请求头

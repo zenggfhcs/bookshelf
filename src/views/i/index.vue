@@ -1,16 +1,12 @@
 <script setup>
-import {BREADCRUMB_I_INDEX} from "@/constant/breadcrumb.js";
+import {B_I} from "@/constant/breadcrumb.js";
 import router from "@/router/Router.js";
 import {DEBIT_CHECK} from "@/router/RouterValue.js";
 import {renderCell} from "@/utils/render.js";
 import {NCard, NDataTable, NGi, NGrid, NLayout, NTag} from "naive-ui";
-import {h} from "vue";
+import {h, onActivated} from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
-{
-	props.updateMenuItem("i-index");
-	props.updateBreadcrumbArray(BREADCRUMB_I_INDEX);
-}
 
 const cols = [
 	{
@@ -58,6 +54,15 @@ const rowProps = row => {
 		}
 	}
 }
+
+//#region 生命周期钩子
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+onActivated(() => {
+	props.updateMenuItem("i-index");
+	props.updateBreadcrumbArray(B_I);
+})
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 </script>
 
 <template>

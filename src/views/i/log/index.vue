@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_LOG_INDEX} from "@/constant/breadcrumb.js";
 import {LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/map.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
@@ -37,18 +38,10 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
-props.updateMenuItem("i-log");
-
-//#region message
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 数据表信息
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const cols = [
 	{
 		title: "id",
@@ -235,8 +228,7 @@ const rowProps = row => {
 		}
 	}
 }
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 const entity = reactive({
 	id: '',
 	type: '',
@@ -299,15 +291,6 @@ const clickFind = debounce(e => {
 	e.preventDefault();
 	query();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 分页组件
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-
 
 const itemCount = ref(0);
 
@@ -333,21 +316,16 @@ const pagination = reactive({
 		query();
 	}
 });
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 生命周期钩子
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-/**
- * 组件挂载完成时调用
- */
-onMounted(() => { // 加载数据
+
+onMounted(() => {
 	checkLoginState();
+	{
+		props.updateMenuItem("i-log");
+		props.updateBreadcrumbArray(B_LOG_INDEX);
+	}
 	query();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
 </script>
 
 <template>
@@ -416,7 +394,7 @@ onMounted(() => { // 加载数据
 		</n-flex>
 	</n-layout-header>
 
-	<n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em"
+	<n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em overflow-hidden"
 	          content-style="padding: .3em 1em;">
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20" style="--n-height: 2.4em; --n-width: 2.4em;"/>

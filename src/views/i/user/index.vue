@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_USER_INDEX} from "@/constant/breadcrumb.js";
 import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
@@ -39,9 +40,7 @@ import {
 import {h, onMounted, reactive, ref} from "vue"
 
 
-const props = defineProps(['updateMenuItem']);
-
-props.updateMenuItem("i-user");
+const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
 //#region message
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -392,14 +391,19 @@ onMounted(() => { // 加载数据
 	checkLoginState();
 	query();
 })
+
+{
+	props.updateMenuItem("i-user");
+	props.updateBreadcrumbArray(B_USER_INDEX);
+}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
 </script>
 
 <template>
-	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-2.4em items-center m-l-1em m-r-1em">
+	<n-layout-header bordered class="h-3em" position="absolute">
+		<n-flex class="h-3em items-center m-l-1em m-r-1em">
 			<n-popover trigger="click">
 				<template #trigger>
 					<n-button class="m-.3em h-2.4em m-l-a">
