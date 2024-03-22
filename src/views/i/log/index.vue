@@ -7,6 +7,8 @@ import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
 import {LOG_CHECK} from "@/router/RouterValue.js";
+import {PAGE, PAGE_SIZE} from "@/storage/key.js";
+import {session} from "@/storage/session.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {getTagType, timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
@@ -36,7 +38,7 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui"
-import {h, onMounted, reactive, ref} from "vue"
+import {h, onBeforeUnmount, onMounted, reactive, ref} from "vue"
 
 const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
@@ -272,7 +274,7 @@ const query = () => {
 		.then(res => {
 			const data = res.data;
 			if (!data || data?.code !== ResponseCode.SUCCESS) {
-				message.error(data?.msg, messageOptions);
+				message.error(data.message, messageOptions);
 				return;
 			}
 
@@ -294,9 +296,12 @@ const clickFind = debounce(e => {
 
 const itemCount = ref(0);
 
+const pageValue = session.get(PAGE);
+const pageSizeValue = session.get(PAGE_SIZE);
+
 const pagination = reactive({
-	page: 1,
-	pageSize: 10,
+	page: pageValue ? +pageValue : 1,
+	pageSize: pageSizeValue ? +pageSizeValue : 10,
 	showSizePicker: true,
 	pageSizes: [
 		{label: "10 每页", value: 10,},
@@ -326,10 +331,15 @@ onMounted(() => {
 	}
 	query();
 })
+
+onBeforeUnmount(() => {
+	session.put(PAGE, pagination.page);
+	session.put(PAGE_SIZE, pagination.pageSize);
+})
 </script>
 
 <template>
-	<n-layout-header class="h-3em" position="absolute">
+	<n-layout-header bordered class="h-3em" position="absolute">
 		<n-flex class="h-2.4em items-center" justify="right" style="margin: 0.3em 1em;">
 			<n-popover placement="top" trigger="click">
 				<template #trigger>

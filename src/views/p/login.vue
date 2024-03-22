@@ -66,7 +66,7 @@ const login = debounce((e) => {
 					localStorage.setItem("token", data?.data?.token);
 					router.push("/");
 				} else {
-					message.error(data?.msg);
+					message.error(data.message);
 				}
 			})
 			.catch(err => {

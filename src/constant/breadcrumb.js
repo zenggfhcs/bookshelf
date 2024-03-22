@@ -20,6 +20,48 @@ export {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region book
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const BOOK = {
+	path: "/i/books",
+	label: "书籍",
+}
+
+const BOOK_ADD = {
+	path: "/i/books/add",
+	label: "新增",
+}
+
+const BOOK_CHECK = (id) => ({
+	path: `/i/books/${id}`,
+	label: "详情",
+})
+
+const B_BOOK = [
+	I_HOME,
+	BOOK,
+]
+
+const B_BOOK_ADD = [
+	I_HOME,
+	BOOK,
+	BOOK_ADD,
+]
+
+const B_BOOK_CHECK = (id) => [
+	I_HOME,
+	BOOK,
+	BOOK_CHECK(id),
+]
+
+export {
+	B_BOOK,
+	B_BOOK_ADD,
+	B_BOOK_CHECK,
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 //#region book info
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BOOK_INFO = {

@@ -4,7 +4,7 @@ import router from "@/router/Router.js";
 import {DEBIT_CHECK} from "@/router/RouterValue.js";
 import {renderCell} from "@/utils/render.js";
 import {NCard, NDataTable, NGi, NGrid, NLayout, NTag} from "naive-ui";
-import {h, onActivated} from "vue";
+import {h} from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
@@ -39,8 +39,6 @@ const tableData = Array.from({length: 100}).map((_, index) => {
 	}
 });
 
-console.log(tableData);
-
 const rowProps = row => {
 	return {
 		onDblclick: (e) => {
@@ -57,10 +55,10 @@ const rowProps = row => {
 
 //#region 生命周期钩子
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-onActivated(() => {
+{
 	props.updateMenuItem("i-index");
 	props.updateBreadcrumbArray(B_I);
-})
+}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 </script>

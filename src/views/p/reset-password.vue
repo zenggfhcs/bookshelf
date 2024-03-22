@@ -39,6 +39,8 @@ const model = ref({
  */
 const reenteredRef = ref(null);
 
+const codeRef = ref(null);
+
 /**
  * 加载标志
  * ：
@@ -106,9 +108,17 @@ function validatePasswordSame(rule, value) {
 }
 
 function handlePasswordInput() {
-	if (model.value.reenteredAuthenticationString && reenteredRef.value?.validate) {
+	if (model.value.reenteredAuthenticationString) {
 		reenteredRef.value?.validate({trigger: "authenticationString-input"});
 	}
+}
+
+function handleCodeAfterConfirmed() {
+	if (model.value.code) {
+		codeRef.value?.validate({trigger: "validate-code"});
+		return true;
+	}
+	return false;
 }
 
 const rules = {
@@ -131,10 +141,10 @@ const rules = {
 	code: [
 		{
 			required: true,
-			trigger: ['input', 'blur'],
+			trigger: ['input', 'blur'], // todo diy 触发方式，在表单验证时触发
 			message: '请输入验证码',
 		}, {
-			trigger: ['validate-code', 'blur'],
+			trigger: ['validate-code'],
 			validator(rule, value) {
 				if (value.trim() !== code.value) {
 					return new Error("验证码错误");
@@ -212,7 +222,7 @@ const resetPassword = debounce((e) => {
 			.then(res => {
 				const data = res.data;
 				if (data?.code !== ResponseCode.SUCCESS) {
-					message.error(data?.msg);
+					message.error(data.message);
 					return;
 				}
 				message.success("修改成功，3秒后自动跳转到登录界面...", messageOptions);
@@ -257,11 +267,11 @@ const resetPassword = debounce((e) => {
 		<n-form-item first label="验证码" path="code" size="large">
 			<div class="flex w-100%">
 				<n-input
+					ref="codeRef"
 					v-model:value="model.code"
 					class="flex-auto"
 					placeholder="输入验证码"
 					style="border-radius: .1em 0 0 .1em"
-					@input="handlePasswordInput"
 					@keydown.enter.prevent
 				/>
 				<n-button :disabled="ObtainedCode || !emailValidated" class="b-rd-0"

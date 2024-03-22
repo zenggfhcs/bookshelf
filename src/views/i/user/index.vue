@@ -325,7 +325,7 @@ const query = () => {
 		.then(res => {
 			const _returnData = res.data;
 			if (!_returnData || _returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData?.msg, messageOptions);
+				message.error(_returnData.message, messageOptions);
 				return;
 			}
 

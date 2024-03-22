@@ -1,12 +1,13 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import NoData from "@/components/no-data.vue";
 import {B_LOG_CHECK} from "@/constant/breadcrumb.js";
 import {SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {getTagType} from "@/utils/convert.js";
 import {copyMatchingProperties} from "@/utils/index.js";
 import {sleep} from "@/utils/sleep.js";
-import {NFlex, NLayout, NLayoutHeader, NTable, NTag, useMessage} from "naive-ui";
+import {NFlex, NLayout, NLayoutHeader, NTable, NTag, NText, useMessage} from "naive-ui";
 import {onMounted, reactive} from "vue";
 import JsonViewer from "vue-json-viewer";
 
@@ -55,7 +56,7 @@ const findLogCreator = () => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
 				msgReactive.type = "error";
-				msgReactive.content = _returnData?.msg;
+				msgReactive.content = _returnData.message;
 				return;
 			}
 
@@ -79,7 +80,7 @@ const query = (id) => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
 				msgReactive.type = "error";
-				msgReactive.content = _returnData?.msg;
+				msgReactive.content = _returnData.message;
 				return;
 			}
 
@@ -148,7 +149,12 @@ onMounted(() => {
 			</tr>
 			<tr>
 				<td>数据 id</td>
-				<td>{{ info.dataId }}</td>
+				<td>
+					<n-text v-if="info.dataId">
+						{{ info.dataId }}
+					</n-text>
+					<NoData v-else/>
+				</td>
 			</tr>
 			<tr>
 				<td>操作持续时间-毫秒</td>

@@ -1,5 +1,7 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_BOOK} from "@/constant/breadcrumb.js";
+import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/Router.js";
@@ -7,6 +9,7 @@ import {BOOK_ADD, BOOK_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
+import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
 import {AddCircle, Search} from "@vicons/ionicons5";
 import {
@@ -31,9 +34,10 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue";
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
 props.updateMenuItem("i-book");
+props.updateBreadcrumbArray(B_BOOK);
 
 // todo alter
 
@@ -41,28 +45,13 @@ props.updateMenuItem("i-book");
 
 // todo search
 
-//#region entity
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const entity = reactive({
 	id: '',
 	name: '',
 	place: '',
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region message
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-
-const messageOptions = {
-	duration: 10000
-}
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 数据表信息
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 let tableData = [];
 const cols = [
@@ -89,8 +78,8 @@ const cols = [
 		),
 	},
 	{
-		title: "出版社名称",
-		key: "name",
+		title: "书籍名称",
+		key: "bookInfo.bookName",
 		// 可拖动
 		resizable: true,
 		// 溢出省略
@@ -100,8 +89,28 @@ const cols = [
 		//render: (row) => h()
 	},
 	{
-		title: "出版地",
-		key: "place",
+		title: "作者",
+		key: "bookInfo.author",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+	},
+	{
+		title: "类型",
+		key: "bookInfo.bookType",
+		// 可拖动
+		resizable: true,
+		// 溢出省略
+		ellipsis: {
+			tooltip: true
+		},
+	},
+	{
+		title: "破损程度",
+		key: "damageLevel",
 		resizable: true,
 		ellipsis: {
 			tooltip: true
@@ -113,23 +122,29 @@ const cols = [
 				bordered: false
 			},
 			{
-				default: () => row?.place
+				default: () => row?.damageLevel
 			}
 		)
 	},
 	{
-		title: "备注",
-		key: "remark",
+		title: "可借的",
+		key: "borrowable",
 		// 可拖动
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true
 		},
-		width: 200,
-		minWidth: 50,
-		maxWidth: 300,
-		//render: (row) => h()
+		render: (row) => h(
+			NTag,
+			{
+				type: "primary",
+				bordered: false,
+			},
+			{
+				default: () => row?.borrowable ? 'yes' : 'no'
+			}
+		),
 	},
 	{
 		title: "创建时间",
@@ -160,16 +175,21 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		render: (row) => h(
-			NTag,
-			{
-				type: "info",
-				bordered: false,
-			},
-			{
-				default: () => row?.createdBy
+		render: (row) => {
+			if (!row?.createdBy) {
+				return renderCell();
 			}
-		),
+			return h(
+				NTag,
+				{
+					type: "info",
+					bordered: false,
+				},
+				{
+					default: () => row?.createdBy
+				}
+			);
+		}
 	},
 	{
 		title: "最后更新时间",
@@ -200,16 +220,21 @@ const cols = [
 		ellipsis: {
 			tooltip: true
 		},
-		render: (row) => h(
-			NTag,
-			{
-				type: "info",
-				bordered: false,
-			},
-			{
-				default: () => row?.updatedBy
+		render: (row) => {
+			if (!row?.updatedBy) {
+				return renderCell();
 			}
-		),
+			return h(
+				NTag,
+				{
+					type: "info",
+					bordered: false,
+				},
+				{
+					default: () => row?.updatedBy
+				}
+			)
+		}
 	},
 ]
 
@@ -228,8 +253,7 @@ const rowProps = (row) => {
 		}
 	}
 }
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 const timestamp = reactive({
 	creationTime: null,
 	lastUpdatedTime: null,
@@ -273,7 +297,7 @@ const query = () => {
 		.then(res => {
 			const data = res.data;
 			if (!data || data?.code !== ResponseCode.SUCCESS) {
-				message.error(data?.msg, messageOptions);
+				message.error(data.message, messageOptions);
 				return;
 			}
 
@@ -293,14 +317,6 @@ const clickFind = debounce(e => {
 	e.preventDefault();
 	query();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 分页组件
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 const itemCount = ref(0);
 
@@ -327,11 +343,6 @@ const pagination = reactive({
 	}
 });
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 生命周期钩子
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 /**
  * 组件挂载完成时调用
  */
@@ -339,8 +350,6 @@ onMounted(() => { // 加载数据
 	checkLoginState();
 	query();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
 </script>
 

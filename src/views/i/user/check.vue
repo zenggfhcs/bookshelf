@@ -5,12 +5,25 @@ import {B_USER_CHECK} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
-import {PUBLISHER} from "@/router/RouterValue.js";
+import {USER} from "@/router/RouterValue.js";
 import {convertGender, getTagType} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
 import {formatTime} from "@/utils/format.js";
 import {copyMatchingProperties} from "@/utils/index.js";
-import {NButton, NFlex, NForm, NLayout, NLayoutHeader, NModal, NSpace, NTable, NTag, useMessage} from "naive-ui";
+import {
+	NButton,
+	NFlex,
+	NForm,
+	NFormItem,
+	NInput,
+	NLayout,
+	NLayoutHeader,
+	NModal,
+	NSpace,
+	NTable,
+	NTag,
+	useMessage
+} from "naive-ui";
 import {onBeforeMount, reactive, ref} from "vue";
 
 const props = defineProps(['id', 'updateMenuItem', 'updateBreadcrumbArray']);
@@ -21,11 +34,9 @@ const props = defineProps(['id', 'updateMenuItem', 'updateBreadcrumbArray']);
 
 const message = useMessage();
 
-const source = reactive({
-	name: null,
-	remark: null,
-	place: null,
-});
+const source = reactive({});
+
+const target = reactive({});
 
 const info = reactive({
 	id: 0,
@@ -66,6 +77,12 @@ const updater = reactive({
 	phoneNumber: null
 })
 
+const showUpdateModal = debounce(() => {
+	copyMatchingProperties(info, source);
+	copyMatchingProperties(info, target);
+	showUpdate.value = true;
+});
+
 
 const queryUser = (id, target) => {
 	if (!id) {
@@ -75,7 +92,7 @@ const queryUser = (id, target) => {
 		.then(res => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData?.msg, messageOptions);
+				message.error(_returnData.message, messageOptions);
 				return;
 			}
 			copyMatchingProperties(_returnData.data, target);
@@ -97,7 +114,7 @@ const query = (id) => {
 		.then(res => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData?.msg, messageOptions);
+				message.error(_returnData.message, messageOptions);
 				return;
 			}
 
@@ -112,33 +129,33 @@ const query = (id) => {
 			message.error(err.message);
 		})
 		.finally(() => {
-
 		})
 }
 
-const showRemove = ref(false);
+const showRemoveConfirmation = ref(false);
 
-const remove = () => {
-	Service.Publishers.remove(props.id)
+const remove = debounce(() => {
+	Service.Users.remove(props.id)
 		.then(res => {
 			const _returnData = res.data;
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData?.msg, messageOptions);
+				message.error(_returnData.message, messageOptions);
+				return;
 			}
-
 			message.success("删除成功", messageOptions);
-
-			goto(PUBLISHER);
+			goto(USER);
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-			showRemove.value = false;
+			showRemoveConfirmation.value = false;
 		})
-}
+});
 
 const showUpdate = ref(false);
+
+const showUpdateConfirmation = ref(false);
 
 const updateFormRef = ref(null);
 
@@ -157,11 +174,16 @@ const updateRule = {
 
 const showUpdateAfterModified = () => {
 	if (isModified()) {
-		showUpdate.value = true;
+		showUpdateConfirmation.value = true;
 		return;
 	}
 	message.warning("没有内容存在更改", messageOptions);
 }
+
+const verificationAfterInspection = debounce(() => {
+	// todo verification
+	showUpdateConfirmation.value = true;
+})
 
 const isModified = () => {
 	return !((info.name === source.name && info.remark === source.remark));
@@ -182,7 +204,7 @@ const update = debounce((e) => {
 			const _returnData = res.data;
 
 			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData?.msg, messageOptions);
+				message.error(_returnData.message, messageOptions);
 				return;
 			}
 
@@ -209,10 +231,10 @@ onBeforeMount(() => {
 	<n-layout-header bordered class="top-0 h-3em" position="absolute">
 		<n-flex class="items-center" style="margin: 0 1em;">
 			<h1 class="m-r-a">用户信息</h1>
-			<n-button type="error" @click="showRemove = true">
+			<n-button type="error" @click="showRemoveConfirmation = true">
 				删除
 			</n-button>
-			<n-button type="warning" @click="showUpdateAfterModified">
+			<n-button type="warning" @click.prevent="showUpdateModal">
 				修改
 			</n-button>
 		</n-flex>
@@ -426,10 +448,10 @@ onBeforeMount(() => {
 			</n-table>
 		</n-form>
 
-		<!--   删除面板   -->
+		<!--   删除确认面板   -->
 		<n-modal
-			id="remove-modal"
-			v-model:show="showRemove"
+			id="remove-confirmed-modal"
+			v-model:show="showRemoveConfirmation"
 			preset="dialog"
 			style="--n-font-size: 16px;"
 			title="删除二次确认"
@@ -441,17 +463,41 @@ onBeforeMount(() => {
             您是否要删除？
          </span>
 				<n-flex justify="right">
-					<n-button type="error" @click="remove">
+					<n-button type="error" @click.prevent="remove">
 						确定
 					</n-button>
 				</n-flex>
 			</n-space>
 		</n-modal>
 
-		<!--   更新面板   -->
+		<n-modal id="update-form-modal"
+		         ref="updateFormRef"
+		         v-model:show="showUpdate"
+		         :mask-closable="false"
+		         :model="target"
+		         preset="dialog"
+		         title="修改"
+		         transform-origin="center" type="warning">
+			<n-form>
+				<n-form-item>
+					<n-input/>
+				</n-form-item>
+				<n-form-item>
+					<n-input/>
+				</n-form-item>
+				<n-form-item>
+					<n-input/>
+				</n-form-item>
+				<n-flex justify="right">
+					<n-button type="warning" @click.prevent="verificationAfterInspection">确定</n-button>
+				</n-flex>
+			</n-form>
+		</n-modal>
+
+		<!--   更新确认面板   -->
 		<n-modal
-			id="update-modal"
-			v-model:show="showUpdate"
+			id="update-confirmed-modal"
+			v-model:show="showUpdateConfirmation"
 			preset="dialog"
 			title="修改二次确认"
 			transform-origin="center"

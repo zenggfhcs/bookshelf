@@ -95,7 +95,7 @@ const register = debounce((e) => {
 			.then(res => {
 				const data = res.data;
 				if (data?.code !== ResponseCode.SUCCESS) {
-					message.error(data?.msg, messageOptions);
+					message.error(data.message, messageOptions);
 					return
 				}
 				message.success("注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...", messageOptions)
