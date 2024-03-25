@@ -35,3 +35,17 @@ export function subMatchingProperties(source, target) {
 	return _res;
 }
 
+/**
+ * if else 简写
+ * @param array 要求是 [([bool, fuc],)[true, fuc]]
+ */
+export function traverse(array) {
+	for (let i = 0; i < array.length; i++) {
+		const _item = array[i];
+		if (_item[0]) {
+			_item[1]();
+			return
+		}
+	}
+}
+

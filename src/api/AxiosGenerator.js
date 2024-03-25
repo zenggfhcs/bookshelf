@@ -1,5 +1,9 @@
 import {Header} from "@/api/Header.js";
+import {Service} from "@/api/index.js";
+import {ResponseCode} from "@/constant/response-code.js";
+import {REFRESH_TOKEN} from "@/storage/key.js";
 import {local} from "@/storage/local.js";
+import {resetToken} from "@/utils/storage-operation.js";
 import axios from "axios";
 
 const PRE_DEFINED_AXIOS = axios.create({
@@ -12,23 +16,21 @@ const PRE_DEFINED_AXIOS = axios.create({
 	// 它只能用于 'PUT', 'POST' 和 'PATCH' 这几个请求方法
 	// 数组中最后一个函数必须返回一个字符串， 一个Buffer实例，ArrayBuffer，FormData，或 Stream
 	// 你可以修改请求头。
-	transformRequest: [function (data, headers) {
+	transformRequest: [(data, headers) => {
 		// 对发送的 data 进行任意转换处理
 		return JSON.stringify(data);
 	}],
 	// `transformResponse` 在传递给 then/catch 前，允许修改响应数据
-	transformResponse: [function (data) {
-		// 对接收的 data 进行任意转换处理
-		const jsonData = JSON.parse(data);
+	transformResponse: [(data) => {
 		// todo 调试使用
-		console.log(jsonData);
-		return jsonData;
+		const _jsonData = JSON.parse(data);
+		console.log(_jsonData);
+		return _jsonData;
 	}],
 
 	// 自定义请求头
 	headers: {
 		"Content-Type": "application/json",
-		"token": ""
 	},
 
 	// `timeout` 指定请求超时的毫秒数。
@@ -56,13 +58,13 @@ const PRE_DEFINED_AXIOS = axios.create({
 
 	// `onUploadProgress` 允许为上传处理进度事件
 	// 浏览器专属
-	onUploadProgress: function (progressEvent) {
+	onUploadProgress: (progressEvent) => {
 		// 处理原生进度事件
 	},
 
 	// `onDownloadProgress` 允许为下载处理进度事件
 	// 浏览器专属
-	onDownloadProgress: function (progressEvent) {
+	onDownloadProgress: (progressEvent) => {
 		// 处理原生进度事件
 	},
 
@@ -75,7 +77,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 	// `validateStatus` 定义了对于给定的 HTTP状态码是 resolve 还是 reject promise。
 	// 如果 `validateStatus` 返回 `true` (或者设置为 `null` 或 `undefined`)，
 	// 则promise 将会 resolved，否则是 rejected。
-	validateStatus: function (status) {
+	validateStatus: (status) => {
 		return status >= 200 && status < 300; // 默认值
 	},
 });
@@ -83,29 +85,66 @@ const PRE_DEFINED_AXIOS = axios.create({
 //#region interceptor
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 // 添加请求拦截器
-PRE_DEFINED_AXIOS.interceptors.request.use(function (config) {
-	// 在发送请求之前做些什么
-	config.headers[Header.TOKEN] = local.get(Header.TOKEN);
-	return config;
-}, function (error) {
-	// 对请求错误做些什么
-	return Promise.reject(error);
-});
+PRE_DEFINED_AXIOS.interceptors.request.use(
+	(config) => {
+		// 在发送请求之前做些什么
+		// 刷新使用的 token
+		if (config.url?.toString().endsWith("/refresh")) {
+			config.headers[Header.TOKEN] = local.get(REFRESH_TOKEN);
+		} else { // 默认 token
+			config.headers[Header.TOKEN] = local.get(Header.TOKEN);
+		}
+		return config;
+	},
+	(error) => {
+		// 对请求错误做些什么
+		return Promise.reject(error);
+	}
+);
 
 
 // 添加响应拦截器
-PRE_DEFINED_AXIOS.interceptors.response.use(function (response) {
-	// 2xx 范围内的状态码都会触发该函数。
-	// 对响应数据做点什么
-	return response;
-}, function (error) {
-	// 超出 2xx 范围的状态码都会触发该函数。
-	// 对响应错误做点什么
-	return Promise.reject(error);
-});
+PRE_DEFINED_AXIOS.interceptors.response.use(
+	(response) => {
+		// 2xx 范围内的状态码都会触发该函数。
+		// 对响应数据做点什么
+
+		return response;
+	},
+	async (error) => {
+		// 超出 2xx 范围的状态码都会触发该函数。
+		// 对响应错误做点什么
+		const {data, config} = error.response;
+		if (data?.code === ResponseCode.TOKEN_E && !config.url?.toString().endsWith("/refresh")) {
+			const _refreshRes = await refreshToken();
+			if (_refreshRes?.data?.code === ResponseCode.SUCCESS) {
+				// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
+				const _dataString = config?.data;
+				config.data = JSON.parse(_dataString);
+				// 重请求
+				return PRE_DEFINED_AXIOS(config);
+			}
+		} else
+			return error.response;
+	}
+);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
 export {
 	PRE_DEFINED_AXIOS
 }
+
+const refreshToken = async () => await Service.Token.refresh()
+	.then(res => {
+		// todo 设置 token
+		console.log(1)
+		const _data = res?.data;
+		if (_data?.code === ResponseCode.SUCCESS) {
+			console.log(1.5)
+			const _tokenInfo = JSON.parse(res?.data?.data?.token);
+			resetToken(_tokenInfo);
+		}
+		return res;
+	})
+	.catch(err => err)

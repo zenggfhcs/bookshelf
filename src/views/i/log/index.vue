@@ -272,6 +272,7 @@ const query = () => {
 
 	Service.Logs.list(entity, filter)
 		.then(res => {
+			// todo del
 			const data = res.data;
 			if (!data || data?.code !== ResponseCode.SUCCESS) {
 				message.error(data.message, messageOptions);

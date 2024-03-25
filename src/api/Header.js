@@ -1,4 +1,5 @@
-const TOKEN = "token";
+import {TOKEN} from "@/storage/key.js";
+
 
 const Header = {
 	TOKEN

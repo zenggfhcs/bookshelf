@@ -1,15 +1,18 @@
 <script setup>
 import {Header} from "@/api/Header.js";
 import {Service} from "@/api/index.js";
+import {messageOptions} from "@/constant/options.js";
 import {REG_EMAIL} from "@/constant/regular-expression.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import router from "@/router/Router.js";
 import {REGISTER, RESET_PASSWORD} from "@/router/RouterValue.js";
+import {REFRESH_TOKEN} from "@/storage/key.js";
 import {local} from "@/storage/local.js";
 import {debounce} from "@/utils/debounce.js";
+import {resetToken} from "@/utils/storage-operation.js";
 import {formValidator} from "@/utils/validator.js";
 import {NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage} from "naive-ui";
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 
 onMounted(() => {
 })
@@ -17,7 +20,7 @@ onMounted(() => {
 
 const formRef = ref(null);
 const message = useMessage();
-const model = ref({
+const model = reactive({
 	email: null,
 	authenticationString: null,
 });
@@ -60,22 +63,24 @@ const login = debounce((e) => {
 	e.preventDefault();                       // 父默认方法
 	formValidator(formRef, message, () => {
 		loading.value = true;
-		Service.Users.login(model.value)
+		console.log(model)
+		Service.Users.login(model)
 			.then(res => {
 				const data = res.data;
 				if (data?.code === ResponseCode.SUCCESS) {
 					// 登录
 					// localStorage.setItem(TOKEN, data?.data?.token); todo
-					if (local.get(Header.TOKEN))
-						local.remove(Header.TOKEN);
-					local.put(Header.TOKEN, data?.data?.token);
+
+					const _tokenInfo = JSON.parse(data?.data?.token);
+					resetToken(_tokenInfo);
+
 					router.push("/");
 				} else {
 					message.error(data.message);
 				}
 			})
 			.catch(err => {
-				message.error(err.message);
+				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
 				loading.value = false;

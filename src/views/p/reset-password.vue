@@ -1,5 +1,5 @@
 <script setup>
-import {Mail, Service} from "@/api/index.js";
+import {Service} from "@/api/index.js";
 import {messageOptions} from "@/constant/options.js";
 import {REG_EMAIL} from "@/constant/regular-expression.js";
 import {ResponseCode} from "@/constant/response-code.js";
@@ -10,7 +10,7 @@ import {gCode} from "@/utils/generate.js";
 import {formValidator} from "@/utils/validator.js";
 import {ChevronBackOutline} from "@vicons/ionicons5";
 import {NButton, NCountdown, NFlex, NForm, NFormItem, NGi, NGrid, NInput, useMessage} from "naive-ui";
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 
 /**
  * form ref 定位
@@ -27,7 +27,7 @@ const message = useMessage();
 /**
  * form model object
  */
-const model = ref({
+const model = reactive({
 	email: null,
 	code: null,
 	authenticationString: null,
@@ -102,21 +102,21 @@ const countdownFinish = () => {
 }
 
 function validatePasswordStartWith(rule, value) {
-	return !!model.value.authenticationString && model.value.authenticationString.startsWith(value) && model.value.authenticationString.length >= value.length;
+	return !!model.authenticationString && model.authenticationString?.toString().startsWith(value) && model.authenticationString.length >= value.length;
 }
 
 function validatePasswordSame(rule, value) {
-	return value === model.value.authenticationString;
+	return value === model.authenticationString;
 }
 
 function handlePasswordInput() {
-	if (model.value.reenteredAuthenticationString) {
+	if (model.reenteredAuthenticationString) {
 		reenteredRef.value?.validate({trigger: "authenticationString-input"});
 	}
 }
 
 function handleCodeAfterConfirmed() {
-	if (model.value.code) {
+	if (model.code) {
 		codeRef.value?.validate({trigger: "validate-code"});
 		return true;
 	}
@@ -191,16 +191,15 @@ const rules = {
 /**
  * 发送验证码
  */
-const sendCode = debounce((e) => {
-	e.preventDefault();
+const sendCode = debounce(() => {
 	code.value = gCode();
 
 	const _entity = {
-		email: model.value.email,
+		email: model.email,
 		authenticationString: code.value?.toString()
 	}
 	sendCodeLoading.value = true;
-	Mail.sendCode(_entity)
+	Service.Mail.sendCode(_entity)
 		.then(res => {
 			message.success("发送成功，请查看邮箱邮件", messageOptions);
 			console.log(res);
@@ -218,11 +217,13 @@ const sendCode = debounce((e) => {
  * 注册
  * @param e event
  */
-const resetPassword = debounce((e) => {
-	e.preventDefault();                       // 父默认方法
+const resetPassword = debounce(() => {
 	formValidator(formRef, message, () => {
+		if (handleCodeAfterConfirmed()) {
+
+		}
 		loading.value = true;
-		Service.Users.resetPassword(model.value)
+		Service.Users.resetPassword(model)
 			.then(res => {
 				const data = res.data;
 				if (data?.code !== ResponseCode.SUCCESS) {
@@ -280,7 +281,7 @@ const resetPassword = debounce((e) => {
 				/>
 				<n-button :disabled="ObtainedCode || !emailValidated" :loading="sendCodeLoading"
 				          class="b-rd-0"
-				          style="border-radius: 0 .1em .1em 0" type="info" @click="sendCode">
+				          style="border-radius: 0 .1em .1em 0" type="info" @click.prevent="sendCode">
 					<span v-show="!ObtainedCode">获取</span>
 					<span v-show="ObtainedCode">
                            <n-countdown
@@ -331,7 +332,7 @@ const resetPassword = debounce((e) => {
 			</n-gi>
 			<n-gi :span="3">
 				<n-button :loading="loading" class="w-100%" size="large"
-				          type="success" @click="resetPassword">
+				          type="success" @click.prevent="resetPassword">
 					重置密码
 				</n-button>
 			</n-gi>

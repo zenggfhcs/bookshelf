@@ -10,7 +10,7 @@ const put = (key, value) => {
 
 const get = (key) => {
 	const _v = localStorage.getItem(key);
-	return _v ? JSON.parse(_v) : "";
+	return _v && _v !== "undefined" ? JSON.parse(_v) : "";
 }
 
 const remove = (key) => {

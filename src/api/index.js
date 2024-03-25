@@ -1,9 +1,12 @@
 //#region file des
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
+import {Header} from "@/api/Header.js";
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 import {MyRequest} from "@/api/MyRequest.js";
+import {REFRESH_TOKEN} from "@/storage/key.js";
+import {local} from "@/storage/local.js";
 import {encodeByRSA} from "@/utils/rsa-tools.js";
 
 const ServiceName = {
@@ -104,14 +107,13 @@ const Logs = new BaseService(ServiceName.LOG);
 //#endregion
 
 
-const Service = {
-	Publishers,
-	Users,
-	Debits,
-	BookInfos,
-	Books,
-	Logs,
+//#region token
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const Token = {
+	refresh: () => MyRequest.post("/token/refresh", {})
 }
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
 
 //#region mail
@@ -124,7 +126,17 @@ const Mail = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+const Service = {
+	Publishers,
+	Users,
+	Debits,
+	BookInfos,
+	Books,
+	Logs,
+	Token,
+	Mail,
+}
+
 export {
 	Service,
-	Mail
 }
