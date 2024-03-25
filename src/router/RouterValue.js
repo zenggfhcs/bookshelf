@@ -17,11 +17,14 @@ import PublisherManager from "@/views/i/publisher/index.vue";
 import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
 import BaseJ from "@/views/j/base-j.vue";
+import Check from "@/views/j/check.vue";
 import J from "@/views/j/index.vue";
+import Statistics from "@/views/j/statistics.vue";
 import Public from "@/views/p/base-p.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
+import UserInfo from "@/views/p/user-info.vue";
 import Verify from "@/views/p/verify.vue";
 
 //#region route item
@@ -84,13 +87,13 @@ const _404 = {
 }
 
 const ERROR = {
-	"component": null,
-	"name": "ERROR",
-	"path": "/:pathMatch(.*)*",
-	"props": true,
-	"children": [_404,],
-	"redirect": _404,
-	"hidden": true,
+	component: null,
+	name: "ERROR",
+	path: "/:pathMatch(.*)*",
+	props: true,
+	children: [_404,],
+	redirect: _404,
+	hidden: true,
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -98,23 +101,45 @@ const ERROR = {
 //#region j
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const J_HOME = {
-	"component": J,
-	"name": "jIndex",
-	"path": "/j/index",
-	"props": true,
-	"hidden": true,
-	"meta": {"keepalive": true},
+	component: J,
+	name: "jIndex",
+	path: "/j/index",
+	props: true,
+	hidden: true,
+}
+
+const J_USER_INFO = {
+	component: UserInfo,
+	name: "jUserInfo",
+	path: "/j/my-info",
+	props: true,
+	hidden: true,
+}
+
+const J_CHECK = {
+	component: Check,
+	name: "jCheck",
+	path: "/j/check",
+	props: true,
+	hidden: true,
+}
+
+const J_STATISTICS = {
+	component: Statistics,
+	name: "jStatistics",
+	path: "/j/statistics",
+	props: true,
+	hidden: true,
 }
 
 const BASE_J = {
-	"component": BaseJ,
-	"name": "j",
-	"path": "/",
-	"props": true,
-	"children": [J_HOME,],
-	"redirect": J_HOME,
-	"hidden": true,
-	"meta": {"keepalive": true}
+	component: BaseJ,
+	name: "j",
+	path: "/",
+	props: true,
+	children: [J_HOME, J_CHECK, J_USER_INFO, J_STATISTICS],
+	redirect: J_HOME,
+	hidden: true,
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -279,9 +304,19 @@ const I_HOME = {
 	name: "iIndex",
 	path: "/i/index",
 };
+
+
+const I_USER_INFO = {
+	component: UserInfo,
+	name: "iUserInfo",
+	path: "/i/my-info",
+	props: true,
+	hidden: true,
+}
+
 const BASE_I = {
 	children: [
-		I_HOME,
+		I_HOME, I_USER_INFO,
 		DEBIT, DEBIT_CHECK,
 		BOOK, BOOK_CHECK, BOOK_ADD,
 		BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
@@ -316,6 +351,7 @@ export {
 	// i
 	BASE_I,
 	I_HOME,
+	I_USER_INFO,
 	DEBIT,
 	DEBIT_CHECK,
 	USER,
@@ -333,7 +369,10 @@ export {
 	PUBLISHER_ADD,
 
 	// j
-	J_HOME
+	J_HOME,
+	J_CHECK,
+	J_USER_INFO,
+	J_STATISTICS,
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

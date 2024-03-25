@@ -1,4 +1,5 @@
 import {Header} from "@/api/Header.js";
+import {local} from "@/storage/local.js";
 import axios from "axios";
 
 const PRE_DEFINED_AXIOS = axios.create({
@@ -84,7 +85,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 // 添加请求拦截器
 PRE_DEFINED_AXIOS.interceptors.request.use(function (config) {
 	// 在发送请求之前做些什么
-	config.headers[Header.TOKEN] = localStorage.getItem(Header.TOKEN);
+	config.headers[Header.TOKEN] = local.get(Header.TOKEN);
 	return config;
 }, function (error) {
 	// 对请求错误做些什么

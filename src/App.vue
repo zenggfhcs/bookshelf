@@ -1,4 +1,6 @@
 <script setup>
+import {ThEME} from "@/storage/key.js";
+import {local} from "@/storage/local.js";
 import {
 	darkTheme,
 	dateZhCN,
@@ -9,16 +11,16 @@ import {
 	NWatermark,
 	zhCN
 } from "naive-ui";
-import {onBeforeMount, onBeforeUnmount, ref} from "vue";
+import {onBeforeMount, ref} from "vue";
 
 // 是暗色主题
 const isDark = ref(false);
 {
-	let _ = localStorage.getItem("isDark"); // 刷新时读取
+	let _ = local.get(ThEME) // 刷新时读取
 	if (_) {
 		isDark.value = _ === "true"; // bool string to bool
 	} else {
-		localStorage.setItem("isDark", "false"); // save
+		local.put(ThEME, false); // save
 	}
 }
 
@@ -30,18 +32,13 @@ const switchTheme = (v = !isDark.value) => {
 	if (isDark.value === v) return;
 	isDark.value = v;
 	// todo 可能有性能影响，替代方案是在 onBeforeUnmount 中执行，但是刷新页面时没有执行，达不到预期
-	localStorage.setItem("isDark", isDark.value?.toString());
+	local.put(ThEME, isDark.value?.toString());
 }
 
 //#region 生命周期
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 onBeforeMount(() => {
 	document.documentElement.style.fontSize = '16px';
-})
-
-// todo error 刷新不执行
-onBeforeUnmount(() => {
-	localStorage.setItem("isDark", isDark.value?.toString());
 })
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

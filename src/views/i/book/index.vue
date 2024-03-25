@@ -372,7 +372,7 @@ onMounted(() => { // 加载数据
 								<write/>
 							</n-icon>
 						</template>
-						修改条件
+						筛选
 					</n-button>
 				</template>
 				<span class="font-size-1.2em font-800">精确查询</span>

@@ -1,17 +1,45 @@
 <script setup>
-import Book from "@/components/book.vue";
-import {BASE_I, J_HOME, LOGIN, REGISTER} from "@/router/RouterValue.js";
+import {Header} from "@/api/Header.js";
+import Home from "@/icons/home.vue";
+import Statistics from "@/icons/i-statistics.vue";
+import moon from "@/icons/moon.vue";
+import Msg from "@/icons/msg.vue";
+import Search from "@/icons/search.vue";
+import sun from "@/icons/sun.vue";
+import {BASE_I, J_CHECK, J_HOME, J_STATISTICS, J_USER_INFO, LOGIN, REGISTER} from "@/router/RouterValue.js";
+import {local} from "@/storage/local.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {gProps} from "@/utils/generate.js";
+import logout from "@/utils/logout.js";
 import {expandIcon, renderIcon} from "@/utils/render.js";
-import {Home} from "@vicons/fa";
-import {NButton, NFlex, NLayout, NLayoutHeader, NMenu} from 'naive-ui'
-import {h, onMounted, ref} from "vue";
+import {
+	NBadge,
+	NButton,
+	NFlex,
+	NForm,
+	NIcon,
+	NLayout,
+	NLayoutHeader,
+	NMenu,
+	NModal,
+	NPopover,
+	NSpace,
+	useMessage,
+} from 'naive-ui'
+import {h, onBeforeMount, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
 
+const message = useMessage();
+
 const menuItemValue = ref("");
+
+const logoutConfirmationShow = ref(false);
+
+const loginStatus = ref(false);
+
+const showLogout = () => logoutConfirmationShow.value = true;
 
 const updateMenuItem = (v) => {
 	menuItemValue.value = v;
@@ -24,57 +52,144 @@ onMounted(() => {
 
 const menuOptions = [
 	{
-		label: () =>
-			h(
-				RouterLink,
-				gProps(J_HOME.name),
-				{default: () => '首页'}
-			),
+		label: () => h(
+			RouterLink,
+			gProps(J_HOME.name),
+			{default: () => '首页'}
+		),
 		key: 'j-index',
 		icon: renderIcon(Home)
 	},
+	{
+		label: () => h(
+			RouterLink,
+			gProps(J_CHECK.name),
+			{default: () => '查阅'}
+		),
+		key: "j-check",
+		icon: renderIcon(Search)
+	},
+	{
+		label: () => h(
+			RouterLink,
+			gProps(J_STATISTICS.name),
+			{default: () => '统计'},
+		),
+		key: "j-statistics",
+		icon: renderIcon(Statistics)
+	}
 ]
+
+const getThemeIcon = () => {
+	return props.isDark ? moon : sun;
+}
+
+onBeforeMount(() => {
+	if (local.get(Header.TOKEN)) {
+		loginStatus.value = true;
+	}
+})
 </script>
 
 <template>
-	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-3em items-center m-r-1em" style="flex-wrap: nowrap">
-			<n-menu
-				v-model:value="menuItemValue"
-				:collapsed-icon-size="16"
-				:expand-icon="expandIcon"
-				:options="menuOptions"
-				class="font-size-5"
-				mode="horizontal"
-			/>
-			<!-- todo 添加头像，登录后显示，没有登录显示以下内容 -->
-			<router-link :to="LOGIN">
-				<n-button :bordered="false" style="--n-padding: 0;">
-					Sign in
+	<n-layout-header bordered class="h-3em" position="absolute">
+		<n-flex justify="center">
+			<n-flex class="w-80em h-3em items-center" style="flex-wrap: nowrap">
+				<n-menu
+					v-model:value="menuItemValue"
+					:collapsed-icon-size="16"
+					:expand-icon="expandIcon"
+					:options="menuOptions"
+					:root-indent="0"
+					class="font-size-5"
+					mode="horizontal"
+				/>
+				<n-badge :value="15" class="m-l-a" dot>
+					<Msg class="w-2em h-2em"/>
+				</n-badge>
+				<n-button circle size="large" strong @click="props.switchTheme()">
+					<template #icon>
+						<n-icon :component="getThemeIcon()"/>
+					</template>
 				</n-button>
-			</router-link>
-			<router-link :to="REGISTER">
-				<n-button class="no-border-btn" tag="span">
-					Sign up
-				</n-button>
-			</router-link>
-			<router-link :to="BASE_I">
-				<n-button class="no-border-btn" type="info">
-					神秘的地方
-				</n-button>
-			</router-link>
+				<!-- todo 添加头像，登录后显示，没有登录显示以下内容 -->
+				<template v-if="loginStatus">
+					<n-popover class="p-0" placement="bottom" trigger="click">
+						<template #trigger>
+							<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
+                        <span class="font-800 font-size-1em"
+                              style="font-family: inter,sans-serif;">ME</span>
+							</n-button>
+						</template>
+						<n-form label-placement="left">
+							<n-flex style="text-align: justify;" vertical>
+								<router-link :to="BASE_I.path">
+									<n-button :bordered="false" class="w-100% no-border-btn">
+										后台
+									</n-button>
+								</router-link>
+								<router-link :to="J_USER_INFO.path">
+									<n-button :bordered="false" class="w-100% no-border-btn">
+										个人信息
+									</n-button>
+								</router-link>
+								<n-button :bordered="false" class="no-border-btn" @click="showLogout">
+									登出
+								</n-button>
+							</n-flex>
+						</n-form>
+					</n-popover>
+				</template>
+				<template v-else>
+					<router-link :to="LOGIN">
+						<n-button :bordered="false" style="--n-padding: 0;">
+							Sign in
+						</n-button>
+					</router-link>
+					<router-link :to="REGISTER">
+						<n-button tag="span">
+							Sign up
+						</n-button>
+					</router-link>
+				</template>
+			</n-flex>
 		</n-flex>
 	</n-layout-header>
-	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0 bg-#00bd7e"
+	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .5em;">
-		<Book/>
 		<router-view v-slot="{ Component}">
 			<component :is="Component" :updateMenuItem="updateMenuItem"/>
 		</router-view>
 	</n-layout>
 
+
+	<n-modal
+		id="logout-modal"
+		v-model:show="logoutConfirmationShow"
+		preset="dialog"
+		style="--n-font-size: 16px;"
+		title="退出二次确认"
+		transform-origin="center"
+		type="warning"
+	>
+		<n-space vertical>
+					<span>
+						您是否要退出登录？
+					</span>
+			<n-flex justify="right">
+				<n-button type="warning" @click="logout(message)">
+					确定
+				</n-button>
+			</n-flex>
+		</n-space>
+	</n-modal>
+
 </template>
 
 <style scoped>
 @import url(@/styles/no-border-btn.css);
+
+:deep(div.n-menu.n-menu--horizontal div.n-menu-item-content) {
+	padding: 0 2em 0 0;
+}
 </style>

@@ -9,7 +9,7 @@ import {debounce} from "@/utils/debounce.js";
 import {gCode} from "@/utils/generate.js";
 import {formValidator} from "@/utils/validator.js";
 import {ChevronBackOutline} from "@vicons/ionicons5";
-import {NButton, NCountdown, NForm, NFormItem, NGi, NGrid, NInput, useMessage} from "naive-ui";
+import {NButton, NCountdown, NFlex, NForm, NFormItem, NGi, NGrid, NInput, useMessage} from "naive-ui";
 import {ref} from "vue";
 
 /**
@@ -48,6 +48,8 @@ const codeRef = ref(null);
  * @Default false
  */
 const loading = ref(false);
+
+const sendCodeLoading = ref(false);
 
 /**
  * 验证码有效标识，获取过验证码，并且验证码有效为 true
@@ -197,17 +199,19 @@ const sendCode = debounce((e) => {
 		email: model.value.email,
 		authenticationString: code.value?.toString()
 	}
+	sendCodeLoading.value = true;
 	Mail.sendCode(_entity)
 		.then(res => {
+			message.success("发送成功，请查看邮箱邮件", messageOptions);
 			console.log(res);
+			ObtainedCode.value = true;
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-
+			sendCodeLoading.value = false;
 		})
-	ObtainedCode.value = true;
 });
 
 /**
@@ -241,14 +245,14 @@ const resetPassword = debounce((e) => {
 </script>
 
 <template>
-	<div>
+	<n-flex class="items-center" vertical>
 		<div class="text-center font-800 font-size-1.5em">重置密码</div>
 		<div class="text-center">
 			<span class="font-size-.9em color-#8c98a4">
 				输入您的注册邮箱，我们为您发送一封包含验证码的邮件，在此输入以重置您的密码
 			</span>
 		</div>
-	</div>
+	</n-flex>
 	<n-form
 		id="login-form"
 		ref="formRef"
@@ -274,7 +278,8 @@ const resetPassword = debounce((e) => {
 					style="border-radius: .1em 0 0 .1em"
 					@keydown.enter.prevent
 				/>
-				<n-button :disabled="ObtainedCode || !emailValidated" class="b-rd-0"
+				<n-button :disabled="ObtainedCode || !emailValidated" :loading="sendCodeLoading"
+				          class="b-rd-0"
 				          style="border-radius: 0 .1em .1em 0" type="info" @click="sendCode">
 					<span v-show="!ObtainedCode">获取</span>
 					<span v-show="ObtainedCode">

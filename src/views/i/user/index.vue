@@ -403,16 +403,16 @@ onMounted(() => { // 加载数据
 
 <template>
 	<n-layout-header bordered class="h-3em" position="absolute">
-		<n-flex class="h-3em items-center m-l-1em m-r-1em">
+		<n-flex class="h-3em items-center m-l-1em m-r-1em" justify="right">
 			<n-popover trigger="click">
 				<template #trigger>
-					<n-button class="m-.3em h-2.4em m-l-a">
+					<n-button class="h-2.4em">
 						<template #icon>
 							<n-icon>
 								<write/>
 							</n-icon>
 						</template>
-						修改条件
+						筛选
 					</n-button>
 				</template>
 				<span class="font-size-1.2em font-800">精确查询</span>

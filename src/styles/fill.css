@@ -11,6 +11,8 @@
 }
 
 .n-button:not(.n-button--disabled):hover .n-button__icon svg,
-.n-button:not(.n-button--disabled):focus .n-button__icon svg {
+.n-button:not(.n-button--disabled):focus .n-button__icon svg,
+.n-icon svg,
+.n-icon svg g path {
     fill: var(--n-text-color-hover);
 }

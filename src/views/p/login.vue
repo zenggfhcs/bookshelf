@@ -1,12 +1,14 @@
 <script setup>
+import {Header} from "@/api/Header.js";
 import {Service} from "@/api/index.js";
 import {REG_EMAIL} from "@/constant/regular-expression.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import router from "@/router/Router.js";
 import {REGISTER, RESET_PASSWORD} from "@/router/RouterValue.js";
+import {local} from "@/storage/local.js";
 import {debounce} from "@/utils/debounce.js";
 import {formValidator} from "@/utils/validator.js";
-import {NButton, NDivider, NForm, NFormItem, NInput, NLayout, useMessage} from "naive-ui";
+import {NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage} from "naive-ui";
 import {onMounted, ref} from "vue";
 
 onMounted(() => {
@@ -63,7 +65,10 @@ const login = debounce((e) => {
 				const data = res.data;
 				if (data?.code === ResponseCode.SUCCESS) {
 					// 登录
-					localStorage.setItem("token", data?.data?.token);
+					// localStorage.setItem(TOKEN, data?.data?.token); todo
+					if (local.get(Header.TOKEN))
+						local.remove(Header.TOKEN);
+					local.put(Header.TOKEN, data?.data?.token);
 					router.push("/");
 				} else {
 					message.error(data.message);
@@ -82,7 +87,7 @@ const login = debounce((e) => {
 </script>
 
 <template>
-	<n-layout>
+	<n-flex class="items-center" vertical>
 		<div class="text-center">
 			<span class="font-800 font-size-1.5em">登录您的账户</span>
 		</div>
@@ -92,50 +97,50 @@ const login = debounce((e) => {
 			</router-link>
 		</div>
 		<n-divider>OR</n-divider>
-		<n-form
-			id="login-form"
-			ref="formRef"
-			:model="model"
-			:rules="rules"
-		>
-			<n-form-item label="邮箱" path="email" size="large">
+	</n-flex>
+	<n-form
+		id="login-form"
+		ref="formRef"
+		:model="model"
+		:rules="rules"
+	>
+		<n-form-item label="邮箱" path="email" size="large">
+			<n-input
+				v-model:value="model.email"
+				:maxlength="32"
+				:minlength="5"
+				placeholder="输入邮箱"
+				@keydown.enter.prevent
+			/>
+		</n-form-item>
+		<n-form-item label="密码" path="authenticationString" size="large">
+			<div class="w-100% relative">
 				<n-input
-					v-model:value="model.email"
-					:maxlength="32"
-					:minlength="5"
-					placeholder="输入邮箱"
+					v-model:value="model.authenticationString"
+					:maxlength="17"
+					:minlength="7"
+					autocapitalize="on"
+					placeholder="输入密码"
+					show-password-on="mousedown"
+					type="password"
 					@keydown.enter.prevent
 				/>
-			</n-form-item>
-			<n-form-item label="密码" path="authenticationString" size="large">
-				<div class="w-100% relative">
-					<n-input
-						v-model:value="model.authenticationString"
-						:maxlength="17"
-						:minlength="7"
-						autocapitalize="on"
-						placeholder="输入密码"
-						show-password-on="mousedown"
-						type="password"
-						@keydown.enter.prevent
-					/>
-					<router-link :to="RESET_PASSWORD"
-					             class="absolute bottom--1.7em right-0 h-2em line-height-2em color-#8c98a4">忘记密码?
-					</router-link>
-				</div>
-			</n-form-item>
-			<n-form-item>
-				<n-button
-					:loading="loading"
-					class="w-100%"
-					size="large"
-					type="success"
-					@click="login">
-					登入
-				</n-button>
-			</n-form-item>
-		</n-form>
-	</n-layout>
+				<router-link :to="RESET_PASSWORD"
+				             class="absolute bottom--1.7em right-0 h-2em line-height-2em color-#8c98a4">忘记密码?
+				</router-link>
+			</div>
+		</n-form-item>
+		<n-form-item>
+			<n-button
+				:loading="loading"
+				class="w-100%"
+				size="large"
+				type="success"
+				@click="login">
+				登入
+			</n-button>
+		</n-form-item>
+	</n-form>
 </template>
 
 <style scoped>

@@ -1,17 +1,15 @@
 <script setup>
-import {Header} from "@/api/Header.js";
 import BookBrain from "@/icons/book-brain.vue";
 import WorkBenchIcon from "@/icons/home.vue";
 import LogIcon from "@/icons/log.vue";
 import moon from "@/icons/moon.vue";
 import PublisherIcon from "@/icons/publisher.vue";
 import sun from "@/icons/sun.vue";
-import router from "@/router/Router.js";
-import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, LOG, LOGIN, PUBLISHER, USER} from "@/router/RouterValue.js";
+import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, LOG, PUBLISHER, USER} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {gProps} from "@/utils/generate.js";
+import logout from "@/utils/logout.js";
 import {expandIcon, renderIcon} from "@/utils/render.js";
-import {sleep} from "@/utils/sleep.js";
 import {
 	Book as BookManagerIcon,
 	BookOpen as BookInfoManagerIcon,
@@ -61,12 +59,6 @@ const updateBreadcrumbArray = (array) => {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const showLogout = ref(false);
 
-const logout = () => {
-	localStorage.removeItem(Header.TOKEN);
-	message.success("成功退出登录");
-	sleep();
-	router.push(LOGIN.path);
-}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -254,9 +246,16 @@ onMounted(() => {
 							</n-button>
 						</template>
 						<n-form label-placement="left">
-							<n-button :bordered="false" class="no-border-btn" @click="showLogout = true">
-								登出
-							</n-button>
+							<n-flex vertical>
+								<router-link to="/i">
+									<n-button :bordered="false" class="w-100% no-border-btn">
+										个人信息
+									</n-button>
+								</router-link>
+								<n-button :bordered="false" class="no-border-btn" @click="showLogout = true">
+									登出
+								</n-button>
+							</n-flex>
 						</n-form>
 					</n-popover>
 
@@ -283,7 +282,7 @@ onMounted(() => {
 						您是否要退出登录？
 					</span>
 					<n-flex justify="right">
-						<n-button type="warning" @click="logout">
+						<n-button type="warning" @click="logout(message)">
 							确定
 						</n-button>
 					</n-flex>
