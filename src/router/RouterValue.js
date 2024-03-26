@@ -11,6 +11,7 @@ import DebitManager from "@/views/i/debit/index.vue";
 import I from "@/views/i/index.vue";
 import LogCheck from "@/views/i/log/check.vue";
 import LogManager from "@/views/i/log/index.vue";
+import My from "@/views/i/my/index.vue";
 import PublisherAdd from "@/views/i/publisher/add.vue";
 import PublisherCheck from "@/views/i/publisher/check.vue";
 import PublisherManager from "@/views/i/publisher/index.vue";
@@ -42,10 +43,10 @@ const LOGIN = {
 
 const REGISTER = {
 	component: Register,
-	hidden: true,
 	name: "register",
 	path: "/register",
 	props: true,
+	hidden: true,
 };
 
 const RESET_PASSWORD = {
@@ -80,10 +81,9 @@ const PUBLIC = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const _404 = {
 	component: Page404,
-	hidden: true,
-
 	name: "404",
 	path: "/error/404",
+	hidden: true,
 }
 
 const ERROR = {
@@ -299,6 +299,18 @@ const USER_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region my
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const MY = {
+	component: My,
+	name: "my",
+	path: "/i/my",
+	props: true,
+	hidden: true
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 const I_HOME = {
 	component: I,
 	name: "iIndex",
@@ -323,6 +335,7 @@ const BASE_I = {
 		PUBLISHER, PUBLISHER_CHECK, PUBLISHER_ADD,
 		USER, USER_CHECK,
 		LOG, LOG_CHECK,
+		MY,
 	],
 	redirect: I_HOME,
 	component: BaseI,
@@ -367,6 +380,7 @@ export {
 	LOG_CHECK,
 	PUBLISHER_CHECK,
 	PUBLISHER_ADD,
+	MY,
 
 	// j
 	J_HOME,

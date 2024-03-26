@@ -311,8 +311,7 @@ onBeforeMount(() => {
 			<n-button type="error" @click="showRemove = true">
 				删除
 			</n-button>
-			<n-button :disabled="isModified()"
-			          type="warning"
+			<n-button type="warning"
 			          @click="showUpdate = true">
 				修改
 			</n-button>
@@ -320,9 +319,7 @@ onBeforeMount(() => {
 	</n-layout-header>
 	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .3em 1em">
-		<!--		todo add form-->
 		<n-table :single-line="false" class="w-100%">
-			<!--			todo 优化布局，-->
 			<tbody class="trc">
 			<tr>
 				<td class="w-43%">id</td>
@@ -360,15 +357,9 @@ onBeforeMount(() => {
 					<n-tag :bordered="false" type="default">
 						{{ info.bookType }}
 					</n-tag>
-					<!--                  todo 完善 options 和查找逻辑-->
-					<!--					<n-select v-model:value="info.bookType" :loading="loadingSearchPublisher" :options="typeOptions"-->
-					<!--					          clearable-->
-					<!--					          filterable placeholder="查找类型"-->
-					<!--					          remote @search="handleSearchType"/>-->
 				</td>
 			</tr>
 			<tr>
-				<!--            todo 不知道该怎么展示图片, 要给图片加个上传功能，要写上传接口；使用 n-upload -->
 				<td>封面链接</td>
 				<td>
 					<img :src="info.cover" alt="书籍图片链接" class="h-20em">
@@ -449,11 +440,6 @@ onBeforeMount(() => {
 									{{ `${info.publisher?.name}出版社` }}
 								</n-tag>
 								<NoData v-else/>
-								<!--								&lt;!&ndash; todo 完善 options ，异步查询 &ndash;&gt;-->
-								<!--								<n-select v-model:value="info.publisher.id" :loading="loadingSearchPublisher"-->
-								<!--								          :options="publisherOptions" clearable-->
-								<!--								          filterable placeholder="查找出版社"-->
-								<!--								          remote @search="handleSearchPublisher"/>-->
 							</td>
 						</tr>
 						<tr>

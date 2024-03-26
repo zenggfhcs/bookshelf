@@ -20,6 +20,45 @@ export {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region debit
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const DEBIT = {
+	path: "/i/debits",
+	label: "借阅记录",
+}
+
+const DEBIT_ADD = {
+	path: "/i/debits/add",
+	label: "新增",
+}
+
+const DEBIT_CHECK = (id) => ({
+	path: `/i/debits/${id}`,
+	label: "详情",
+})
+
+const B_DEBIT = [
+	I_HOME,
+	DEBIT,
+]
+const B_DEBIT_ADD = [
+	I_HOME,
+	DEBIT,
+	DEBIT_ADD,
+]
+const B_DEBIT_CHECK = (id) => [
+	I_HOME,
+	DEBIT,
+	DEBIT_CHECK(id),
+]
+export {
+	B_DEBIT,
+	B_DEBIT_ADD,
+	B_DEBIT_CHECK,
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 //#region book
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BOOK = {
@@ -212,6 +251,23 @@ const B_LOG_CHECK = (id) => [
 export {
 	B_LOG_INDEX,
 	B_LOG_CHECK,
+}
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region my
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const MY = {
+	path: "/i/my",
+	label: "我的",
+}
+
+const B_MY = [
+	I_HOME,
+	MY,
+]
+export {
+	B_MY,
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

@@ -1,5 +1,6 @@
 <script setup>
 import {Service} from "@/api/index.js";
+import {B_DEBIT} from "@/constant/breadcrumb.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
@@ -33,9 +34,12 @@ import {
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(['updateMenuItem', "updateBreadcrumbArray"]);
 
-props.updateMenuItem("i-debit");
+{
+	props.updateMenuItem("i-debit");
+	props.updateBreadcrumbArray(B_DEBIT);
+}
 
 //#region entity
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */

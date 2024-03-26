@@ -26,7 +26,7 @@ import {
 	NSpace,
 	useMessage,
 } from 'naive-ui'
-import {h, onBeforeMount, onMounted, ref} from "vue";
+import {computed, h, onBeforeMount, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
@@ -43,6 +43,25 @@ const showLogout = () => logoutConfirmationShow.value = true;
 
 const updateMenuItem = (v) => {
 	menuItemValue.value = v;
+}
+
+const showUserPopover = ref(false);
+
+const canSwitch = ref(true);
+
+// todo
+const switchShowUserPopover = (target = !showUserPopover.value) => {
+	if (canSwitch.value) {
+		showUserPopover.value = target;
+	}
+}
+
+const handleClickPopoverOutSide = () => {
+	showUserPopover.value = false;
+	canSwitch.value = false;
+	setTimeout(() => {
+		canSwitch.value = true;
+	}, 100);
 }
 
 onMounted(() => {
@@ -80,9 +99,9 @@ const menuOptions = [
 	}
 ]
 
-const getThemeIcon = () => {
+const themeIcon = computed(() => {
 	return props.isDark ? moon : sun;
-}
+})
 
 onBeforeMount(() => {
 	if (local.get(Header.TOKEN)) {
@@ -109,14 +128,16 @@ onBeforeMount(() => {
 				</n-badge>
 				<n-button circle size="large" strong @click="props.switchTheme()">
 					<template #icon>
-						<n-icon :component="getThemeIcon()"/>
+						<n-icon :component="themeIcon"/>
 					</template>
 				</n-button>
 				<!-- todo 添加头像，登录后显示，没有登录显示以下内容 -->
 				<template v-if="loginStatus">
-					<n-popover class="p-0" placement="bottom" trigger="click">
+					<n-popover :show="showUserPopover" class="p-0" placement="bottom"
+					           trigger="click" @clickoutside.prevent="handleClickPopoverOutSide()">
 						<template #trigger>
-							<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
+							<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer"
+							          @click.prevent="switchShowUserPopover()">
                         <span class="font-800 font-size-1em"
                               style="font-family: inter,sans-serif;">ME</span>
 							</n-button>
@@ -124,7 +145,8 @@ onBeforeMount(() => {
 						<n-form label-placement="left">
 							<n-flex style="text-align: justify;" vertical>
 								<router-link :to="BASE_I.path">
-									<n-button :bordered="false" class="w-100% no-border-btn">
+									<n-button :bordered="false" class="w-100% no-border-btn"
+									          @click.prevent="switchShowUserPopover(false)">
 										后台
 									</n-button>
 								</router-link>
@@ -133,7 +155,8 @@ onBeforeMount(() => {
 										个人信息
 									</n-button>
 								</router-link>
-								<n-button :bordered="false" class="no-border-btn" @click="showLogout">
+								<n-button :bordered="false" class="no-border-btn"
+								          @click.prevent="switchShowUserPopover(false); showLogout();">
 									登出
 								</n-button>
 							</n-flex>

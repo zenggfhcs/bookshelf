@@ -1,6 +1,8 @@
 <script setup>
 import {Service} from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
+import {B_DEBIT_CHECK} from "@/constant/breadcrumb.js";
+import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import {timeFormat} from "@/utils/convert.js";
 import {copyMatchingProperties} from "@/utils/index.js";
@@ -8,9 +10,11 @@ import {sleep} from "@/utils/sleep.js";
 import {NFlex, NLayout, NLayoutHeader, NTable, NTag, useMessage} from "naive-ui";
 import {onMounted, reactive} from "vue";
 
-const props = defineProps(['id', 'updateMenuItem']);
+const props = defineProps(['id', 'updateMenuItem', "updateBreadcrumbArray"]);
+
 {
-	props.updateMenuItem('i-debit');
+	props.updateMenuItem("i-debit");
+	props.updateBreadcrumbArray(B_DEBIT_CHECK(props.id));
 }
 
 const message = useMessage();
@@ -57,6 +61,9 @@ const updater = reactive({
 //#region query
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const queryUser = (id, target) => {
+	if (!id) {
+		return;
+	}
 	Service.Users.get(id)
 		.then(res => {
 			const _returnData = res.data;
@@ -68,7 +75,8 @@ const queryUser = (id, target) => {
 
 		})
 		.catch(err => {
-			message.error(err.message);
+			console.log(err);
+			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
 

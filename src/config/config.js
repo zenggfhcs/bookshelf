@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:9090';
+const BASE_URL = 'http://10.3.105.0:9090';
 
 export {
 	BASE_URL

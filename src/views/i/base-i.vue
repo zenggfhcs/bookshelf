@@ -5,7 +5,7 @@ import LogIcon from "@/icons/log.vue";
 import moon from "@/icons/moon.vue";
 import PublisherIcon from "@/icons/publisher.vue";
 import sun from "@/icons/sun.vue";
-import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, LOG, PUBLISHER, USER} from "@/router/RouterValue.js";
+import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, LOG, MY, PUBLISHER, USER} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {gProps} from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -39,37 +39,45 @@ import {RouterLink} from "vue-router";
 
 const props = defineProps(['switchTheme', 'isDark']);
 
-//#region message
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 面包屑
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const breadcrumbArray = ref([]);
 
 const updateBreadcrumbArray = (array) => {
 	breadcrumbArray.value = array;
 }
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region logout
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const showLogout = ref(false);
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+const switchShowLogout = (targetValue = !showLogout.value) => {
+	showLogout.value = targetValue;
+}
 
-//#region menu
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const collapsed = ref(false);
 
 const menuItemValue = ref("");
 
 const updateMenuItem = (itemValue) => {
 	menuItemValue.value = itemValue;
+}
+
+const showUserPopover = ref(false);
+
+const canSwitch = ref(true);
+
+// todo
+const switchShowUserPopover = (target = !showUserPopover.value) => {
+	if (canSwitch.value) {
+		showUserPopover.value = target;
+	}
+}
+
+const handleClickPopoverOutSide = () => {
+	showUserPopover.value = false;
+	canSwitch.value = false;
+	setTimeout(() => {
+		canSwitch.value = true;
+	}, 100);
 }
 
 const menuOptions = [
@@ -140,18 +148,24 @@ const menuOptions = [
 		,
 		key: 'i-log',
 		icon: renderIcon(LogIcon)
+	}, {
+		label: () =>
+			h(
+				RouterLink,
+				gProps(MY.name),
+				{default: () => '我的'}
+			)
+		,
+		key: 'i-my',
+		icon: renderIcon(LogIcon)
 	}
 ]
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 生命周期函数
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 onMounted(() => {
 	checkLoginState();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+
 </script>
 
 <template>
@@ -238,21 +252,25 @@ onMounted(() => {
 							<router-link :to="item?.path">{{ item?.label }}</router-link>
 						</n-breadcrumb-item>
 					</n-breadcrumb>
-					<n-popover class="p-0" placement="left-start" trigger="click">
+					<n-popover :show="showUserPopover" class="p-0" placement="left-start"
+					           trigger="click" @clickoutside.prevent="handleClickPopoverOutSide()">
 						<template #trigger>
-							<n-button class="m-l-a m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer">
+							<n-button class="m-l-a m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer"
+							          @click.prevent="switchShowUserPopover()">
                         <span class="font-800 font-size-1em"
                               style="font-family: inter,sans-serif;">ME</span>
 							</n-button>
 						</template>
 						<n-form label-placement="left">
 							<n-flex vertical>
-								<router-link to="/i">
-									<n-button :bordered="false" class="w-100% no-border-btn">
+								<router-link :to="MY.path">
+									<n-button :bordered="false" class="w-100% no-border-btn"
+									          @click.prevent="switchShowUserPopover()">
 										个人信息
 									</n-button>
 								</router-link>
-								<n-button :bordered="false" class="no-border-btn" @click="showLogout = true">
+								<n-button :bordered="false" class="no-border-btn"
+								          @click.prevent="switchShowUserPopover(); switchShowLogout()">
 									登出
 								</n-button>
 							</n-flex>

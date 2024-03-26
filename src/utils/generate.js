@@ -1,6 +1,6 @@
 import {ParameterType} from "@/constant/Type.js";
 import {TypeCheck} from "@/utils/Check.js";
-import {copyMatchingProperties, shuffleArray} from "@/utils/index.js";
+import {shuffleArray} from "@/utils/index.js";
 import {randomInt} from "@/utils/random.js";
 
 
@@ -55,40 +55,6 @@ export {
 	gProps,
 }
 //#endregion
-
-
-//#region g col item
-/**
- * 生成表格头
- * @param t title
- * @param k key
- * @param ext 额外的属性
- */
-const gCol = (t, k, ext = undefined) => {
-	const res = {
-		title: t,
-		key: k,
-		//#region default
-
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		//#endregion
-	}
-
-	copyMatchingProperties(ext, res);
-
-	return res;
-}
-
-export {
-	gCol
-}
-//#endregion
-
 
 /**
  * 生成验证码

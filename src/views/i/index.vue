@@ -77,7 +77,7 @@ const rowProps = row => {
 				</n-card>
 			</n-gi>
 			<n-gi>
-				<n-card title="今日借阅">
+				<n-card title="今日活跃用户">
 					第3个card
 				</n-card>
 			</n-gi>

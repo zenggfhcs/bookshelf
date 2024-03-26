@@ -4,12 +4,11 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+import {elapsedTimeLevel, LOG_TYPE_MAP} from "@/constant/log-info.js";
+import {ageLevel, GENDER_MAP, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP} from "@/constant/user-info.js";
+
 //#region 时间戳转 yyyy-MM-ddTHH:mm:ss
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-
-import {elapsedTimeLevel, LOG_TYPE_MAP} from "@/constant/log.js";
-import {ageLevel, GENDER_MAP, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP} from "@/constant/user.js";
-
 const timestampToDateTimeString = (timestamp) => {
 	if (!timestamp) {
 		return null;

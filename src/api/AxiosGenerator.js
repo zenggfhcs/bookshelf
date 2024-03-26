@@ -10,7 +10,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 
 	// `baseURL` 将自动加在 `url` 前面，除非 `url` 是一个绝对 URL。
 	// 它可以通过设置一个 `baseURL` 便于为 axios 实例的方法传递相对 URL
-	baseURL: 'http://10.3.105.0:9090/', // `${BASE_URL}`,
+	baseURL: 'http://10.3.105.0:9090/', // `${BASE_URL}`, // todo import base url
 
 	// `transformRequest` 允许在向服务器发送前，修改请求数据
 	// 它只能用于 'PUT', 'POST' 和 'PATCH' 这几个请求方法
@@ -22,7 +22,6 @@ const PRE_DEFINED_AXIOS = axios.create({
 	}],
 	// `transformResponse` 在传递给 then/catch 前，允许修改响应数据
 	transformResponse: [(data) => {
-		// todo 调试使用
 		const _jsonData = JSON.parse(data);
 		console.log(_jsonData);
 		return _jsonData;
@@ -82,18 +81,17 @@ const PRE_DEFINED_AXIOS = axios.create({
 	},
 });
 
-//#region interceptor
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 // 添加请求拦截器
 PRE_DEFINED_AXIOS.interceptors.request.use(
 	(config) => {
 		// 在发送请求之前做些什么
 		// 刷新使用的 token
-		if (config.url?.toString().endsWith("/refresh")) {
-			config.headers[Header.TOKEN] = local.get(REFRESH_TOKEN);
-		} else { // 默认 token
-			config.headers[Header.TOKEN] = local.get(Header.TOKEN);
-		}
+		const tokenKey =
+			config.url?.toString().endsWith("/token/refresh") ?
+				REFRESH_TOKEN
+				:
+				Header.TOKEN;
+		config.headers[Header.TOKEN] = local.get(tokenKey);
 		return config;
 	},
 	(error) => {
@@ -115,8 +113,10 @@ PRE_DEFINED_AXIOS.interceptors.response.use(
 		// 超出 2xx 范围的状态码都会触发该函数。
 		// 对响应错误做点什么
 		const {data, config} = error.response;
-		if (data?.code === ResponseCode.TOKEN_E && !config.url?.toString().endsWith("/refresh")) {
+
+		if (data?.code === ResponseCode.TOKEN_E && !config.url?.toString().endsWith("/token/refresh")) {
 			const _refreshRes = await refreshToken();
+
 			if (_refreshRes?.data?.code === ResponseCode.SUCCESS) {
 				// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
 				const _dataString = config?.data;
@@ -128,23 +128,20 @@ PRE_DEFINED_AXIOS.interceptors.response.use(
 			return error.response;
 	}
 );
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+
 
 export {
 	PRE_DEFINED_AXIOS
 }
 
-const refreshToken = async () => await Service.Token.refresh()
-	.then(res => {
-		// todo 设置 token
-		console.log(1)
-		const _data = res?.data;
-		if (_data?.code === ResponseCode.SUCCESS) {
-			console.log(1.5)
-			const _tokenInfo = JSON.parse(res?.data?.data?.token);
-			resetToken(_tokenInfo);
-		}
-		return res;
-	})
-	.catch(err => err)
+const refreshToken = async () =>
+	await Service.Token.refresh()
+		.then(res => {
+			const _data = res?.data;
+			if (_data?.code === ResponseCode.SUCCESS) {
+				const _tokenInfo = JSON.parse(res?.data?.data?.token);
+				resetToken(_tokenInfo);
+			}
+			return res;
+		})
+		.catch(err => err)

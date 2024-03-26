@@ -49,3 +49,21 @@ export function traverse(array) {
 	}
 }
 
+
+/**
+ * 格式化字符串
+ * @param dateString
+ * @param formatString
+ */
+export function transDateString(dateString, formatString) {
+	const dateReg = /^(\d+)(([-/])(\d+))?(([-/])(\d+))?(([ T])(\d+))?(([:])(\d+))?(([:])(\d+(\.\d+)?))?$/;
+	const _execArray = dateReg.exec(dateString);
+	const _valueArray = [
+		_execArray?.[1], _execArray?.[3],
+		_execArray?.[4], _execArray?.[6],
+		_execArray?.[7], _execArray?.[9],
+		_execArray?.[10], _execArray?.[12],
+		_execArray?.[13], _execArray?.[15],
+		_execArray?.[16]
+	]
+}
