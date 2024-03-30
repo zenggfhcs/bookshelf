@@ -5,7 +5,7 @@ import {LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, SERVICE_NAME_MAP, TY
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {LOG_CHECK} from "@/router/RouterValue.js";
 import {PAGE, PAGE_SIZE} from "@/storage/key.js";
 import {session} from "@/storage/session.js";
@@ -34,7 +34,6 @@ import {
 	NPagination,
 	NPopover,
 	NSelect,
-	NSpin,
 	NTag,
 	useMessage
 } from "naive-ui"
@@ -211,7 +210,7 @@ const cols = [
 
 let tableData = [];
 
-const loadingFind = ref(false);
+const loadingQuery = ref(false);
 
 const typeOptions = LOG_PRE_DEFINED_TYPE;
 
@@ -266,7 +265,7 @@ const preQuery = () => {
 // todo 修改条件后查找，不会改变页码，会导致查页错误、查出数据为空
 // 预计实现方式：
 const query = () => {
-	loadingFind.value = true;
+	loadingQuery.value = true;
 
 	preQuery();
 
@@ -286,7 +285,7 @@ const query = () => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-			loadingFind.value = false;
+			loadingQuery.value = false;
 		});
 };
 
@@ -410,15 +409,14 @@ onBeforeUnmount(() => {
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20" style="--n-height: 2.4em; --n-width: 2.4em;"/>
 		<!--   数据表   -->
-		<n-spin :show="loadingFind">
-			<n-data-table
-				:columns="cols"
-				:data="tableData"
-				:render-cell="renderCell"
-				:row-props="rowProps"
-				:single-line="false" striped
-			/>
-		</n-spin>
+		<n-data-table
+			:loading="loadingQuery"
+			:columns="cols"
+			:data="tableData"
+			:render-cell="renderCell"
+			:row-props="rowProps"
+			:single-line="false" striped
+		/>
 	</n-layout>
 	<n-layout-footer class="h-2.4em" position="absolute">
 		<n-flex :size="8" class="items-center mr4 h-100%" justify="center">

@@ -96,6 +96,15 @@ const menuOptions = [
 		),
 		key: "j-statistics",
 		icon: renderIcon(Statistics)
+	},
+	{
+		label: () => h(
+			RouterLink,
+			gProps(J_STATISTICS.name),
+			{default: () => '借阅记录'},
+		),
+		key: "j-debit-info",
+		icon: renderIcon(Statistics)
 	}
 ]
 
@@ -111,81 +120,80 @@ onBeforeMount(() => {
 </script>
 
 <template>
-	<n-layout-header bordered class="h-3em" position="absolute">
-		<n-flex justify="center">
-			<n-flex class="w-80em h-3em items-center" style="flex-wrap: nowrap">
-				<n-menu
-					v-model:value="menuItemValue"
-					:collapsed-icon-size="16"
-					:expand-icon="expandIcon"
-					:options="menuOptions"
-					:root-indent="0"
-					class="font-size-5"
-					mode="horizontal"
-				/>
-				<n-badge :value="15" class="m-l-a" dot>
-					<Msg class="w-2em h-2em"/>
-				</n-badge>
-				<n-button circle size="large" strong @click="props.switchTheme()">
-					<template #icon>
-						<n-icon :component="themeIcon"/>
-					</template>
-				</n-button>
-				<!-- todo 添加头像，登录后显示，没有登录显示以下内容 -->
-				<template v-if="loginStatus">
-					<n-popover :show="showUserPopover" class="p-0" placement="bottom"
-					           trigger="click" @clickoutside.prevent="handleClickPopoverOutSide()">
-						<template #trigger>
-							<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer"
-							          @click.prevent="switchShowUserPopover()">
+	<n-layout position="absolute" :native-scrollbar="false">
+		<n-layout-header bordered class="h-3em">
+			<n-flex justify="center">
+				<n-flex class="w-80em h-3em items-center" style="flex-wrap: nowrap">
+					<n-menu
+						v-model:value="menuItemValue"
+						:collapsed-icon-size="16"
+						:expand-icon="expandIcon"
+						:options="menuOptions"
+						:root-indent="0"
+						class="font-size-5"
+						mode="horizontal"
+					/>
+					<n-badge :value="15" class="m-l-a" dot>
+						<Msg class="w-2em h-2em"/>
+					</n-badge>
+					<n-button circle size="large" strong @click="props.switchTheme()">
+						<template #icon>
+							<n-icon :component="themeIcon"/>
+						</template>
+					</n-button>
+					<!-- todo 添加头像，登录后显示，没有登录显示以下内容 -->
+					<template v-if="loginStatus">
+						<n-popover :show="showUserPopover" class="p-0" placement="bottom"
+						           trigger="click" @clickoutside.prevent="handleClickPopoverOutSide()">
+							<template #trigger>
+								<n-button class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer"
+								          @click.prevent="switchShowUserPopover()">
                         <span class="font-800 font-size-1em"
                               style="font-family: inter,sans-serif;">ME</span>
-							</n-button>
-						</template>
-						<n-form label-placement="left">
-							<n-flex style="text-align: justify;" vertical>
-								<router-link :to="BASE_I.path">
-									<n-button :bordered="false" class="w-100% no-border-btn"
-									          @click.prevent="switchShowUserPopover(false)">
-										后台
-									</n-button>
-								</router-link>
-								<router-link :to="J_USER_INFO.path">
-									<n-button :bordered="false" class="w-100% no-border-btn">
-										个人信息
-									</n-button>
-								</router-link>
-								<n-button :bordered="false" class="no-border-btn"
-								          @click.prevent="switchShowUserPopover(false); showLogout();">
-									登出
 								</n-button>
-							</n-flex>
-						</n-form>
-					</n-popover>
-				</template>
-				<template v-else>
-					<router-link :to="LOGIN">
-						<n-button :bordered="false" style="--n-padding: 0;">
-							Sign in
-						</n-button>
-					</router-link>
-					<router-link :to="REGISTER">
-						<n-button tag="span">
-							Sign up
-						</n-button>
-					</router-link>
-				</template>
+							</template>
+							<n-form label-placement="left">
+								<n-flex style="text-align: justify;" vertical>
+									<router-link :to="BASE_I.path">
+										<n-button :bordered="false" class="w-100% no-border-btn">
+											后台
+										</n-button>
+									</router-link>
+									<router-link :to="J_USER_INFO.path">
+										<n-button :bordered="false" class="w-100% no-border-btn"
+										          @click="switchShowUserPopover(false)">
+											个人信息
+										</n-button>
+									</router-link>
+									<n-button :bordered="false" class="no-border-btn"
+									          @click.prevent="switchShowUserPopover(false); showLogout();">
+										登出
+									</n-button>
+								</n-flex>
+							</n-form>
+						</n-popover>
+					</template>
+					<template v-else>
+						<router-link :to="LOGIN">
+							<n-button :bordered="false" style="--n-padding: 0;">
+								Sign in
+							</n-button>
+						</router-link>
+						<router-link :to="REGISTER">
+							<n-button tag="span">
+								Sign up
+							</n-button>
+						</router-link>
+					</template>
+				</n-flex>
 			</n-flex>
-		</n-flex>
-	</n-layout-header>
-	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
-	          content-style="padding: .5em;">
-		<router-view v-slot="{ Component}">
-			<component :is="Component" :updateMenuItem="updateMenuItem"/>
-		</router-view>
+		</n-layout-header>
+		<n-layout content-style="padding: 1em;">
+			<router-view v-slot="{ Component}">
+				<component :is="Component" :updateMenuItem="updateMenuItem"/>
+			</router-view>
+		</n-layout>
 	</n-layout>
-
-
 	<n-modal
 		id="logout-modal"
 		v-model:show="logoutConfirmationShow"
@@ -213,6 +221,7 @@ onBeforeMount(() => {
 @import url(@/styles/no-border-btn.css);
 
 :deep(div.n-menu.n-menu--horizontal div.n-menu-item-content) {
-	padding: 0 2em 0 0;
+	padding: 0;
+	margin: 0 2em 0 0;
 }
 </style>

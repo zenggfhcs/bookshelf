@@ -1,6 +1,6 @@
 <script setup>
 import {B_I} from "@/constant/breadcrumb.js";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {DEBIT_CHECK} from "@/router/RouterValue.js";
 import {renderCell} from "@/utils/render.js";
 import {NCard, NDataTable, NGi, NGrid, NLayout, NTag} from "naive-ui";
@@ -53,14 +53,11 @@ const rowProps = row => {
 	}
 }
 
-//#region 生命周期钩子
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 {
 	props.updateMenuItem("i-index");
 	props.updateBreadcrumbArray(B_I);
 }
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+
 </script>
 
 <template>

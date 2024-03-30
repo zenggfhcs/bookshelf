@@ -1,5 +1,5 @@
 import {Header} from "@/api/Header.js";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 
 const checkLoginState = () => {
 	const token = localStorage.getItem(Header.TOKEN)

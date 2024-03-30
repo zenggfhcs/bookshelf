@@ -4,7 +4,7 @@ import {B_BOOK} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {BOOK_ADD, BOOK_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {timestampToDateTimeString} from "@/utils/convert.js";
@@ -28,7 +28,6 @@ import {
 	NLayoutHeader,
 	NPagination,
 	NPopover,
-	NSpin,
 	NTag,
 	useMessage
 } from "naive-ui"
@@ -238,7 +237,7 @@ const cols = [
 	},
 ]
 
-const loadingFind = ref(false);
+const loadingQuery = ref(false);
 
 const rowProps = (row) => {
 	return {
@@ -291,7 +290,7 @@ const preQuery = () => {
 
 const query = () => {
 	preQuery();
-	loadingFind.value = true;
+	loadingQuery.value = true;
 
 	Service.Books.list(entity, filter)
 		.then(res => {
@@ -309,7 +308,7 @@ const query = () => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-			loadingFind.value = false;
+			loadingQuery.value = false;
 		});
 };
 
@@ -422,14 +421,13 @@ onMounted(() => { // 加载数据
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
-		<n-spin :show="loadingFind">
-			<n-data-table
-				:columns="cols"
-				:data="tableData"
-				:row-props="rowProps"
-				:single-line="false"
-			/>
-		</n-spin>
+		<n-data-table
+			:loading="loadingQuery"
+			:columns="cols"
+			:data="tableData"
+			:row-props="rowProps"
+			:single-line="false"
+		/>
 
 	</n-layout>
 

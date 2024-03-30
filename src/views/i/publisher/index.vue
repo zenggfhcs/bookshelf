@@ -2,16 +2,19 @@
 import {Service} from "@/api/index.js";
 import {B_PUBLISHER_INDEX} from "@/constant/breadcrumb.js";
 import {ResponseCode} from "@/constant/response-code.js";
+import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {PUBLISHER_ADD, PUBLISHER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
 import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
-import {AddCircle, Search} from "@vicons/ionicons5";
+import {AddCircle} from "@vicons/ionicons5";
 import {
+	NGi,
+	NGrid,
 	NBackTop,
 	NButton,
 	NDataTable,
@@ -25,38 +28,29 @@ import {
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
+	NModal,
 	NPagination,
-	NPopover,
-	NSpin,
 	NTag,
+	NButtonGroup,
 	useMessage
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
 
 const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
 
-//#region entity
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const entity = reactive({
 	id: '',
 	name: '',
 	place: '',
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region message
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 const message = useMessage();
 
 const messageOptions = {
 	duration: 10000
 }
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 数据表信息
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 let tableData = [];
 
@@ -124,6 +118,7 @@ const cols = [
 		maxWidth: 300,
 		//render: (row) => h()
 	},
+	/*
 	{
 		title: "创建时间",
 		key: "creationTime",
@@ -214,9 +209,12 @@ const cols = [
 			)
 		}
 	},
+	*/
 ]
 
-const loadingFind = ref(false);
+const loadingQuery = ref(false);
+
+const filterShow = ref(false);
 
 const rowProps = (row) => {
 	return {
@@ -231,13 +229,11 @@ const rowProps = (row) => {
 		}
 	}
 }
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const
-	timestamp = reactive({
-		creationTime: null,
-		lastUpdatedTime: null,
-	})
+
+const timestamp = reactive({
+	creationTime: null,
+	lastUpdatedTime: null,
+})
 
 const filter = reactive({
 	page: {
@@ -270,7 +266,7 @@ const pre_find = () => {
 }
 
 const find = () => {
-	loadingFind.value = true;
+	loadingQuery.value = true;
 
 	pre_find();
 
@@ -296,21 +292,13 @@ const find = () => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-			loadingFind.value = false;
+			loadingQuery.value = false;
 		});
 };
 
 const clickFind = debounce(e => {
 	find();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 分页组件
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 const itemCount = ref(0);
 
@@ -337,11 +325,7 @@ const pagination = reactive({
 	}
 });
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 生命周期钩子
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 /**
  * 组件挂载完成时调用
  */
@@ -349,13 +333,11 @@ onMounted(() => { // 加载数据
 	checkLoginState();
 	find();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-{
-	props.updateMenuItem("i-publisher");
-	props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
-}
+
+props.updateMenuItem("i-publisher");
+props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
+
 </script>
 
 <template>
@@ -369,55 +351,21 @@ onMounted(() => { // 加载数据
 					新增
 				</n-button>
 			</router-link>
-			<n-popover placement="top" trigger="click">
-				<template #trigger>
-					<n-button class="h-2.4em m-l-a">
-						<template #icon>
-							<n-icon>
-								<write/>
-							</n-icon>
-						</template>
-						筛选
-					</n-button>
+			<n-button class="h-2.4em m-l-a" @click="filterShow = true">
+				<template #icon>
+					<n-icon>
+						<write/>
+					</n-icon>
 				</template>
-				<span class="font-size-1.2em font-800">精确查询</span>
-				<n-form :model="entity">
-					<n-divider class="m-1!"/>
-					<n-form-item label="id" path="id">
-						<n-input v-model:value="entity.id" :allow-input="inputValidator.onlyAllowNumber"
-						         clearable
-						         placeholder="输入id"/>
-					</n-form-item>
-					<n-form-item label="出版社名称" path="name">
-						<n-input v-model:value="entity.name" :allow-input="inputValidator.noSideSpace"
-						         clearable placeholder="输入出版社名称"/>
-
-					</n-form-item>
-					<n-form-item label="出版地" path="name">
-						<n-input v-model:value="entity.place" :allow-input="inputValidator.noSideSpace"
-						         clearable placeholder="输入出版地，如 '北京'"/>
-					</n-form-item>
-				</n-form>
-				<n-form :model="filter">
-					<span class="font-size-1.2em font-800">模糊查询</span>
-					<n-divider class="m-1!"/>
-					<n-form-item label="创建时间">
-						<n-date-picker v-model:value="timestamp.creationTime" clearable type="datetimerange"
-						               update-value-on-close/>
-					</n-form-item>
-					<n-form-item label="最后修改时间">
-						<n-date-picker v-model:value="timestamp.lastUpdatedTime" clearable type="datetimerange"
-						               update-value-on-close/>
-					</n-form-item>
-				</n-form>
-			</n-popover>
+				筛选
+			</n-button>
 			<n-button class="h-2.4em" @click="clickFind">
 				<template #icon>
 					<n-icon>
-						<search/>
+						<IReload/>
 					</n-icon>
 				</template>
-				查找
+				刷新
 			</n-button>
 		</n-flex>
 	</n-layout-header>
@@ -427,15 +375,13 @@ onMounted(() => { // 加载数据
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
-		<n-spin :show="loadingFind">
-			<n-data-table
-				:columns="cols"
-				:data="tableData"
-				:row-props="rowProps"
-				:single-line="false"
-			/>
-		</n-spin>
-
+		<n-data-table
+			:loading="loadingQuery"
+			:columns="cols"
+			:data="tableData"
+			:row-props="rowProps"
+			:single-line="false"
+		/>
 	</n-layout>
 
 	<n-layout-footer class="h-2.4em" position="absolute">
@@ -464,6 +410,55 @@ onMounted(() => { // 加载数据
 			</n-pagination>
 		</n-flex>
 	</n-layout-footer>
+
+	<n-modal
+		id="update-confirmed-modal"
+		v-model:show="filterShow"
+		:mask-closable="false"
+		preset="dialog"
+		title="筛选"
+		transform-origin="center"
+	>
+		<n-form :model="entity">
+			<n-divider class="m-1!"/>
+			<n-form-item label="id" path="id">
+				<n-input v-model:value="entity.id" :allow-input="inputValidator.onlyAllowNumber"
+				         clearable
+				         placeholder="输入id"/>
+			</n-form-item>
+			<n-form-item label="出版社名称" path="name">
+				<n-input v-model:value="entity.name" :allow-input="inputValidator.noSideSpace"
+				         clearable placeholder="输入出版社名称"/>
+
+			</n-form-item>
+			<n-form-item label="出版地" path="name">
+				<n-input v-model:value="entity.place" :allow-input="inputValidator.noSideSpace"
+				         clearable placeholder="输入出版地，如 '北京'"/>
+			</n-form-item>
+		</n-form>
+		<n-form :model="filter">
+			<n-divider class="m-1!"/>
+			<n-form-item label="创建时间">
+				<n-date-picker v-model:value="timestamp.creationTime" clearable type="datetimerange"
+				               update-value-on-close/>
+			</n-form-item>
+			<n-form-item label="最后修改时间">
+				<n-date-picker v-model:value="timestamp.lastUpdatedTime" clearable type="datetimerange"
+				               update-value-on-close/>
+			</n-form-item>
+		</n-form>
+		<n-grid cols="5" x-gap="12">
+			<n-gi>
+				<n-button class="w-100%" tertiary type="warning">清空</n-button>
+			</n-gi>
+			<n-gi />
+			<n-gi />
+			<n-gi />
+			<n-gi>
+				<n-button class="w-100%" type="success">过滤</n-button>
+			</n-gi>
+		</n-grid>
+	</n-modal>
 </template>
 
 <style scoped>

@@ -3,7 +3,7 @@ import {Service} from "@/api/index.js";
 import {messageOptions} from "@/constant/options.js";
 import {REG_EMAIL} from "@/constant/regular-expression.js";
 import {ResponseCode} from "@/constant/response-code.js";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {REGISTER, RESET_PASSWORD} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
 import {resetToken} from "@/utils/storage-operation.js";
@@ -63,6 +63,8 @@ const login = debounce((e) => {
 		console.log(model)
 		Service.Users.login(model)
 			.then(res => {
+				// todo
+				console.log(res);
 				const data = res.data;
 				if (data?.code === ResponseCode.SUCCESS) {
 					// 登录

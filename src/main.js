@@ -1,4 +1,4 @@
-import router from '@/router/Router.js'
+import router from '@/router/index.js'
 import {createApp} from 'vue'
 import 'virtual:uno.css'
 import App from './App.vue'

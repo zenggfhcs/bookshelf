@@ -4,7 +4,7 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 
 const goto = (component, params = undefined) => {
 	router.push({

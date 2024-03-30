@@ -2,19 +2,23 @@
     fill: var(--n-text-color);
 }
 
+.n-menu-item-content:hover .n-icon svg,
 .n-menu-item-content--selected .n-icon svg {
     fill: var(--n-item-text-color-active);
 }
 
-.n-menu-item-content--selected .n-icon svg path {
+.n-menu-item-content--selected .n-icon svg path,
+.n-menu-item-content:hover .n-icon svg path {
     fill: var(--n-item-text-color-active);
 }
 
 .n-button:not(.n-button--disabled):hover .n-button__icon svg,
 .n-button:not(.n-button--disabled):focus .n-button__icon svg,
-.n-icon svg:hover,
-.n-icon svg:focus,
-.n-icon svg g path:hover,
-.n-icon svg g path:focus {
+.n-button:not(.n-button--disabled):hover .n-button__icon svg g path,
+.n-button:not(.n-button--disabled):focus .n-button__icon svg g path,
+.n-icon:hover svg,
+.n-icon:focus svg,
+.n-icon:hover svg g path,
+.n-icon:focus svg g path {
     fill: var(--n-text-color-hover);
 }

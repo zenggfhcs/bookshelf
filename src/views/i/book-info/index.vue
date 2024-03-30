@@ -4,7 +4,7 @@ import {B_BOOK_INFO} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import write from "@/icons/write.vue";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {BOOK_INFO_ADD, BOOK_INFO_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {timestampToDateTimeString} from "@/utils/convert.js";
@@ -27,7 +27,6 @@ import {
 	NLayoutHeader,
 	NPagination,
 	NPopover,
-	NSpin,
 	NTag,
 	useMessage
 } from "naive-ui"
@@ -41,27 +40,18 @@ const props = defineProps(['updateMenuItem', "updateBreadcrumbArray"]);
 }
 
 
-//#region entity
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const entity = reactive({
 	id: '',
 	name: '',
 });
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region message
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 const message = useMessage();
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 数据表信息
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 let tableData = [];
 
-const loadingFind = ref(false);
+const loadingQuery = ref(false);
 const rowProps = (row) => {
 	return {
 		onDblclick: (e) => {
@@ -76,8 +66,6 @@ const rowProps = (row) => {
 	}
 }
 
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const timestamp = reactive({
 	creationTime: null,
 	lastUpdatedTime: null,
@@ -108,7 +96,7 @@ const preQuery = () => {
 
 // todo query 未完成
 const query = () => {
-	loadingFind.value = true;
+	loadingQuery.value = true;
 
 	preQuery();
 
@@ -126,7 +114,7 @@ const query = () => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-			loadingFind.value = false;
+			loadingQuery.value = false;
 		});
 };
 
@@ -135,14 +123,6 @@ const clickFind = debounce(e => {
 	query();
 })
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 分页组件
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const cols = [
 	{
 		title: "id",
@@ -285,8 +265,6 @@ const pagination = paginationReactive;
 //#endregion
 
 
-//#region 生命周期钩子
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 /**
  * 组件挂载完成时调用
  */
@@ -294,8 +272,6 @@ onMounted(() => { // 加载数据
 	checkLoginState();
 	query();
 })
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 </script>
 
 <template>
@@ -360,14 +336,13 @@ onMounted(() => { // 加载数据
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
-		<n-spin :show="loadingFind">
-			<n-data-table
-				:columns="cols"
-				:data="tableData"
-				:row-props="rowProps"
-				:single-line="false"
-			/>
-		</n-spin>
+		<n-data-table
+			:loading="loadingQuery"
+			:columns="cols"
+			:data="tableData"
+			:row-props="rowProps"
+			:single-line="false"
+		/>
 
 	</n-layout>
 

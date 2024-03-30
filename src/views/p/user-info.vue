@@ -32,7 +32,7 @@ const info = {
 						<n-space :size="16">
 							<n-card class="w-60em">
 								<n-flex>
-									<n-avatar :size="144" round
+									<n-avatar :size="144" round bordered
 									          src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"/>
 									<n-flex class="w-20em" justify="center" vertical>
 										<span>添加照片，个性化你的账户。 你的个人资料照片会显示在使用你的帐户的应用和设备上。</span>
@@ -112,9 +112,6 @@ const info = {
 					</n-tab-pane>
 					<n-tab-pane name="reset-password" tab="修改密码">
 						修改密码
-					</n-tab-pane>
-					<n-tab-pane name="log-info" tab="操作日志">
-						操作日志
 					</n-tab-pane>
 					<n-tab-pane name="feedback" tab="意见反馈">
 						意见反馈

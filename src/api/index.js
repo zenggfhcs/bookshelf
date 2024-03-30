@@ -53,6 +53,7 @@ const Publishers = new BaseService(ServiceName.PUBLISHER);
 const Users = new BaseService(ServiceName.USER);
 
 Users.login = (entity) => {
+	console.log(entity);//todo
 	return MyRequest.post("/login", {entity});
 };
 

@@ -4,7 +4,7 @@ import {B_USER_INDEX} from "@/constant/breadcrumb.js";
 import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/map.js";
 import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
-import router from "@/router/Router.js";
+import router from "@/router/index.js";
 import {USER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {convertGender, getTagType, timestampToDateTimeString} from "@/utils/convert.js";
@@ -33,7 +33,6 @@ import {
 	NPagination,
 	NPopover,
 	NSelect,
-	NSpin,
 	NTag,
 	useMessage
 } from "naive-ui"
@@ -41,19 +40,11 @@ import {h, onMounted, reactive, ref} from "vue"
 
 
 const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
-
-//#region message
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const message = useMessage();
 
 const messageOptions = {
 	duration: 10000
 }
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 数据表信息
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 let tableData = ref([]);
 
@@ -236,7 +227,7 @@ const cols = [
 	}
 ]
 
-const loadingFind = ref(false);
+const loadingQuery = ref(false);
 
 const rowProps = (row) => {
 	return {
@@ -251,12 +242,6 @@ const rowProps = (row) => {
 		}
 	}
 }
-
-
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-
-const loading = ref(false);
 
 const timestamp = reactive({
 	creationTime: null,
@@ -317,7 +302,7 @@ const preQuery = () => {
 }
 
 const query = () => {
-	loading.value = true;
+	loadingQuery.value = true;
 
 	preQuery();
 
@@ -337,7 +322,7 @@ const query = () => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
-			loading.value = false;
+			loadingQuery.value = false;
 		});
 }
 
@@ -345,14 +330,8 @@ const clickFind = debounce((e) => {
 	e.preventDefault();
 	query();
 });
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region 分页组件
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const itemCount = ref(0);
 
 const pagination = reactive({
@@ -379,11 +358,6 @@ const pagination = reactive({
 	}
 });
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region 生命周期钩子
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 /**
  * 组件挂载完成时调用
  */
@@ -396,8 +370,7 @@ onMounted(() => { // 加载数据
 	props.updateMenuItem("i-user");
 	props.updateBreadcrumbArray(B_USER_INDEX);
 }
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+
 
 </script>
 
@@ -507,14 +480,13 @@ onMounted(() => { // 加载数据
 		<!--   返回顶部   -->
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
-		<n-spin :show="loadingFind">
-			<n-data-table
-				:columns="cols"
-				:data="tableData"
-				:row-props="rowProps"
-				:single-line="false"
-			/>
-		</n-spin>
+		<n-data-table
+			:loading="loadingQuery"
+			:columns="cols"
+			:data="tableData"
+			:row-props="rowProps"
+			:single-line="false"
+		/>
 
 	</n-layout>
 

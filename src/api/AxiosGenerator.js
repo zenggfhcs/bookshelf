@@ -84,6 +84,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 // 添加请求拦截器
 PRE_DEFINED_AXIOS.interceptors.request.use(
 	(config) => {
+		console.log(config);
 		// 在发送请求之前做些什么
 		// 刷新使用的 token
 		const tokenKey =
@@ -120,7 +121,9 @@ PRE_DEFINED_AXIOS.interceptors.response.use(
 			if (_refreshRes?.data?.code === ResponseCode.SUCCESS) {
 				// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
 				const _dataString = config?.data;
-				config.data = JSON.parse(_dataString);
+				if (_dataString) {
+					config.data = JSON.parse(_dataString);
+				}
 				// 重请求
 				return PRE_DEFINED_AXIOS(config);
 			}
