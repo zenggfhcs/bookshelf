@@ -3,14 +3,13 @@ import {Service} from "@/api/index.js";
 import {B_LOG_INDEX} from "@/constant/breadcrumb.js";
 import {LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, SERVICE_NAME_MAP, TYPE_MAP} from "@/constant/map.js";
 import {messageOptions} from "@/constant/options.js";
-import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import {LOG_CHECK} from "@/router/RouterValue.js";
 import {PAGE, PAGE_SIZE} from "@/storage/key.js";
 import {session} from "@/storage/session.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {getTagType, timestampToDateTimeString} from "@/utils/convert.js";
+import {getTagType} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
 import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
@@ -210,6 +209,8 @@ const cols = [
 
 let tableData = [];
 
+let currentPageTableData = ref([]);
+
 const loadingQuery = ref(false);
 
 const typeOptions = LOG_PRE_DEFINED_TYPE;
@@ -256,30 +257,16 @@ const filter = reactive({
 	}
 });
 
-const preQuery = () => {
-	// todo pre query
-	filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
-	filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
-}
-
-// todo 修改条件后查找，不会改变页码，会导致查页错误、查出数据为空
-// 预计实现方式：
 const query = () => {
 	loadingQuery.value = true;
 
-	preQuery();
-
 	Service.Logs.list(entity, filter)
 		.then(res => {
-			// todo del
-			const data = res.data;
-			if (!data || data?.code !== ResponseCode.SUCCESS) {
-				message.error(data.message, messageOptions);
-				return;
-			}
-
-			itemCount.value = data?.data?.count;
-			tableData = data?.data?.data;
+			const data = res?.data;
+			// todo 会不会出现 data 为空的情况
+			itemCount.value = data?.data?.total;
+			tableData = data?.data?.list;
+			pagination.onUpdatePage(pagination.page);
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -289,19 +276,16 @@ const query = () => {
 		});
 };
 
-const clickFind = debounce(e => {
-	e.preventDefault();
-	query();
-})
+const clickQuery = debounce(query);
 
 const itemCount = ref(0);
 
-const pageValue = session.get(PAGE);
-const pageSizeValue = session.get(PAGE_SIZE);
+// const pageValue = session.get(PAGE);
+// const pageSizeValue = session.get(PAGE_SIZE);
 
 const pagination = reactive({
-	page: pageValue ? +pageValue : 1,
-	pageSize: pageSizeValue ? +pageSizeValue : 10,
+	page: 1,// pageValue ? +pageValue : 1,
+	pageSize: 10,// pageSizeValue ? +pageSizeValue : 10,
 	showSizePicker: true,
 	pageSizes: [
 		{label: "10 每页", value: 10,},
@@ -316,12 +300,27 @@ const pagination = reactive({
 	},
 	onUpdatePage: (page) => {
 		pagination.page = page;
-		filter.page.start = (page - 1) * pagination.pageSize;
-		filter.page.end = pagination.pageSize;
-		query();
+		if (!loadingQuery.value) {
+			loadingQuery.value = true;
+		}
+		updateCurrentPageData(page, pagination.pageSize)
+			.then(res => {
+				currentPageTableData.value = res?.data;
+				loadingQuery.value = false;
+			})
 	}
 });
 
+const updateCurrentPageData = (page, pageSize) => {
+	return new Promise(resolve => {
+		const start = (page - 1) * pageSize;
+		const end = start + pageSize;
+		const data = tableData.slice(start, end);
+		resolve({
+			data: data
+		})
+	})
+}
 
 onMounted(() => {
 	checkLoginState();
@@ -393,7 +392,7 @@ onBeforeUnmount(() => {
 
 				</n-form>
 			</n-popover>
-			<n-button class="h-2.4em" @click="clickFind">
+			<n-button class="h-2.4em" @click.prevent="clickQuery">
 				<template #icon>
 					<n-icon>
 						<search/>
@@ -410,9 +409,9 @@ onBeforeUnmount(() => {
 		<n-back-top :bottom="2" :right="20" style="--n-height: 2.4em; --n-width: 2.4em;"/>
 		<!--   数据表   -->
 		<n-data-table
-			:loading="loadingQuery"
 			:columns="cols"
-			:data="tableData"
+			:data="currentPageTableData"
+			:loading="loadingQuery"
 			:render-cell="renderCell"
 			:row-props="rowProps"
 			:single-line="false" striped

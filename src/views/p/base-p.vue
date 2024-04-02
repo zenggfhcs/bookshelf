@@ -2,11 +2,10 @@
 import BookBrain from "@/icons/book-brain.vue";
 import BookShelf from "@/icons/book-shelf.vue";
 import Flying from "@/icons/flying.vue";
-import moon from "@/icons/moon.vue";
 import sun from "@/icons/sun.vue";
 import {NButton, NCard, NFlex, NGi, NGrid, NIcon, NLayout} from "naive-ui";
 
-const props = defineProps(['switchTheme', 'isDark']);
+const props = defineProps(['switchTheme']);
 
 </script>
 <template>
@@ -39,7 +38,7 @@ const props = defineProps(['switchTheme', 'isDark']);
 	</n-layout>
 	<n-button circle class="absolute bottom-3em right-3em z-1" size="large" strong @click="props.switchTheme()">
 		<template #icon>
-			<n-icon :component="props.isDark ? moon : sun"/>
+			<n-icon :component="sun"/>
 		</template>
 	</n-button>
 </template>

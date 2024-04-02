@@ -64,7 +64,6 @@ onBeforeMount(() => {
 					<RouterView v-slot="{ Component }">
 						<component
 							:is="Component"
-							:isDark="isDark"
 							:switchTheme="switchTheme"
 						/>
 					</RouterView>

@@ -2,7 +2,6 @@
 import {Service} from "@/api/index.js";
 import {messageOptions} from "@/constant/options.js";
 import {REG_EMAIL} from "@/constant/regular-expression.js";
-import {ResponseCode} from "@/constant/response-code.js";
 import {goto} from "@/router/goto.js";
 import {LOGIN} from "@/router/RouterValue.js";
 import {debounce} from "@/utils/debounce.js";
@@ -220,16 +219,11 @@ const sendCode = debounce(() => {
 const resetPassword = debounce(() => {
 	formValidator(formRef, message, () => {
 		if (handleCodeAfterConfirmed()) {
-
+			// todo
 		}
 		loading.value = true;
 		Service.Users.resetPassword(model)
-			.then(res => {
-				const data = res.data;
-				if (data?.code !== ResponseCode.SUCCESS) {
-					message.error(data.message);
-					return;
-				}
+			.then(_ => {
 				message.success("修改成功，3秒后自动跳转到登录界面...", messageOptions);
 				setTimeout(() => {
 					goto(LOGIN);

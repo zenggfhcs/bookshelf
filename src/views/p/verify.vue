@@ -31,7 +31,7 @@ const start = async () => {
 
 	updateMessage("loading", "验证中");
 
-	Service.Users.verifyRegister(query.token)
+	Service.Users.verifyEmail(query.token)
 		.then(res => {
 			const data = res.data;
 			if (data?.code !== ResponseCode.SUCCESS) {

@@ -61,11 +61,11 @@ const containerRef = ref();
 		<n-flex class="w-80em min-w-80em">
 			<n-layout has-sider>
 				<n-layout-sider
-					:show-collapsed-content="false"
-					show-trigger="bar"
 					:collapsed-width="16"
+					:show-collapsed-content="false"
+					:width="240"
 					class="m-r-4"
-					:width="240">
+					show-trigger="bar">
 					<n-card :bordered="false">
 						<n-flex class="items-center flex-nowrap w-190px" vertical>
 							<BookShelf class="w-8em h-8em"/>
@@ -110,7 +110,7 @@ const containerRef = ref();
 											<template v-for="i in 20">
 												<n-flex class="items-center">
 													<n-checkbox/>
-													abc d
+													abc d{{i}}
 												</n-flex>
 											</template>
 										</n-collapse-item>
@@ -121,7 +121,8 @@ const containerRef = ref();
 					</n-card>
 				</n-layout-sider>
 				<n-layout-content>
-					<n-data-table :loading="loading" remote :columns="cols" :data="modelArrayRef" :show-header="false"/>
+					<n-data-table :bordered="false" :columns="cols" :data="modelArrayRef" :loading="loading" :show-header="false"
+					              :single-line="false" remote/>
 
 				</n-layout-content>
 			</n-layout>

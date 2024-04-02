@@ -301,10 +301,10 @@ const USER_CHECK = {
 
 //#region my
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const MY = {
+const I_MY = {
 	component: My,
-	name: "my",
-	path: "/i/my",
+	name: "myInfo",
+	path: "/i/myInfo",
 	props: true,
 	hidden: true
 }
@@ -335,7 +335,7 @@ const BASE_I = {
 		PUBLISHER, PUBLISHER_CHECK, PUBLISHER_ADD,
 		USER, USER_CHECK,
 		LOG, LOG_CHECK,
-		MY,
+		I_MY,
 	],
 	redirect: I_HOME,
 	component: BaseI,
@@ -380,7 +380,7 @@ export {
 	LOG_CHECK,
 	PUBLISHER_CHECK,
 	PUBLISHER_ADD,
-	MY,
+	I_MY,
 
 	// j
 	J_HOME,

@@ -2,12 +2,11 @@
 import {Service} from "@/api/index.js";
 import {B_USER_INDEX} from "@/constant/breadcrumb.js";
 import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/map.js";
-import {ResponseCode} from "@/constant/response-code.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import {USER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {convertGender, getTagType, timestampToDateTimeString} from "@/utils/convert.js";
+import {convertGender, getTagType} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
 import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
@@ -46,7 +45,9 @@ const messageOptions = {
 	duration: 10000
 }
 
-let tableData = ref([]);
+let tableData = [];
+
+let currentPageTableData = ref([]);
 
 const cols = [
 	{
@@ -286,36 +287,17 @@ const entity = reactive({
 
 const roleOptions = ROLE_PRE_DEFINED;
 
-const preQuery = () => {
-	if (timestamp.creationTime) {
-		filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
-		filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
-	}
-	if (timestamp.lastLoginTime) {
-		filter.lastLoginTime.start = timestampToDateTimeString(timestamp.lastLoginTime?.[0]);
-		filter.lastLoginTime.end = timestampToDateTimeString(timestamp.lastLoginTime?.[1]);
-	}
-	if (timestamp.lastUpdatedTime) {
-		filter.lastUpdatedTime.start = timestampToDateTimeString(timestamp.lastUpdatedTime?.[0]);
-		filter.lastUpdatedTime.end = timestampToDateTimeString(timestamp.lastUpdatedTime?.[1]);
-	}
-}
 
 const query = () => {
 	loadingQuery.value = true;
 
-	preQuery();
-
 	Service.Users.list(entity, filter)
 		.then(res => {
 			const _returnData = res.data;
-			if (!_returnData || _returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData.message, messageOptions);
-				return;
-			}
+			itemCount.value = _returnData?.data?.total;
+			tableData = _returnData?.data?.list;
 
-			itemCount.value = _returnData?.data?.count;
-			tableData.value = _returnData?.data?.data;
+			pagination.onUpdatePage();
 
 		})
 		.catch(err => {
@@ -349,14 +331,29 @@ const pagination = reactive({
 		pagination.pageSize = pageSize;
 		pagination.onUpdatePage(1);
 	},
-	onUpdatePage: (page) => {
+	onUpdatePage: (page = pagination.page) => {
 		pagination.page = page;
-		filter.page.start = (page - 1) * pagination.pageSize;
-		filter.page.end = pagination.pageSize;
-		console.log(1)
-		query();
+		if (!loadingQuery.value) {
+			loadingQuery.value = true;
+		}
+		updateCurrentPageData(page, pagination.pageSize)
+			.then(res => {
+				currentPageTableData.value = res?.data;
+				loadingQuery.value = false;
+			})
 	}
 });
+
+const updateCurrentPageData = (page, pageSize) => {
+	return new Promise(resolve => {
+		const start = (page - 1) * pageSize;
+		const end = start + pageSize;
+		const data = tableData.slice(start, end);
+		resolve({
+			data: data
+		})
+	})
+}
 
 /**
  * 组件挂载完成时调用
@@ -481,9 +478,9 @@ onMounted(() => { // 加载数据
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
 		<n-data-table
-			:loading="loadingQuery"
 			:columns="cols"
-			:data="tableData"
+			:data="currentPageTableData"
+			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
 		/>

@@ -4,20 +4,15 @@ import {debounce} from "@/utils/debounce.js";
 import {formValidator, inputValidator} from "@/utils/validator.js";
 import {
 	NButton,
+	NCard,
 	NCheckbox,
-	NCheckboxGroup,
 	NFlex,
 	NForm,
 	NFormItem,
-	NGi,
-	NGrid,
 	NInput,
 	NLayout,
 	NLayoutHeader,
 	NSelect,
-	NTable,
-	NTd,
-	NTr,
 	useMessage
 } from "naive-ui";
 import {reactive, ref} from "vue";
@@ -101,70 +96,39 @@ const add = debounce((e) => {
 	</n-layout-header>
 	<n-layout :native-scrollbar="false" class="absolute top-3em bottom-0 left-0 right-0"
 	          content-style="padding: .3em 1em">
-		<n-form ref="addFormRef" :model="entity" :rules="addRule"
-		        label-placement="left">
-			<n-table :single-line="false" class="w-100%">
-				<tbody class="trc">
-				<n-tr>
-					<n-td class="w-43%">书籍破损程度</n-td>
-					<n-td>
-						<n-form-item path="damageLevel">
-							<n-select
-								v-model:value="damageLevelValue"
-								:options="damageLevelOptions"
-								placeholder="破损程度"/>
-						</n-form-item>
-					</n-td>
-				</n-tr>
-				<n-tr>
-					<n-td>状态</n-td>
-					<n-td>
-						<n-checkbox-group v-model:value="states">
-							<n-grid cols="4">
-								<n-gi>
-									<n-checkbox label="可借的" value="borrowable"/>
-								</n-gi>
-							</n-grid>
-						</n-checkbox-group>
-					</n-td>
-				</n-tr>
-				<n-tr>
-					<n-td>备注</n-td>
-					<n-td>
-						<n-form-item path="remark">
-							<n-input v-model:value="entity.remark" :allow-input="inputValidator.noSideSpace" autosize
-							         clearable maxlength="255"
-							         placeholder="输入备注" type="textarea"/>
-						</n-form-item>
-					</n-td>
-				</n-tr>
-				<n-tr>
-					<n-td>书籍信息</n-td>
-					<n-td>
-						<n-grid cols="1" y-gap="8">
-							<n-gi>
-								<n-form-item path="bookInfo">
-									<n-select
-										v-model:value="bookInfoValue"
-										:loading="loadingSearchBookInfo"
-										:options="bookInfoOptions"
-										clearable
-										filterable
-										placeholder="搜索"
-										remote
-										@search="handleSearchBookInfo"/>
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<!--								todo 书籍信息-->
-								todo 书籍信息
-							</n-gi>
-						</n-grid>
-					</n-td>
-				</n-tr>
-				</tbody>
-			</n-table>
-		</n-form>
+		<n-flex justify="center">
+			<n-card class="w-44em">
+				<n-form ref="addFormRef" :model="entity" :rules="addRule">
+					<n-form-item label="书籍破损程度" path="damageLevel">
+						<n-select
+							v-model:value="damageLevelValue"
+							:options="damageLevelOptions"
+							placeholder="破损程度"/>
+					</n-form-item>
+					<n-form-item label="书籍信息" path="bookInfo">
+						<n-select
+							v-model:value="bookInfoValue"
+							:loading="loadingSearchBookInfo"
+							:options="bookInfoOptions"
+							clearable
+							filterable
+							placeholder="搜索"
+							remote
+							@search="handleSearchBookInfo"/>
+					</n-form-item>
+					<!--								todo 书籍信息-->
+					todo 书籍信息
+					<n-form-item>
+						<n-checkbox label="可借的" value="borrowable"/>
+					</n-form-item>
+					<n-form-item label="备注" path="remark">
+						<n-input v-model:value="entity.remark" :allow-input="inputValidator.noSideSpace" autosize
+						         clearable maxlength="255"
+						         placeholder="输入备注" type="textarea"/>
+					</n-form-item>
+				</n-form>
+			</n-card>
+		</n-flex>
 	</n-layout>
 </template>
 

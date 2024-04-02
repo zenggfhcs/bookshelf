@@ -2,12 +2,10 @@
 import {Service} from "@/api/index.js";
 import {B_BOOK_INFO} from "@/constant/breadcrumb.js";
 import {messageOptions} from "@/constant/options.js";
-import {ResponseCode} from "@/constant/response-code.js";
 import write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import {BOOK_INFO_ADD, BOOK_INFO_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
 import {inputValidator} from "@/utils/validator.js";
 import {AddCircle, Search} from "@vicons/ionicons5";
@@ -48,8 +46,9 @@ const entity = reactive({
 
 const message = useMessage();
 
-
 let tableData = [];
+
+let currentPageTableData = ref([]);
 
 const loadingQuery = ref(false);
 const rowProps = (row) => {
@@ -86,29 +85,16 @@ const filter = reactive({
 	},
 });
 
-const preQuery = () => {
-	filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
-	filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
-
-	filter.lastUpdatedTime.start = timestampToDateTimeString(timestamp.lastUpdatedTime?.[0]);
-	filter.lastUpdatedTime.end = timestampToDateTimeString(timestamp.lastUpdatedTime?.[1]);
-}
-
-// todo query 未完成
 const query = () => {
 	loadingQuery.value = true;
-
-	preQuery();
 
 	Service.BookInfos.list(entity, filter)
 		.then(res => {
 			const data = res.data;
-			if (!data || data?.code !== ResponseCode.SUCCESS) {
-				message.error(data.message, messageOptions);
-				return;
-			}
-			itemCount.value = data?.data?.count;
-			tableData = data?.data?.data;
+			itemCount.value = data?.data?.total;
+			tableData = data?.data?.list;
+
+			pagination.onUpdatePage();
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -237,7 +223,7 @@ const cols = [
 
 const itemCount = ref(0);
 
-const paginationReactive = reactive({
+const pagination = reactive({
 	page: 1,
 	pageSize: 10,
 	showSizePicker: true,
@@ -253,14 +239,29 @@ const paginationReactive = reactive({
 		paginationReactive.onUpdatePage(1);
 	},
 	onUpdatePage: (page) => {
-		paginationReactive.page = page;
-		filter.page.start = (page - 1) * paginationReactive.pageSize;
-		filter.page.end = paginationReactive.pageSize;
-		query();
+		pagination.page = page;
+		if (!loadingQuery.value) {
+			loadingQuery.value = true;
+		}
+		updateCurrentPageData(page, pagination.pageSize)
+			.then(res => {
+				currentPageTableData.value = res?.data;
+				loadingQuery.value = false;
+			})
 	}
 });
 
-const pagination = paginationReactive;
+const updateCurrentPageData = (page, pageSize) => {
+	return new Promise(resolve => {
+		const start = (page - 1) * pageSize;
+		const end = start + pageSize;
+		const data = tableData.slice(start, end);
+		resolve({
+			data: data
+		})
+	})
+}
+
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -337,9 +338,9 @@ onMounted(() => { // 加载数据
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
 		<n-data-table
-			:loading="loadingQuery"
 			:columns="cols"
 			:data="tableData"
+			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
 		/>

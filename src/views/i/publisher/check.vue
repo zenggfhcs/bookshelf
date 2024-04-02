@@ -36,8 +36,6 @@ const props = defineProps(['id', 'updateMenuItem', 'updateBreadcrumbArray']);
 
 const message = useMessage();
 
-const msgReactive = message.create("查找信息", {type: "loading"});
-
 const source = reactive({
 	name: null,
 	remark: null,
@@ -91,21 +89,12 @@ const findUser = (id, target) => {
 		return;
 	}
 
-	msgReactive.type = "loading";
-	msgReactive.content = "查找日志操作者";
 	Service.Users.get(id)
 		.then(res => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				msgReactive.type = "error";
-				msgReactive.content = _returnData.message;
-				return;
-			}
+			const data = res.data;
 
-			copyMatchingProperties(_returnData.data, target);
+			copyMatchingProperties(data.data, target);
 
-			msgReactive.type = "success";
-			msgReactive.content = "查找完成";
 		})
 		.catch(err => {
 			message.error(err.message);
@@ -133,7 +122,6 @@ const query = (id) => {
 			}
 
 			copyMatchingProperties(info, source);
-
 			findUser(info.createdBy, creator);
 			findUser(info.updatedBy, updater);
 		})

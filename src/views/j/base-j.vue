@@ -2,7 +2,6 @@
 import {Header} from "@/api/Header.js";
 import Home from "@/icons/home.vue";
 import Statistics from "@/icons/i-statistics.vue";
-import moon from "@/icons/moon.vue";
 import Msg from "@/icons/msg.vue";
 import Search from "@/icons/search.vue";
 import sun from "@/icons/sun.vue";
@@ -29,7 +28,7 @@ import {
 import {computed, h, onBeforeMount, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
-const props = defineProps(['switchTheme', 'isDark']);
+const props = defineProps(['switchTheme']);
 
 const message = useMessage();
 
@@ -109,7 +108,7 @@ const menuOptions = [
 ]
 
 const themeIcon = computed(() => {
-	return props.isDark ? moon : sun;
+	return sun;
 })
 
 onBeforeMount(() => {
@@ -120,7 +119,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-	<n-layout position="absolute" :native-scrollbar="false">
+	<n-layout :native-scrollbar="false" position="absolute">
 		<n-layout-header bordered class="h-3em">
 			<n-flex justify="center">
 				<n-flex class="w-80em h-3em items-center" style="flex-wrap: nowrap">

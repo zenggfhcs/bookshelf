@@ -2,10 +2,10 @@
 import BookBrain from "@/icons/book-brain.vue";
 import WorkBenchIcon from "@/icons/home.vue";
 import LogIcon from "@/icons/log.vue";
-import moon from "@/icons/moon.vue";
 import PublisherIcon from "@/icons/publisher.vue";
+import SelfIcon from "@/icons/self.vue";
 import sun from "@/icons/sun.vue";
-import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, LOG, MY, PUBLISHER, USER} from "@/router/RouterValue.js";
+import {BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, I_MY, LOG, PUBLISHER, USER} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
 import {gProps} from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -37,7 +37,7 @@ import {
 import {h, onMounted, ref} from "vue";
 import {RouterLink} from "vue-router";
 
-const props = defineProps(['switchTheme', 'isDark']);
+const props = defineProps(['switchTheme']);
 
 const message = useMessage();
 
@@ -152,12 +152,12 @@ const menuOptions = [
 		label: () =>
 			h(
 				RouterLink,
-				gProps(MY.name),
+				gProps(I_MY.name),
 				{default: () => '我的'}
 			)
 		,
 		key: 'i-my',
-		icon: renderIcon(LogIcon)
+		icon: renderIcon(SelfIcon)
 	}
 ]
 
@@ -215,31 +215,11 @@ onMounted(() => {
 				position="absolute"
 			>
 				<n-flex :wrap="false" class="h-full over-hidden items-center">
-					<n-popover trigger="click">
-						<template #trigger>
-							<n-button circle class="m-l-15px m-r-15px" secondary strong>
-								<template #icon>
-									<n-icon :component="props.isDark ? moon : sun"/>
-								</template>
-							</n-button>
+					<n-button circle class="m-l-15px m-r-15px" secondary strong @click="props.switchTheme()">
+						<template #icon>
+							<n-icon :component="sun"/>
 						</template>
-						<n-form class="flex flex-col" label-placement="left">
-							<n-button :bordered="false" class="no-border-btn"
-							          @click="props.switchTheme(false)">
-								<template #icon>
-									<n-icon :component="sun"/>
-								</template>
-								日间模式
-							</n-button>
-							<n-button :bordered="false" class="no-border-btn"
-							          @click="props.switchTheme(true)">
-								<template #icon>
-									<n-icon :component="moon"/>
-								</template>
-								夜间模式
-							</n-button>
-						</n-form>
-					</n-popover>
+					</n-button>
 				</n-flex>
 
 			</n-layout-footer>
@@ -263,7 +243,7 @@ onMounted(() => {
 						</template>
 						<n-form label-placement="left">
 							<n-flex vertical>
-								<router-link :to="MY.path">
+								<router-link :to="I_MY.path">
 									<n-button :bordered="false" class="w-100% no-border-btn"
 									          @click.prevent="switchShowUserPopover()">
 										个人信息

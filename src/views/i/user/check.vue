@@ -88,6 +88,12 @@ const queryUser = (id, target) => {
 	if (!id) {
 		return;
 	}
+
+	if (+props.id === +id) {
+		copyMatchingProperties(info, target);
+		return;
+	}
+
 	Service.Users.get(id)
 		.then(res => {
 			const _returnData = res.data;

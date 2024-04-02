@@ -1,13 +1,12 @@
 <script setup>
 import {Service} from "@/api/index.js";
 import {B_DEBIT} from "@/constant/breadcrumb.js";
-import {ResponseCode} from "@/constant/response-code.js";
 import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import {DEBIT_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {timeFormat, timestampToDateTimeString} from "@/utils/convert.js";
+import {timeFormat} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
 import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
@@ -53,6 +52,9 @@ const messageOptions = {
 }
 
 let tableData = [];
+
+let currentPageTableData = ref([]);
+
 const cols = [
 	{
 		title: "id",
@@ -222,32 +224,16 @@ const filter = reactive({
 	},
 });
 
-
-const pre_find = () => {
-	// todo
-
-	filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
-	filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
-
-	filter.lastUpdatedTime.start = timestampToDateTimeString(timestamp.lastUpdatedTime?.[0]);
-	filter.lastUpdatedTime.end = timestampToDateTimeString(timestamp.lastUpdatedTime?.[1]);
-}
-
-const find = () => {
+const query = () => {
 	loadingQuery.value = true;
-
-	pre_find();
 
 	Service.Debits.list(entity, filter)
 		.then(res => {
 			const data = res.data;
-			if (!data || data?.code !== ResponseCode.SUCCESS) {
-				message.error(data.message, messageOptions);
-				return;
-			}
+			itemCount.value = data?.data?.total;
+			tableData = data?.data?.list;
 
-			itemCount.value = data?.data?.count;
-			tableData = data?.data?.data;
+			pagination.onUpdatePage();
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -257,10 +243,7 @@ const find = () => {
 		});
 };
 
-const clickFind = debounce(e => {
-	e.preventDefault();
-	find();
-})
+const clickQuery = debounce(query)
 
 const itemCount = ref(0);
 
@@ -279,20 +262,35 @@ const pagination = reactive({
 		pagination.pageSize = pageSize;
 		pagination.onUpdatePage(1);
 	},
-	onUpdatePage: (page) => {
+	onUpdatePage: (page = pagination.page) => {
 		pagination.page = page;
-		filter.page.start = (page - 1) * pagination.pageSize;
-		filter.page.end = pagination.pageSize;
-		find();
+		if (!loadingQuery.value) {
+			loadingQuery.value = true;
+		}
+		updateCurrentPageData(page, pagination.pageSize)
+			.then(res => {
+				currentPageTableData.value = res?.data;
+				loadingQuery.value = false;
+			})
 	}
 });
 
+const updateCurrentPageData = (page, pageSize) => {
+	return new Promise(resolve => {
+		const start = (page - 1) * pageSize;
+		const end = start + pageSize;
+		const data = tableData.slice(start, end);
+		resolve({
+			data: data
+		})
+	})
+}
 /**
  * 组件挂载完成时调用
  */
 onMounted(() => { // 加载数据
 	checkLoginState();
-	find();
+	query();
 })
 
 </script>
@@ -351,7 +349,7 @@ onMounted(() => { // 加载数据
 					</n-form-item>
 				</n-form>
 			</n-popover>
-			<n-button class="h-2.4em" @click="clickFind">
+			<n-button class="h-2.4em" @click.prevent="clickQuery">
 				<template #icon>
 					<n-icon>
 						<search/>
@@ -368,9 +366,9 @@ onMounted(() => { // 加载数据
 		<n-back-top :bottom="2" :right="20"/>
 
 		<n-data-table
-			:loading="loadingQuery"
 			:columns="cols"
-			:data="tableData"
+			:data="currentPageTableData"
+			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
 			@update:sorter=""

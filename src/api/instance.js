@@ -6,7 +6,7 @@ import {local} from "@/storage/local.js";
 import {resetToken} from "@/utils/storage-operation.js";
 import axios from "axios";
 
-const PRE_DEFINED_AXIOS = axios.create({
+const instance = axios.create({
 
 	// `baseURL` 将自动加在 `url` 前面，除非 `url` 是一个绝对 URL。
 	// 它可以通过设置一个 `baseURL` 便于为 axios 实例的方法传递相对 URL
@@ -16,7 +16,7 @@ const PRE_DEFINED_AXIOS = axios.create({
 	// 它只能用于 'PUT', 'POST' 和 'PATCH' 这几个请求方法
 	// 数组中最后一个函数必须返回一个字符串， 一个Buffer实例，ArrayBuffer，FormData，或 Stream
 	// 你可以修改请求头。
-	transformRequest: [(data, headers) => {
+	transformRequest: [(data, _) => {
 		// 对发送的 data 进行任意转换处理
 		return JSON.stringify(data);
 	}],
@@ -57,13 +57,13 @@ const PRE_DEFINED_AXIOS = axios.create({
 
 	// `onUploadProgress` 允许为上传处理进度事件
 	// 浏览器专属
-	onUploadProgress: (progressEvent) => {
+	onUploadProgress: (_) => {
 		// 处理原生进度事件
 	},
 
 	// `onDownloadProgress` 允许为下载处理进度事件
 	// 浏览器专属
-	onDownloadProgress: (progressEvent) => {
+	onDownloadProgress: (_) => {
 		// 处理原生进度事件
 	},
 
@@ -82,17 +82,21 @@ const PRE_DEFINED_AXIOS = axios.create({
 });
 
 // 添加请求拦截器
-PRE_DEFINED_AXIOS.interceptors.request.use(
+instance.interceptors.request.use(
 	(config) => {
-		console.log(config);
-		// 在发送请求之前做些什么
-		// 刷新使用的 token
-		const tokenKey =
-			config.url?.toString().endsWith("/token/refresh") ?
-				REFRESH_TOKEN
-				:
-				Header.TOKEN;
-		config.headers[Header.TOKEN] = local.get(tokenKey);
+		/**
+		 * 在发送请求之前做些什么
+		 */
+
+		{ // 刷新使用的 token
+			const tokenKey =
+				config.url?.toString().endsWith("/token/refresh") ?
+					REFRESH_TOKEN
+					:
+					Header.TOKEN;
+			config.headers[Header.TOKEN] = local.get(tokenKey);
+		}
+
 		return config;
 	},
 	(error) => {
@@ -101,21 +105,29 @@ PRE_DEFINED_AXIOS.interceptors.request.use(
 	}
 );
 
-
+// todo 出现的错误，通过 Promise.reject 返回；要避免在错误中产生错误
 // 添加响应拦截器
-PRE_DEFINED_AXIOS.interceptors.response.use(
+instance.interceptors.response.use(
 	(response) => {
-		// 2xx 范围内的状态码都会触发该函数。
-		// 对响应数据做点什么
+		/**
+		 * 2xx 范围内的状态码都会触发该函数
+		 */
 
-		return response;
+		// 预设错误
+		if (response?.data?.code !== ResponseCode.SUCCESS) {
+			return Promise.reject(response?.data);
+		}
+
+		return Promise.resolve(response);
 	},
 	async (error) => {
 		// 超出 2xx 范围的状态码都会触发该函数。
 		// 对响应错误做点什么
-		const {data, config} = error.response;
+		const response = error.response;
 
-		if (data?.code === ResponseCode.TOKEN_E && !config.url?.toString().endsWith("/token/refresh")) {
+		if (response?.data?.code === ResponseCode.TOKEN_E
+			&& !response?.config.url?.toString().endsWith("/token/refresh")) {
+			const {config} = response;
 			const _refreshRes = await refreshToken();
 
 			if (_refreshRes?.data?.code === ResponseCode.SUCCESS) {
@@ -125,16 +137,17 @@ PRE_DEFINED_AXIOS.interceptors.response.use(
 					config.data = JSON.parse(_dataString);
 				}
 				// 重请求
-				return PRE_DEFINED_AXIOS(config);
+				return instance(config);
 			}
-		} else
-			return error.response;
+		}
+
+		return Promise.reject(error);
 	}
 );
 
 
 export {
-	PRE_DEFINED_AXIOS
+	instance
 }
 
 const refreshToken = async () =>
@@ -147,4 +160,4 @@ const refreshToken = async () =>
 			}
 			return res;
 		})
-		.catch(err => err)
+		.catch(err => err);

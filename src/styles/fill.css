@@ -14,6 +14,8 @@
 
 .n-button:not(.n-button--disabled):hover .n-button__icon svg,
 .n-button:not(.n-button--disabled):focus .n-button__icon svg,
+.n-button:not(.n-button--disabled):hover .n-button__icon svg circle,
+.n-button:not(.n-button--disabled):focus .n-button__icon svg circle,
 .n-button:not(.n-button--disabled):hover .n-button__icon svg g path,
 .n-button:not(.n-button--disabled):focus .n-button__icon svg g path,
 .n-icon:hover svg,

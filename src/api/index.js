@@ -19,11 +19,11 @@ const ServiceName = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 class BaseService {
 	constructor(serviceName) {
-		this.list = (entity, filter) => MyRequest.post(`/${serviceName}/list/select`, {entity, filter});
-		this.add = (entity) => MyRequest.post(`/${serviceName}/list/create`, {entity});
-		this.get = (id) => MyRequest.post(`/${serviceName}/${id}/select`, {});
-		this.remove = (id) => MyRequest.post(`/${serviceName}/${id}/delete`, {});
-		this.update = (entity) => MyRequest.post(`/${serviceName}/${entity?.id}/update`, {entity});
+		this.list = () => MyRequest.get(`/${serviceName}`);
+		this.add = (entity) => MyRequest.post(`/${serviceName}`, entity);
+		this.get = (id) => MyRequest.get(`/${serviceName}/${id}`);
+		this.remove = (id) => MyRequest.delete(`/${serviceName}/${id}/`);
+		this.update = (entity) => MyRequest.patch(`/${serviceName}/${entity?.id}`, entity);
 	}
 }
 
@@ -53,37 +53,32 @@ const Publishers = new BaseService(ServiceName.PUBLISHER);
 const Users = new BaseService(ServiceName.USER);
 
 Users.login = (entity) => {
-	console.log(entity);//todo
-	return MyRequest.post("/login", {entity});
+	return MyRequest.post("/users:login", entity);
 };
 
 Users.register = (entity) => {
-	const _payload = {
-		entity: {
-			email: encodeByRSA(entity.email),
-			authenticationString: encodeByRSA(entity.authenticationString),
-		}
+	const _encryptedEntity = {
+		email: encodeByRSA(entity.email),
+		authenticationString: encodeByRSA(entity.authenticationString),
 	};
-	return MyRequest.post("/register", _payload);
+	return MyRequest.post("/users:register", _encryptedEntity);
 };
 
-Users.verifyRegister = (token) => {
+Users.verifyEmail = (token) => {
 	const _payload = {
 		entity: {
 			token: token
 		}
 	}
-	return MyRequest.post("/verify", _payload);
+	return MyRequest.post("/users/email:verify", _payload);
 };
 
 Users.resetPassword = (entity) => {
 	const _payload = {
-		entity: {
-			email: encodeByRSA(entity.email),
-			authenticationString: encodeByRSA(entity.authenticationString),
-		}
+		email: encodeByRSA(entity.email),
+		authenticationString: encodeByRSA(entity.authenticationString)
 	};
-	return MyRequest.post("/users/reset/password", _payload);
+	return MyRequest.post("/users/password:reset", _payload);
 }
 
 Users.borrowing = null;
@@ -118,7 +113,7 @@ const Token = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Mail = {
 	sendCode(entity) {
-		return MyRequest.post("/send/code", {entity});
+		return MyRequest.post("/send/code", entity);
 	}
 }
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */

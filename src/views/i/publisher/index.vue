@@ -1,20 +1,15 @@
 <script setup>
 import {Service} from "@/api/index.js";
 import {B_PUBLISHER_INDEX} from "@/constant/breadcrumb.js";
-import {ResponseCode} from "@/constant/response-code.js";
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import {PUBLISHER_ADD, PUBLISHER_CHECK} from "@/router/RouterValue.js";
 import {checkLoginState} from "@/utils/check-login-state.js";
-import {timestampToDateTimeString} from "@/utils/convert.js";
 import {debounce} from "@/utils/debounce.js";
-import {renderCell} from "@/utils/render.js";
 import {inputValidator} from "@/utils/validator.js";
 import {AddCircle} from "@vicons/ionicons5";
 import {
-	NGi,
-	NGrid,
 	NBackTop,
 	NButton,
 	NDataTable,
@@ -23,6 +18,8 @@ import {
 	NFlex,
 	NForm,
 	NFormItem,
+	NGi,
+	NGrid,
 	NIcon,
 	NInput,
 	NLayout,
@@ -31,7 +28,6 @@ import {
 	NModal,
 	NPagination,
 	NTag,
-	NButtonGroup,
 	useMessage
 } from "naive-ui"
 import {h, onMounted, reactive, ref} from "vue"
@@ -53,6 +49,8 @@ const messageOptions = {
 
 
 let tableData = [];
+
+let currentPageTableData = ref([]);
 
 const cols = [
 	{
@@ -255,38 +253,25 @@ const filter = reactive({
 });
 
 
-const pre_find = () => {
-	// todo
-
-	filter.creationTime.start = timestampToDateTimeString(timestamp.creationTime?.[0]);
-	filter.creationTime.end = timestampToDateTimeString(timestamp.creationTime?.[1]);
-
-	filter.lastUpdatedTime.start = timestampToDateTimeString(timestamp.lastUpdatedTime?.[0]);
-	filter.lastUpdatedTime.end = timestampToDateTimeString(timestamp.lastUpdatedTime?.[1]);
-}
-
-const find = () => {
+const query = () => {
 	loadingQuery.value = true;
-
-	pre_find();
 
 	Service.Publishers.list(entity, filter)
 		.then(res => {
 			const data = res.data;
-			if (!data || data?.code !== ResponseCode.SUCCESS) {
-				message.error(data.message, messageOptions);
-				return;
-			}
 
-			itemCount.value = data?.data?.count;
-			tableData = data?.data?.data;
+			itemCount.value = data?.data?.total;
+			tableData = data?.data?.list;
 			tableData.map(item => {
 				item.name = /^(.*?)出?版?社?$/.exec(item.name)?.[1];
 			})
 
-			tableData.forEach((item, index) => {
-				item.key = index
-			});
+			pagination.onUpdatePage(pagination.page);
+
+			// tableData.forEach((item, index) => {
+			// 	item.key = index
+			// });
+
 		})
 		.catch(err => {
 			message.error(err.message, messageOptions);
@@ -296,9 +281,7 @@ const find = () => {
 		});
 };
 
-const clickFind = debounce(e => {
-	find();
-})
+const clickQuery = debounce(query)
 
 const itemCount = ref(0);
 
@@ -319,11 +302,27 @@ const pagination = reactive({
 	},
 	onUpdatePage: (page) => {
 		pagination.page = page;
-		filter.page.start = (page - 1) * pagination.pageSize;
-		filter.page.end = pagination.pageSize;
-		find();
+		if (!loadingQuery.value) {
+			loadingQuery.value = true;
+		}
+		updateCurrentPageData(page, pagination.pageSize)
+			.then(res => {
+				currentPageTableData.value = res?.data;
+				loadingQuery.value = false;
+			})
 	}
 });
+
+const updateCurrentPageData = (page, pageSize) => {
+	return new Promise(resolve => {
+		const start = (page - 1) * pageSize;
+		const end = start + pageSize;
+		const data = tableData.slice(start, end);
+		resolve({
+			data: data
+		})
+	})
+}
 
 
 /**
@@ -331,7 +330,7 @@ const pagination = reactive({
  */
 onMounted(() => { // 加载数据
 	checkLoginState();
-	find();
+	query();
 })
 
 
@@ -351,7 +350,7 @@ props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
 					新增
 				</n-button>
 			</router-link>
-			<n-button class="h-2.4em m-l-a" @click="filterShow = true">
+			<n-button class="h-2.4em m-l-a" @click.prevent="filterShow = true">
 				<template #icon>
 					<n-icon>
 						<write/>
@@ -359,7 +358,7 @@ props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
 				</template>
 				筛选
 			</n-button>
-			<n-button class="h-2.4em" @click="clickFind">
+			<n-button class="h-2.4em" @click.prevent="clickQuery">
 				<template #icon>
 					<n-icon>
 						<IReload/>
@@ -376,9 +375,9 @@ props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
 		<n-back-top :bottom="2" :right="20"/>
 		<!--   数据表   -->
 		<n-data-table
-			:loading="loadingQuery"
 			:columns="cols"
-			:data="tableData"
+			:data="currentPageTableData"
+			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
 		/>
@@ -451,9 +450,9 @@ props.updateBreadcrumbArray(B_PUBLISHER_INDEX);
 			<n-gi>
 				<n-button class="w-100%" tertiary type="warning">清空</n-button>
 			</n-gi>
-			<n-gi />
-			<n-gi />
-			<n-gi />
+			<n-gi/>
+			<n-gi/>
+			<n-gi/>
 			<n-gi>
 				<n-button class="w-100%" type="success">过滤</n-button>
 			</n-gi>
