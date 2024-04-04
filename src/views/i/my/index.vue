@@ -1,9 +1,8 @@
 <script setup>
-
-import {B_MY} from "@/constant/breadcrumb.js";
+import { B_MY } from "@/constant/breadcrumb.js";
 import UserInfo from "@/views/p/user-info.vue";
 
-const props = defineProps(['updateMenuItem', "updateBreadcrumbArray"]);
+const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
 {
 	props.updateMenuItem("i-my");
@@ -12,9 +11,7 @@ const props = defineProps(['updateMenuItem', "updateBreadcrumbArray"]);
 </script>
 
 <template>
-	<UserInfo/>
+	<UserInfo />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

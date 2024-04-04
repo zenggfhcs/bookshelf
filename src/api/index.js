@@ -3,9 +3,30 @@
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
-import {MyRequest} from "@/api/MyRequest.js";
-import {encodeByRSA} from "@/utils/rsa-tools.js";
+import { instance } from "@/api/instance.js";
+import { encodeByRSA } from "@/utils/rsa-tools.js";
 
+//#region pre defined request
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const request = {
+	post: (url, entity) => {
+		return instance.post(url, entity);
+	},
+	get: (url) => {
+		return instance.get(url);
+	},
+	patch: (url, entity) => {
+		return instance.patch(url, entity);
+	},
+	delete: (url) => {
+		return instance.delete(url);
+	},
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region service name
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const ServiceName = {
 	BOOK: "books",
 	BOOK_INFO: "bookInfos",
@@ -13,17 +34,20 @@ const ServiceName = {
 	USER: "users",
 	DEBIT: "debits",
 	LOG: "logs",
-}
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 
 //#region base api
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 class BaseService {
 	constructor(serviceName) {
-		this.list = () => MyRequest.get(`/${serviceName}`);
-		this.add = (entity) => MyRequest.post(`/${serviceName}`, entity);
-		this.get = (id) => MyRequest.get(`/${serviceName}/${id}`);
-		this.remove = (id) => MyRequest.delete(`/${serviceName}/${id}/`);
-		this.update = (entity) => MyRequest.patch(`/${serviceName}/${entity?.id}`, entity);
+		this.list = () => request.get(`/${serviceName}`);
+		this.add = (entity) => request.post(`/${serviceName}`, entity);
+		this.get = (id) => request.get(`/${serviceName}/${id}`);
+		this.remove = (id) => request.delete(`/${serviceName}/${id}/`);
+		this.update = (entity) =>
+			request.patch(`/${serviceName}/${entity?.id}`, entity);
 	}
 }
 
@@ -53,7 +77,7 @@ const Publishers = new BaseService(ServiceName.PUBLISHER);
 const Users = new BaseService(ServiceName.USER);
 
 Users.login = (entity) => {
-	return MyRequest.post("/users:login", entity);
+	return request.post("/users:login", entity);
 };
 
 Users.register = (entity) => {
@@ -61,25 +85,27 @@ Users.register = (entity) => {
 		email: encodeByRSA(entity.email),
 		authenticationString: encodeByRSA(entity.authenticationString),
 	};
-	return MyRequest.post("/users:register", _encryptedEntity);
+	return request.post("/users:register", _encryptedEntity);
 };
 
 Users.verifyEmail = (token) => {
-	const _payload = {
-		entity: {
-			token: token
-		}
-	}
-	return MyRequest.post("/users/email:verify", _payload);
+	const _entity = {
+		token: token,
+	};
+	return request.post("/users/email:verify", _entity); // todo test this fuc
 };
 
 Users.resetPassword = (entity) => {
 	const _payload = {
 		email: encodeByRSA(entity.email),
-		authenticationString: encodeByRSA(entity.authenticationString)
+		authenticationString: encodeByRSA(entity.authenticationString),
 	};
-	return MyRequest.post("/users/password:reset", _payload);
-}
+	return request.post("/users/password:reset", _payload);
+};
+
+Users.sendMailForResetPassword = (entity) => {
+	return request.post("/password:reset/email:sendCode", entity);
+};
 
 Users.borrowing = null;
 
@@ -99,23 +125,11 @@ const Logs = new BaseService(ServiceName.LOG);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-
 //#region token
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Token = {
-	refresh: () => MyRequest.post("/token/refresh", {})
-}
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-
-//#region mail
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const Mail = {
-	sendCode(entity) {
-		return MyRequest.post("/send/code", entity);
-	}
-}
+	refresh: () => request.post("/token:refresh", {}),
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -127,9 +141,6 @@ const Service = {
 	Books,
 	Logs,
 	Token,
-	Mail,
-}
+};
 
-export {
-	Service,
-}
+export { Service };

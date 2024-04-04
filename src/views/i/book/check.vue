@@ -1,6 +1,6 @@
 <script setup>
 // todo start
-const props = defineProps(['id', 'updateMenuItem']);
+const props = defineProps(["id", "updateMenuItem"]);
 
 props.updateMenuItem("i-book");
 </script>
@@ -10,6 +10,4 @@ props.updateMenuItem("i-book");
 	a?
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

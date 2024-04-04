@@ -1,6 +1,6 @@
-import {ParameterType} from "@/constant/Type.js";
-import {BoolTools} from "@/utils/BoolTools.js";
-import {Exception} from "@/utils/exception.js";
+import { ParameterType } from "@/constant/Type.js";
+import { BoolTools } from "@/utils/BoolTools.js";
+import { Exception } from "@/utils/exception.js";
 
 /**
  * type check
@@ -29,7 +29,7 @@ export class TypeCheck {
 		if (BoolTools.isFloat(val, fun)) {
 			return;
 		}
-		Exception.typeError(attribute, 'float number', val);
+		Exception.typeError(attribute, "float number", val);
 	}
 
 	/**
@@ -42,7 +42,7 @@ export class TypeCheck {
 		if (BoolTools.Integer(val, fun)) {
 			return;
 		}
-		Exception.typeError(attribute, 'integer', val);
+		Exception.typeError(attribute, "integer", val);
 	}
 
 	/**
@@ -52,7 +52,7 @@ export class TypeCheck {
 	 * @param val 被检查的变量
 	 */
 	static typeCorrect(attribute, type, val) {
-		if (typeof type === 'string') {
+		if (typeof type === "string") {
 			if (BoolTools.isType(val, type)) {
 				return;
 			}

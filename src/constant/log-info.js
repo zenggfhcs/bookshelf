@@ -3,11 +3,9 @@ const LOG_TYPE_MAP = {
 	update: "warning",
 	delete: "error",
 	create: "success",
-}
+};
 
-export {
-	LOG_TYPE_MAP
-}
+export { LOG_TYPE_MAP };
 
 const elapsedTimeLevel = [
 	{
@@ -21,10 +19,7 @@ const elapsedTimeLevel = [
 	{
 		value: 0,
 		type: "success",
-	}
-]
+	},
+];
 
-export {
-	elapsedTimeLevel
-}
-
+export { elapsedTimeLevel };

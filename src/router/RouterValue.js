@@ -61,7 +61,7 @@ const VERIFY = {
 	component: Verify,
 	name: "verify",
 	path: "/verify",
-	props: route => ({token: route.query.token}),
+	props: (route) => ({ token: route.query.token }),
 	hidden: true,
 };
 
@@ -84,17 +84,17 @@ const _404 = {
 	name: "404",
 	path: "/error/404",
 	hidden: true,
-}
+};
 
 const ERROR = {
 	component: null,
 	name: "ERROR",
 	path: "/:pathMatch(.*)*",
 	props: true,
-	children: [_404,],
+	children: [_404],
 	redirect: _404,
 	hidden: true,
-}
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -106,7 +106,7 @@ const J_HOME = {
 	path: "/j/index",
 	props: true,
 	hidden: true,
-}
+};
 
 const J_USER_INFO = {
 	component: UserInfo,
@@ -114,7 +114,7 @@ const J_USER_INFO = {
 	path: "/j/my-info",
 	props: true,
 	hidden: true,
-}
+};
 
 const J_CHECK = {
 	component: Check,
@@ -122,7 +122,7 @@ const J_CHECK = {
 	path: "/j/check",
 	props: true,
 	hidden: true,
-}
+};
 
 const J_STATISTICS = {
 	component: Statistics,
@@ -130,7 +130,7 @@ const J_STATISTICS = {
 	path: "/j/statistics",
 	props: true,
 	hidden: true,
-}
+};
 
 const BASE_J = {
 	component: BaseJ,
@@ -140,7 +140,7 @@ const BASE_J = {
 	children: [J_HOME, J_CHECK, J_USER_INFO, J_STATISTICS],
 	redirect: J_HOME,
 	hidden: true,
-}
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -306,8 +306,8 @@ const I_MY = {
 	name: "myInfo",
 	path: "/i/myInfo",
 	props: true,
-	hidden: true
-}
+	hidden: true,
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -317,24 +317,33 @@ const I_HOME = {
 	path: "/i/index",
 };
 
-
 const I_USER_INFO = {
 	component: UserInfo,
 	name: "iUserInfo",
 	path: "/i/my-info",
 	props: true,
 	hidden: true,
-}
+};
 
 const BASE_I = {
 	children: [
-		I_HOME, I_USER_INFO,
-		DEBIT, DEBIT_CHECK,
-		BOOK, BOOK_CHECK, BOOK_ADD,
-		BOOK_INFO, BOOK_INFO_CHECK, BOOK_INFO_ADD,
-		PUBLISHER, PUBLISHER_CHECK, PUBLISHER_ADD,
-		USER, USER_CHECK,
-		LOG, LOG_CHECK,
+		I_HOME,
+		I_USER_INFO,
+		DEBIT,
+		DEBIT_CHECK,
+		BOOK,
+		BOOK_CHECK,
+		BOOK_ADD,
+		BOOK_INFO,
+		BOOK_INFO_CHECK,
+		BOOK_INFO_ADD,
+		PUBLISHER,
+		PUBLISHER_CHECK,
+		PUBLISHER_ADD,
+		USER,
+		USER_CHECK,
+		LOG,
+		LOG_CHECK,
 		I_MY,
 	],
 	redirect: I_HOME,
@@ -350,7 +359,6 @@ const BASE_I = {
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
-
 
 //#region export route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -387,19 +395,13 @@ export {
 	J_CHECK,
 	J_USER_INFO,
 	J_STATISTICS,
-}
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-
 //#region export routes
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-export const PredefinedRoutes = [
-	PUBLIC,
-	BASE_I,
-	BASE_J,
-	ERROR,
-]
+export const PredefinedRoutes = [PUBLIC, BASE_I, BASE_J, ERROR];
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 

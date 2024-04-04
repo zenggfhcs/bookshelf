@@ -1,12 +1,11 @@
 <script setup>
-import {NLayout} from "naive-ui";
+import { NLayout } from "naive-ui";
 </script>
 
 <template>
 	<n-layout class="m-t-30">
-		<slot/>
+		<slot />
 	</n-layout>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

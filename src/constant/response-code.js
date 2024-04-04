@@ -9,4 +9,4 @@ export const ResponseCode = {
 	SUCCESS,
 	TOKEN_E,
 	TOKEN_R,
-}
+};

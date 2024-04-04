@@ -18,11 +18,11 @@ import {
 	NSpace,
 	NText,
 } from "naive-ui";
-import {h, onMounted, ref} from "vue";
+import { h, onMounted, ref } from "vue";
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(["updateMenuItem"]);
 {
-	props.updateMenuItem('j-check');
+	props.updateMenuItem("j-check");
 }
 
 const modelArrayRef = ref([]);
@@ -31,27 +31,19 @@ const loading = ref(false);
 
 const cols = [
 	{
-		title: () => h(
-			SearchGroup,
-			{},
-			{default: () => null}
-		),
+		title: () => h(SearchGroup, {}, { default: () => null }),
 		key: "id",
-		render: (row) => h(
-			BookListItem,
-			{},
-			{default: () => row?.id}
-		)
-	}
-]
+		render: (row) => h(BookListItem, {}, { default: () => row?.id }),
+	},
+];
 
 onMounted(() => {
 	loading.value = true;
-	modelArrayRef.value = Array.from({length: 13}).map(i => ({
-		id: i
+	modelArrayRef.value = Array.from({ length: 13 }).map((i) => ({
+		id: i,
 	}));
 	loading.value = false;
-})
+});
 
 const containerRef = ref();
 </script>
@@ -65,52 +57,45 @@ const containerRef = ref();
 					:show-collapsed-content="false"
 					:width="240"
 					class="m-r-4"
-					show-trigger="bar">
+					show-trigger="bar"
+				>
 					<n-card :bordered="false">
 						<n-flex class="items-center flex-nowrap w-190px" vertical>
-							<BookShelf class="w-8em h-8em"/>
+							<BookShelf class="w-8em h-8em" />
 							<n-space class="w-100%" vertical>
 								<n-card title="数据类型">
 									<n-flex style="flex-wrap: nowrap">
-										<n-checkbox/>
+										<n-checkbox />
 										<n-grid class="flex-auto" cols="2">
 											<n-gi>
 												<n-text>图书</n-text>
 											</n-gi>
-											<n-gi>
-												1234
-											</n-gi>
+											<n-gi> 1234</n-gi>
 											<n-gi>
 												<n-text>CIP</n-text>
 											</n-gi>
-											<n-gi>
-												1234
-											</n-gi>
+											<n-gi> 1234</n-gi>
 											<n-gi>
 												<n-text>馆藏</n-text>
 											</n-gi>
-											<n-gi>
-												1234
-											</n-gi>
+											<n-gi> 1234</n-gi>
 											<n-gi>
 												<n-text>ISBN</n-text>
 											</n-gi>
-											<n-gi>
-												1234
-											</n-gi>
+											<n-gi> 1234</n-gi>
 										</n-grid>
 									</n-flex>
 								</n-card>
 								<n-card title="类型">
 									<n-collapse>
 										<n-collapse-item name="1" title="中图分类法">
-											<template #header-extra/>
-											<template #arrow/>
-											<template #header/>
+											<template #header-extra />
+											<template #arrow />
+											<template #header />
 											<template v-for="i in 20">
 												<n-flex class="items-center">
-													<n-checkbox/>
-													abc d{{i}}
+													<n-checkbox />
+													abc d{{ i }}
 												</n-flex>
 											</template>
 										</n-collapse-item>
@@ -121,15 +106,20 @@ const containerRef = ref();
 					</n-card>
 				</n-layout-sider>
 				<n-layout-content>
-					<n-data-table :bordered="false" :columns="cols" :data="modelArrayRef" :loading="loading" :show-header="false"
-					              :single-line="false" remote/>
-
+					<n-data-table
+						:bordered="false"
+						:columns="cols"
+						:data="modelArrayRef"
+						:loading="loading"
+						:show-header="false"
+						:single-line="false"
+						remote
+					/>
 				</n-layout-content>
 			</n-layout>
-
 		</n-flex>
 	</n-flex>
-	<n-back-top :right="100"/>
+	<n-back-top :right="100" />
 </template>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <script setup>
-import {ThEME} from "@/storage/key.js";
-import {local} from "@/storage/local.js";
+import { ThEME } from "@/storage/key.js";
+import { local } from "@/storage/local.js";
 import {
 	darkTheme,
 	dateZhCN,
@@ -9,14 +9,14 @@ import {
 	NMessageProvider,
 	NModalProvider,
 	NWatermark,
-	zhCN
+	zhCN,
 } from "naive-ui";
-import {onBeforeMount, ref} from "vue";
+import { onBeforeMount, ref } from "vue";
 
 // 是暗色主题
 const isDark = ref(false);
 {
-	let _ = local.get(ThEME) // 刷新时读取
+	let _ = local.get(ThEME); // 刷新时读取
 	if (_) {
 		isDark.value = _ === "true"; // bool string to bool
 	} else {
@@ -33,13 +33,13 @@ const switchTheme = (v = !isDark.value) => {
 	isDark.value = v;
 	// todo 可能有性能影响，替代方案是在 onBeforeUnmount 中执行，但是刷新页面时没有执行，达不到预期
 	local.put(ThEME, isDark.value?.toString());
-}
+};
 
 //#region 生命周期
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 onBeforeMount(() => {
-	document.documentElement.style.fontSize = '16px';
-})
+	document.documentElement.style.fontSize = "16px";
+});
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 </script>
@@ -57,15 +57,16 @@ onBeforeMount(() => {
 		cross
 		fullscreen
 	/>
-	<n-config-provider :date-locale="dateZhCN" :locale="zhCN" :theme="isDark ? darkTheme : null">
+	<n-config-provider
+		:date-locale="dateZhCN"
+		:locale="zhCN"
+		:theme="isDark ? darkTheme : null"
+	>
 		<n-modal-provider>
 			<n-dialog-provider>
 				<n-message-provider>
 					<RouterView v-slot="{ Component }">
-						<component
-							:is="Component"
-							:switchTheme="switchTheme"
-						/>
+						<component :is="Component" :switchTheme="switchTheme" />
 					</RouterView>
 				</n-message-provider>
 			</n-dialog-provider>

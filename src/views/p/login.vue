@@ -1,19 +1,25 @@
 <script setup>
-import {Service} from "@/api/index.js";
-import {messageOptions} from "@/constant/options.js";
-import {REG_EMAIL} from "@/constant/regular-expression.js";
-import {ResponseCode} from "@/constant/response-code.js";
+import { Service } from "@/api/index.js";
+import { messageOptions } from "@/constant/options.js";
+import { REG_EMAIL } from "@/constant/regular-expression.js";
+import { ResponseCode } from "@/constant/response-code.js";
 import router from "@/router/index.js";
-import {REGISTER, RESET_PASSWORD} from "@/router/RouterValue.js";
-import {debounce} from "@/utils/debounce.js";
-import {resetToken} from "@/utils/storage-operation.js";
-import {formValidator} from "@/utils/validator.js";
-import {NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage} from "naive-ui";
-import {onMounted, reactive, ref} from "vue";
+import { REGISTER, RESET_PASSWORD } from "@/router/RouterValue.js";
+import { debounce } from "@/utils/debounce.js";
+import { resetToken } from "@/utils/storage-operation.js";
+import { formValidator } from "@/utils/validator.js";
+import {
+	NButton,
+	NDivider,
+	NFlex,
+	NForm,
+	NFormItem,
+	NInput,
+	useMessage,
+} from "naive-ui";
+import { onMounted, reactive, ref } from "vue";
 
-onMounted(() => {
-})
-
+onMounted(() => {});
 
 const formRef = ref(null);
 const message = useMessage();
@@ -26,30 +32,31 @@ const loading = ref(false);
 const rules = {
 	email: [
 		{
-			required: true,   // 字段必填
-			trigger: ['input', 'blur'],
-			validator(rule, value) {      // 自定义检查
+			required: true, // 字段必填
+			trigger: ["input", "blur"],
+			validator(rule, value) {
+				// 自定义检查
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入邮箱");
 				} else if (!REG_EMAIL.test(value.trim())) {
 					return new Error("邮箱格式错误");
 				}
-			}
-		}
+			},
+		},
 	],
 	authenticationString: [
 		{
 			required: true,
-			trigger: ['input', 'blur'],
+			trigger: ["input", "blur"],
 			validator(rule, value) {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
 				} else if (value.length < 7 || value.length > 17) {
-					return new Error("password 长度应为 7-17")
+					return new Error("password 长度应为 7-17");
 				}
-			}
-		}
-	]
+			},
+		},
+	],
 };
 
 /**
@@ -57,12 +64,12 @@ const rules = {
  * @param e event
  */
 const login = debounce((e) => {
-	e.preventDefault();                       // 父默认方法
+	e.preventDefault(); // 父默认方法
 	formValidator(formRef, message, () => {
 		loading.value = true;
-		console.log(model)
+		console.log(model);
 		Service.Users.login(model)
-			.then(res => {
+			.then((res) => {
 				// todo
 				console.log(res);
 				const data = res.data;
@@ -78,16 +85,14 @@ const login = debounce((e) => {
 					message.error(data.message);
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
 				loading.value = false;
 			});
-	})
+	});
 });
-
-
 </script>
 
 <template>
@@ -97,17 +102,15 @@ const login = debounce((e) => {
 		</div>
 		<div class="text-center">
 			<span>还没有账户吗?</span>
-			<router-link :to="REGISTER" class="p-0 m-0 font-size-1rem font-800 color-emerald">在此注册
+			<router-link
+				:to="REGISTER"
+				class="p-0 m-0 font-size-1rem font-800 color-emerald"
+				>在此注册
 			</router-link>
 		</div>
 		<n-divider>OR</n-divider>
 	</n-flex>
-	<n-form
-		id="login-form"
-		ref="formRef"
-		:model="model"
-		:rules="rules"
-	>
+	<n-form id="login-form" ref="formRef" :model="model" :rules="rules">
 		<n-form-item label="邮箱" path="email" size="large">
 			<n-input
 				v-model:value="model.email"
@@ -129,8 +132,10 @@ const login = debounce((e) => {
 					type="password"
 					@keydown.enter.prevent
 				/>
-				<router-link :to="RESET_PASSWORD"
-				             class="absolute bottom--1.7em right-0 h-2em line-height-2em color-#8c98a4">忘记密码?
+				<router-link
+					:to="RESET_PASSWORD"
+					class="absolute bottom--1.7em right-0 h-2em line-height-2em color-#8c98a4"
+					>忘记密码?
 				</router-link>
 			</div>
 		</n-form-item>
@@ -140,7 +145,8 @@ const login = debounce((e) => {
 				class="w-100%"
 				size="large"
 				type="success"
-				@click="login">
+				@click="login"
+			>
 				登入
 			</n-button>
 		</n-form-item>
@@ -151,7 +157,7 @@ const login = debounce((e) => {
 @import "/src/styles/form-item-input.css";
 
 .n-layout .n-divider:not(.n-divider--vertical) {
-	margin: .3em 0;
+	margin: 0.3em 0;
 }
 
 /*
@@ -159,5 +165,4 @@ const login = debounce((e) => {
 input:-internal-autofill-selected
 
 */
-
 </style>

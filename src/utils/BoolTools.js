@@ -1,10 +1,9 @@
-import {ParameterType} from "@/constant/Type.js";
+import { ParameterType } from "@/constant/Type.js";
 
 /**
  * bool 聚合类
  */
 export class BoolTools {
-
 	static isFunction(val, fun = undefined) {
 		return this.isType(val, ParameterType.FUNCTION) && this.f(fun);
 	}
@@ -36,9 +35,11 @@ export class BoolTools {
 	 * @returns {boolean}
 	 */
 	static isFloat(val, fun) {
-		return val === +val
+		return (
+			val === +val &&
 			// && val !== (val | 0)
-			&& this.f(fun);
+			this.f(fun)
+		);
 	}
 
 	/**
@@ -64,8 +65,4 @@ export class BoolTools {
 	static f(fun) {
 		return fun === undefined || fun();
 	}
-
 }
-
-
-

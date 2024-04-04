@@ -16,8 +16,12 @@ class BiMap {
 	}
 
 	set(k, v) {
-		if (this.#keyMap.has(k) || this.#keyMap.has(v)
-			|| this.#valueMap.has(k) || this.#valueMap.has(v)) {
+		if (
+			this.#keyMap.has(k) ||
+			this.#keyMap.has(v) ||
+			this.#valueMap.has(k) ||
+			this.#valueMap.has(v)
+		) {
 			throw new Error(`${k} or ${v} is exist`);
 		}
 		this.#keyMap.set(k, v);

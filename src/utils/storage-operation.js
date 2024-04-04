@@ -1,14 +1,11 @@
-import {Header} from "@/api/Header.js";
-import {REFRESH_TOKEN} from "@/storage/key.js";
-import {local} from "@/storage/local.js";
+import { Header } from "@/constant/Header.js";
+import { REFRESH_TOKEN } from "@/storage/key.js";
+import { local } from "@/storage/local.js";
 
 const resetToken = (tokenInfo) => {
-	if (tokenInfo?.token)
-		local.put(Header.TOKEN, tokenInfo?.token);
+	if (tokenInfo?.token) local.put(Header.TOKEN, tokenInfo?.token);
 	if (tokenInfo?.refreshToken)
 		local.put(REFRESH_TOKEN, tokenInfo?.refreshToken);
-}
+};
 
-export {
-	resetToken
-}
+export { resetToken };

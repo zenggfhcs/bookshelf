@@ -4,8 +4,13 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-import {elapsedTimeLevel, LOG_TYPE_MAP} from "@/constant/log-info.js";
-import {ageLevel, GENDER_MAP, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP} from "@/constant/user-info.js";
+import { elapsedTimeLevel, LOG_TYPE_MAP } from "@/constant/log-info.js";
+import {
+	ageLevel,
+	GENDER_MAP,
+	GENDER_TAG_TYPE_MAP,
+	USER_TAG_TYPE_MAP,
+} from "@/constant/user-info.js";
 
 //#region 时间戳转 yyyy-MM-ddTHH:mm:ss
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -27,28 +32,25 @@ const timestampToDateTimeString = (timestamp) => {
 
 	// 返回格式化后的字符串
 	return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}`;
-}
+};
 
 // 辅助函数，用于补零
 function padZero(num) {
-	return (num < 10 ? '0' : '') + num;
+	return (num < 10 ? "0" : "") + num;
 }
 
-export {timestampToDateTimeString};
+export { timestampToDateTimeString };
 
 const timeFormat = (time) => {
 	return time?.toString().replace("T", " ");
-}
+};
 
-export {
-	timeFormat
-}
+export { timeFormat };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-
 const getTagType = {
-	byLogType: value => LOG_TYPE_MAP[value],
+	byLogType: (value) => LOG_TYPE_MAP[value],
 	byElapsedTime: (elapsedTime) => {
 		for (const item of elapsedTimeLevel) {
 			if (item.value <= elapsedTime) {
@@ -57,7 +59,7 @@ const getTagType = {
 		}
 		return "error";
 	},
-	byUserRole: value => USER_TAG_TYPE_MAP[value],
+	byUserRole: (value) => USER_TAG_TYPE_MAP[value],
 	byAge: (age) => {
 		for (const item of ageLevel) {
 			if (item.value <= age) {
@@ -66,21 +68,17 @@ const getTagType = {
 		}
 		return "default";
 	},
-	byGender: (g) => GENDER_TAG_TYPE_MAP[g]
-}
+	byGender: (g) => GENDER_TAG_TYPE_MAP[g],
+};
 
-export {
-	getTagType
-}
+export { getTagType };
 
 const convertGender = (g) => GENDER_MAP[g];
-export {convertGender}
+export { convertGender };
 
 const nullToEmptyString = (s) => {
 	if (s) return s;
 	return "";
-}
+};
 
-export {
-	nullToEmptyString
-}
+export { nullToEmptyString };

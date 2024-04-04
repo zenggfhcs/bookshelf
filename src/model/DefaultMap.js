@@ -1,6 +1,6 @@
 class DefaultMap extends Map {
 	constructor() {
-		super();                          // Invoke superclass constructor
+		super(); // Invoke superclass constructor
 	}
 
 	getOrDefault(key, defaultValue) {

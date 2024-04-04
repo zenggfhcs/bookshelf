@@ -1,15 +1,15 @@
-import {Header} from "@/api/Header.js";
-import {messageOptions} from "@/constant/options.js";
+import { Header } from "@/constant/Header.js";
+import { messageOptions } from "@/constant/options.js";
 import router from "@/router/index.js";
-import {LOGIN} from "@/router/RouterValue.js";
-import {REFRESH_TOKEN} from "@/storage/key.js";
-import {local} from "@/storage/local.js";
+import { LOGIN } from "@/router/RouterValue.js";
+import { REFRESH_TOKEN } from "@/storage/key.js";
+import { local } from "@/storage/local.js";
 
 const logout = async (message) => {
 	local.remove(Header.TOKEN);
 	local.remove(REFRESH_TOKEN);
 	message.success("成功退出登录", messageOptions);
 	await router.push(LOGIN.path);
-}
+};
 
 export default logout;

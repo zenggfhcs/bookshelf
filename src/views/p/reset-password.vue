@@ -1,15 +1,25 @@
 <script setup>
-import {Service} from "@/api/index.js";
-import {messageOptions} from "@/constant/options.js";
-import {REG_EMAIL} from "@/constant/regular-expression.js";
-import {goto} from "@/router/goto.js";
-import {LOGIN} from "@/router/RouterValue.js";
-import {debounce} from "@/utils/debounce.js";
-import {gCode} from "@/utils/generate.js";
-import {formValidator} from "@/utils/validator.js";
-import {ChevronBackOutline} from "@vicons/ionicons5";
-import {NButton, NCountdown, NFlex, NForm, NFormItem, NGi, NGrid, NInput, useMessage} from "naive-ui";
-import {reactive, ref} from "vue";
+import { Service } from "@/api/index.js";
+import { messageOptions } from "@/constant/options.js";
+import { REG_EMAIL } from "@/constant/regular-expression.js";
+import { goto } from "@/router/goto.js";
+import { LOGIN } from "@/router/RouterValue.js";
+import { debounce } from "@/utils/debounce.js";
+import { gCode } from "@/utils/generate.js";
+import { formValidator } from "@/utils/validator.js";
+import { ChevronBackOutline } from "@vicons/ionicons5";
+import {
+	NButton,
+	NCountdown,
+	NFlex,
+	NForm,
+	NFormItem,
+	NGi,
+	NGrid,
+	NInput,
+	useMessage,
+} from "naive-ui";
+import { reactive, ref } from "vue";
 
 /**
  * form ref 定位
@@ -68,9 +78,9 @@ const emailValidated = ref(false);
  * @param minutes 分钟数
  * @param seconds 秒数
  */
-const renderCountdown = ({minutes, seconds}) => {
+const renderCountdown = ({ minutes, seconds }) => {
 	return `(${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")})`;
-}
+};
 
 /**
  * 计时器标识ref，用于重置计时器
@@ -81,7 +91,7 @@ const countdownRef = ref();
 /**
  * 验证码，保存有效的验证码，验证码过期会被重置为 ''
  */
-const code = ref('');
+const code = ref("");
 
 /**
  * 计时器时长
@@ -97,11 +107,15 @@ const countdownFinish = () => {
 	// 重置计时器
 	countdownRef.value.reset();
 	// 重置验证码
-	code.value = '';
-}
+	code.value = "";
+};
 
 function validatePasswordStartWith(rule, value) {
-	return !!model.authenticationString && model.authenticationString?.toString().startsWith(value) && model.authenticationString.length >= value.length;
+	return (
+		!!model.authenticationString &&
+		model.authenticationString?.toString().startsWith(value) &&
+		model.authenticationString.length >= value.length
+	);
 }
 
 function validatePasswordSame(rule, value) {
@@ -110,13 +124,13 @@ function validatePasswordSame(rule, value) {
 
 function handlePasswordInput() {
 	if (model.reenteredAuthenticationString) {
-		reenteredRef.value?.validate({trigger: "authenticationString-input"});
+		reenteredRef.value?.validate({ trigger: "authenticationString-input" });
 	}
 }
 
 function handleCodeAfterConfirmed() {
 	if (model.code) {
-		codeRef.value?.validate({trigger: "validate-code"});
+		codeRef.value?.validate({ trigger: "validate-code" });
 		return true;
 	}
 	return false;
@@ -125,9 +139,10 @@ function handleCodeAfterConfirmed() {
 const rules = {
 	email: [
 		{
-			required: true,          // 字段必填
-			trigger: ['input', 'blur'],
-			validator(rule, value) {      // 自定义检查
+			required: true, // 字段必填
+			trigger: ["input", "blur"],
+			validator(rule, value) {
+				// 自定义检查
 				emailValidated.value = false;
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入邮箱");
@@ -136,55 +151,56 @@ const rules = {
 				}
 				emailValidated.value = true;
 				return true;
-			}
-		}
+			},
+		},
 	],
 	code: [
 		{
 			required: true,
-			trigger: ['input', 'blur'], // todo diy 触发方式，在表单验证时触发
-			message: '请输入验证码',
-		}, {
-			trigger: ['validate-code'],
+			trigger: ["input", "blur"], // todo diy 触发方式，在表单验证时触发
+			message: "请输入验证码",
+		},
+		{
+			trigger: ["validate-code"],
 			validator(rule, value) {
 				if (value.trim() !== code.value) {
 					return new Error("验证码错误");
 				}
 				return true;
-			}
-		}
+			},
+		},
 	],
 	authenticationString: [
 		{
 			required: true,
-			trigger: ['input', 'blur'],
+			trigger: ["input", "blur"],
 			validator(rule, value) {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
 				} else if (value.length < 7 || value.length > 17) {
-					return new Error("password 长度应为 7-17")
+					return new Error("password 长度应为 7-17");
 				}
 				return true;
-			}
-		}
+			},
+		},
 	],
 	reenteredAuthenticationString: [
 		{
 			required: true,
-			message: '请再次输入密码',
-			trigger: ['input', 'blur']
+			message: "请再次输入密码",
+			trigger: ["input", "blur"],
 		},
 		{
 			validator: validatePasswordStartWith,
-			message: '两次密码输入不一致',
-			trigger: 'input'
+			message: "两次密码输入不一致",
+			trigger: "input",
 		},
 		{
 			validator: validatePasswordSame,
-			message: '两次密码输入不一致',
-			trigger: ['blur', 'authenticationString-input']
-		}
-	]
+			message: "两次密码输入不一致",
+			trigger: ["blur", "authenticationString-input"],
+		},
+	],
 };
 
 /**
@@ -195,21 +211,21 @@ const sendCode = debounce(() => {
 
 	const _entity = {
 		email: model.email,
-		authenticationString: code.value?.toString()
-	}
+		authenticationString: code.value?.toString(),
+	};
 	sendCodeLoading.value = true;
-	Service.Mail.sendCode(_entity)
-		.then(res => {
+	Service.Users.sendMailForResetPassword(_entity)
+		.then((res) => {
 			message.success("发送成功，请查看邮箱邮件", messageOptions);
 			console.log(res);
 			ObtainedCode.value = true;
 		})
-		.catch(err => {
+		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
 			sendCodeLoading.value = false;
-		})
+		});
 });
 
 /**
@@ -223,19 +239,22 @@ const resetPassword = debounce(() => {
 		}
 		loading.value = true;
 		Service.Users.resetPassword(model)
-			.then(_ => {
-				message.success("修改成功，3秒后自动跳转到登录界面...", messageOptions);
+			.then((_) => {
+				message.success(
+					"修改成功，3秒后自动跳转到登录界面...",
+					messageOptions,
+				);
 				setTimeout(() => {
 					goto(LOGIN);
 				}, 3000);
 			})
-			.catch(err => {
+			.catch((err) => {
 				message.error(err.message);
 			})
 			.finally(() => {
 				loading.value = false;
 			});
-	})
+	});
 });
 </script>
 
@@ -248,12 +267,7 @@ const resetPassword = debounce(() => {
 			</span>
 		</div>
 	</n-flex>
-	<n-form
-		id="login-form"
-		ref="formRef"
-		:model="model"
-		:rules="rules"
-	>
+	<n-form id="login-form" ref="formRef" :model="model" :rules="rules">
 		<n-form-item label="邮箱" path="email" size="large">
 			<n-input
 				v-model:value="model.email"
@@ -270,21 +284,27 @@ const resetPassword = debounce(() => {
 					v-model:value="model.code"
 					class="flex-auto"
 					placeholder="输入验证码"
-					style="border-radius: .1em 0 0 .1em"
+					style="border-radius: 0.1em 0 0 0.1em"
 					@keydown.enter.prevent
 				/>
-				<n-button :disabled="ObtainedCode || !emailValidated" :loading="sendCodeLoading"
-				          class="b-rd-0"
-				          style="border-radius: 0 .1em .1em 0" type="info" @click.prevent="sendCode">
+				<n-button
+					:disabled="ObtainedCode || !emailValidated"
+					:loading="sendCodeLoading"
+					class="b-rd-0"
+					style="border-radius: 0 0.1em 0.1em 0"
+					type="info"
+					@click.prevent="sendCode"
+				>
 					<span v-show="!ObtainedCode">获取</span>
 					<span v-show="ObtainedCode">
-                           <n-countdown
-	                           ref="countdownRef"
-	                           :active="ObtainedCode"
-	                           :duration="duration"
-	                           :on-finish="countdownFinish"
-	                           :render="renderCountdown"/>
-                        </span>
+						<n-countdown
+							ref="countdownRef"
+							:active="ObtainedCode"
+							:duration="duration"
+							:on-finish="countdownFinish"
+							:render="renderCountdown"
+						/>
+					</span>
 				</n-button>
 			</div>
 		</n-form-item>
@@ -300,7 +320,12 @@ const resetPassword = debounce(() => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-form-item first label="确认密码" path="reenteredAuthenticationString" size="large">
+		<n-form-item
+			first
+			label="确认密码"
+			path="reenteredAuthenticationString"
+			size="large"
+		>
 			<n-input
 				ref="reenteredRef"
 				v-model:value="model.reenteredAuthenticationString"
@@ -315,24 +340,34 @@ const resetPassword = debounce(() => {
 		<n-grid :cols="5" x-gap="12">
 			<n-gi :span="2">
 				<router-link :to="LOGIN">
-					<n-button :bordered="false" class="w-100%"
-					          secondary size="large" strong type="tertiary">
+					<n-button
+						:bordered="false"
+						class="w-100%"
+						secondary
+						size="large"
+						strong
+						type="tertiary"
+					>
 						<template #icon>
-							<ChevronBackOutline/>
+							<ChevronBackOutline />
 						</template>
 						前去登入
 					</n-button>
 				</router-link>
 			</n-gi>
 			<n-gi :span="3">
-				<n-button :loading="loading" class="w-100%" size="large"
-				          type="success" @click.prevent="resetPassword">
+				<n-button
+					:loading="loading"
+					class="w-100%"
+					size="large"
+					type="success"
+					@click.prevent="resetPassword"
+				>
 					重置密码
 				</n-button>
 			</n-gi>
 		</n-grid>
 	</n-form>
-
 </template>
 
 <style scoped>

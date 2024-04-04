@@ -1,7 +1,7 @@
 <template>
 	<n-form ref="formRef" :model="model" :rules="rules">
 		<n-form-item label="年龄" path="age">
-			<n-input v-model:value="model.age" @keydown.enter.prevent/>
+			<n-input v-model:value="model.age" @keydown.enter.prevent />
 		</n-form-item>
 		<n-form-item label="密码" path="password">
 			<n-input
@@ -40,14 +40,23 @@
 		</n-row>
 	</n-form>
 
-	<pre>{{ JSON.stringify(model, null, 2) }}
-</pre>
+	<pre
+		>{{ JSON.stringify(model, null, 2) }}
+</pre
+	>
 </template>
 
 <script setup>
-import {NButton, NCol, NForm, NFormItem, NInput, NRow, useMessage} from "naive-ui";
-import {ref} from "vue";
-
+import {
+	NButton,
+	NCol,
+	NForm,
+	NFormItem,
+	NInput,
+	NRow,
+	useMessage,
+} from "naive-ui";
+import { ref } from "vue";
 
 const formRef = ref(null);
 const rPasswordFormItemRef = ref(null);
@@ -55,13 +64,17 @@ const message = useMessage();
 const modelRef = ref({
 	age: null,
 	password: null,
-	reenteredPassword: null
+	reenteredPassword: null,
 });
 
 const model = modelRef;
 
 function validatePasswordStartWith(rule, value) {
-	return !!modelRef.value.password && modelRef.value.password.startsWith(value) && modelRef.value.password.length >= value.length;
+	return (
+		!!modelRef.value.password &&
+		modelRef.value.password.startsWith(value) &&
+		modelRef.value.password.length >= value.length
+	);
 }
 
 function validatePasswordSame(rule, value) {
@@ -82,38 +95,37 @@ const rules = {
 				}
 				return true;
 			},
-			trigger: ["input", "blur"]
-		}
+			trigger: ["input", "blur"],
+		},
 	],
 	password: [
 		{
 			required: true,
-			message: "请输入密码"
-		}
+			message: "请输入密码",
+		},
 	],
 	reenteredPassword: [
 		{
 			required: true,
 			message: "请再次输入密码",
-			trigger: ["input", "blur"]
+			trigger: ["input", "blur"],
 		},
 		{
 			validator: validatePasswordStartWith,
 			message: "两次密码输入不一致",
-			trigger: "input"
+			trigger: "input",
 		},
 		{
 			validator: validatePasswordSame,
 			message: "两次密码输入不一致",
-			trigger: ["blur", "password-input"]
-		}
-	]
+			trigger: ["blur", "password-input"],
+		},
+	],
 };
-
 
 function handlePasswordInput() {
 	if (modelRef.value.reenteredPassword) {
-		rPasswordFormItemRef.value?.validate({trigger: "password-input"});
+		rPasswordFormItemRef.value?.validate({ trigger: "password-input" });
 	}
 }
 
@@ -128,6 +140,4 @@ function handleValidateButtonClick(e) {
 		}
 	});
 }
-
-
 </script>

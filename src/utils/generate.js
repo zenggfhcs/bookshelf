@@ -1,8 +1,7 @@
-import {ParameterType} from "@/constant/Type.js";
-import {TypeCheck} from "@/utils/Check.js";
-import {shuffleArray} from "@/utils/index.js";
-import {randomInt} from "@/utils/random.js";
-
+import { ParameterType } from "@/constant/Type.js";
+import { TypeCheck } from "@/utils/Check.js";
+import { shuffleArray } from "@/utils/index.js";
+import { randomInt } from "@/utils/random.js";
 
 //#region generate property
 /**
@@ -17,24 +16,23 @@ const generateProperty = (internal, property, check) => {
 	return {
 		get: () => {
 			return internal;
-		}, set: (val) => {
+		},
+		set: (val) => {
 			check(val);
 			internal = val;
-		}, configurable: false,
-	}
-}
+		},
+		configurable: false,
+	};
+};
 
 const generateProperty_check = (internal, property, check) => {
 	// TypeCheck.typeCorrect('internal', ParameterType.OBJECT, internal);
-	TypeCheck.typeCorrect('property', ParameterType.STRING, property);
-	TypeCheck.typeCorrect('check', ParameterType.FUNCTION, check);
-}
+	TypeCheck.typeCorrect("property", ParameterType.STRING, property);
+	TypeCheck.typeCorrect("check", ParameterType.FUNCTION, check);
+};
 
-export {
-	generateProperty,
-}
+export { generateProperty };
 //#endregion
-
 
 //#region generate to json object
 /**
@@ -45,15 +43,12 @@ export {
 const gProps = (name) => {
 	return {
 		to: {
-			name: `${name}`
-		}
+			name: `${name}`,
+		},
 	};
 };
 
-
-export {
-	gProps,
-}
+export { gProps };
 //#endregion
 
 /**
@@ -61,16 +56,13 @@ export {
  * @returns {string}
  */
 const gCode = () => {
-	let code = '';
+	let code = "";
 	const l = randomInt(randomInt(3)) + 7;
 	while (code.length < l) {
-		code += (Math.ceil(Math.random() * 10000000))
-			.toString(16);
+		code += Math.ceil(Math.random() * 10000000).toString(16);
 	}
 	code = shuffleArray(code.split("")).join("");
 	return code.substring(0, l);
-}
+};
 
-export {
-	gCode
-}
+export { gCode };

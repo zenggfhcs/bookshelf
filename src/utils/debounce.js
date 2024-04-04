@@ -16,8 +16,6 @@ const debounce = (fun, delay = 777) => {
 		}, delay);
 		fun(args);
 	};
-}
+};
 
-export {
-	debounce
-}
+export { debounce };

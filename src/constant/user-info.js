@@ -5,15 +5,13 @@
 //#endregion
 
 const USER_TAG_TYPE_MAP = {
-	"root": "error",
-	"admin": "warning",
-	"common": "success",
-	"limited": "default",
-}
+	root: "error",
+	admin: "warning",
+	common: "success",
+	limited: "default",
+};
 
-export {
-	USER_TAG_TYPE_MAP
-}
+export { USER_TAG_TYPE_MAP };
 
 const ageLevel = [
 	{
@@ -27,27 +25,15 @@ const ageLevel = [
 	{
 		value: 0,
 		type: "error",
-	}
-]
+	},
+];
 
-export {
-	ageLevel
-}
+export { ageLevel };
 
-const GENDER_MAP = [
-	"女",
-	"男",
-	"未知"
-]
+const GENDER_MAP = ["女", "男", "未知"];
 
-export {
-	GENDER_MAP
-}
+export { GENDER_MAP };
 
-const GENDER_TAG_TYPE_MAP = [
-	"error",
-	"success",
-	"default",
-]
+const GENDER_TAG_TYPE_MAP = ["error", "success", "default"];
 
-export {GENDER_TAG_TYPE_MAP}
+export { GENDER_TAG_TYPE_MAP };

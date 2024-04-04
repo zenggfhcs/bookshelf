@@ -1,11 +1,10 @@
 <script setup>
-
-import {NCheckbox, NFlex, NGi, NGrid, NImage, NText} from "naive-ui";
+import { NCheckbox, NFlex, NGi, NGrid, NImage, NText } from "naive-ui";
 </script>
 
 <template>
 	<n-flex class="items-center">
-		<n-checkbox size="large"/>
+		<n-checkbox size="large" />
 		<n-image
 			height="128"
 			src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
@@ -24,14 +23,10 @@ import {NCheckbox, NFlex, NGi, NGrid, NImage, NText} from "naive-ui";
 			<n-text>主题词：英语课－学前教育－教学参考资料</n-text>
 		</n-flex>
 		<n-flex class="items-end" justify="right" vertical>
-			<n-text>
-				版次：1丨印次：1
-			</n-text>
+			<n-text> 版次：1丨印次：1</n-text>
 			<n-text>CIP数据库</n-text>
 		</n-flex>
 	</n-flex>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

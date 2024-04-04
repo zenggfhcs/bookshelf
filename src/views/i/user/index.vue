@@ -1,16 +1,16 @@
 <script setup>
-import {Service} from "@/api/index.js";
-import {B_USER_INDEX} from "@/constant/breadcrumb.js";
-import {ROLE_MAP, ROLE_PRE_DEFINED} from "@/constant/map.js";
+import { Service } from "@/api/index.js";
+import { B_USER_INDEX } from "@/constant/breadcrumb.js";
+import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import {USER_CHECK} from "@/router/RouterValue.js";
-import {checkLoginState} from "@/utils/check-login-state.js";
-import {convertGender, getTagType} from "@/utils/convert.js";
-import {debounce} from "@/utils/debounce.js";
-import {renderCell} from "@/utils/render.js";
-import {inputValidator} from "@/utils/validator.js";
-import {Search} from "@vicons/ionicons5";
+import { USER_CHECK } from "@/router/RouterValue.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
+import { convertGender, getTagType } from "@/utils/convert.js";
+import { debounce } from "@/utils/debounce.js";
+import { renderCell } from "@/utils/render.js";
+import { inputValidator } from "@/utils/validator.js";
+import { Search } from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
@@ -33,17 +33,16 @@ import {
 	NPopover,
 	NSelect,
 	NTag,
-	useMessage
-} from "naive-ui"
-import {h, onMounted, reactive, ref} from "vue"
+	useMessage,
+} from "naive-ui";
+import { h, onMounted, reactive, ref } from "vue";
 
-
-const props = defineProps(['updateMenuItem', 'updateBreadcrumbArray']);
+const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 const message = useMessage();
 
 const messageOptions = {
-	duration: 10000
-}
+	duration: 10000,
+};
 
 let tableData = [];
 
@@ -57,20 +56,21 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		width: 100,
 		minWidth: 50,
-		render: (row) => h(
-			NTag,
-			{
-				type: "info",
-				bordered: false,
-			},
-			{
-				default: () => row?.id
-			}
-		),
+		render: (row) =>
+			h(
+				NTag,
+				{
+					type: "info",
+					bordered: false,
+				},
+				{
+					default: () => row?.id,
+				},
+			),
 	},
 	{
 		title: "用户昵称",
@@ -79,13 +79,12 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		render: (row) => {
-			if (!row?.displayName)
-				return renderCell();
+			if (!row?.displayName) return renderCell();
 			return row?.displayName;
-		}
+		},
 	},
 	{
 		title: "用户名",
@@ -94,21 +93,20 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		render: (row) => {
-			if (!(row?.surname || row?.name))
-				return renderCell();
+			if (!(row?.surname || row?.name)) return renderCell();
 			return h(
 				NTag,
 				{
 					bordered: false,
 				},
 				{
-					default: () => `${row?.surname} ${row?.name}`
-				}
-			)
-		}
+					default: () => `${row?.surname} ${row?.name}`,
+				},
+			);
+		},
 	},
 	{
 		title: "邮箱",
@@ -117,19 +115,19 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
-		render: (row) => h(
-			NTag,
-			{
-				bordered: false,
-				type: "error"
-			},
-			{
-				default: () => row?.email
-			}
-		)
-
+		render: (row) =>
+			h(
+				NTag,
+				{
+					bordered: false,
+					type: "error",
+				},
+				{
+					default: () => row?.email,
+				},
+			),
 	},
 	{
 		title: "电话",
@@ -138,23 +136,21 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		render: (row) => {
-			if (!row?.phoneNumber || row?.phoneNumber === '')
-				return renderCell();
+			if (!row?.phoneNumber || row?.phoneNumber === "") return renderCell();
 			return h(
 				NTag,
 				{
 					bordered: false,
-					type: "error"
+					type: "error",
 				},
 				{
-					default: () => row?.phoneNumber
-				}
-			)
-		}
-
+					default: () => row?.phoneNumber,
+				},
+			);
+		},
 	},
 	{
 		title: "角色",
@@ -163,7 +159,7 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		render: (row) => {
 			return h(
@@ -173,12 +169,10 @@ const cols = [
 					bordered: false,
 				},
 				{
-					default: () => ROLE_MAP.getByValue(row?.role?.name)
-				}
-			)
-
-		}
-
+					default: () => ROLE_MAP.getByValue(row?.role?.name),
+				},
+			);
+		},
 	},
 	{
 		title: "年龄",
@@ -187,22 +181,20 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		render: (row) => {
 			return h(
 				NTag,
 				{
 					type: getTagType.byAge(row?.age),
-					bordered: false
+					bordered: false,
 				},
 				{
-					default: () => row?.age
-				}
-			)
-
-		}
-
+					default: () => row?.age,
+				},
+			);
+		},
 	},
 	{
 		title: "性别",
@@ -211,22 +203,22 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true
+			tooltip: true,
 		},
 		render: (row) => {
 			return h(
 				NTag,
 				{
 					bordered: false,
-					type: getTagType.byGender(row?.gender)
+					type: getTagType.byGender(row?.gender),
 				},
 				{
-					default: () => convertGender(row?.gender)
-				}
-			)
-		}
-	}
-]
+					default: () => convertGender(row?.gender),
+				},
+			);
+		},
+	},
+];
 
 const loadingQuery = ref(false);
 
@@ -237,27 +229,27 @@ const rowProps = (row) => {
 			router.push({
 				name: USER_CHECK.name,
 				params: {
-					id: row?.id
-				}
+					id: row?.id,
+				},
 			});
-		}
-	}
-}
+		},
+	};
+};
 
 const timestamp = reactive({
 	creationTime: null,
 	lastLoginTime: null,
 	lastUpdatedTime: null,
-})
+});
 
 const filter = reactive({
 	page: {
 		start: 0,
-		end: 10
+		end: 10,
 	},
 	age: {
 		start: null,
-		end: null
+		end: null,
 	},
 	creationTime: {
 		start: null,
@@ -270,49 +262,46 @@ const filter = reactive({
 	lastLoginTime: {
 		start: null,
 		end: null,
-	}
+	},
 });
 
 const entity = reactive({
-	id: '',
-	displayName: '',
-	userName: '',
-	email: '',
-	phoneNumber: '',
+	id: "",
+	displayName: "",
+	userName: "",
+	email: "",
+	phoneNumber: "",
 	role: {
-		id: '',
-		name: '',
-	}
+		id: "",
+		name: "",
+	},
 });
 
 const roleOptions = ROLE_PRE_DEFINED;
-
 
 const query = () => {
 	loadingQuery.value = true;
 
 	Service.Users.list(entity, filter)
-		.then(res => {
+		.then((res) => {
 			const _returnData = res.data;
 			itemCount.value = _returnData?.data?.total;
 			tableData = _returnData?.data?.list;
 
 			pagination.onUpdatePage();
-
 		})
-		.catch(err => {
+		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {
 			loadingQuery.value = false;
 		});
-}
+};
 
 const clickFind = debounce((e) => {
 	e.preventDefault();
 	query();
 });
-
 
 const itemCount = ref(0);
 
@@ -321,10 +310,10 @@ const pagination = reactive({
 	pageSize: 10,
 	showSizePicker: true,
 	pageSizes: [
-		{label: "10 每页", value: 10,},
-		{label: "15 每页", value: 15,},
-		{label: "20 每页", value: 20,},
-		{label: "30 每页", value: 30,}
+		{ label: "10 每页", value: 10 },
+		{ label: "15 每页", value: 15 },
+		{ label: "20 每页", value: 20 },
+		{ label: "30 每页", value: 30 },
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -336,39 +325,37 @@ const pagination = reactive({
 		if (!loadingQuery.value) {
 			loadingQuery.value = true;
 		}
-		updateCurrentPageData(page, pagination.pageSize)
-			.then(res => {
-				currentPageTableData.value = res?.data;
-				loadingQuery.value = false;
-			})
-	}
+		updateCurrentPageData(page, pagination.pageSize).then((res) => {
+			currentPageTableData.value = res?.data;
+			loadingQuery.value = false;
+		});
+	},
 });
 
 const updateCurrentPageData = (page, pageSize) => {
-	return new Promise(resolve => {
+	return new Promise((resolve) => {
 		const start = (page - 1) * pageSize;
 		const end = start + pageSize;
 		const data = tableData.slice(start, end);
 		resolve({
-			data: data
-		})
-	})
-}
+			data: data,
+		});
+	});
+};
 
 /**
  * 组件挂载完成时调用
  */
-onMounted(() => { // 加载数据
+onMounted(() => {
+	// 加载数据
 	checkLoginState();
 	query();
-})
+});
 
 {
 	props.updateMenuItem("i-user");
 	props.updateBreadcrumbArray(B_USER_INDEX);
 }
-
-
 </script>
 
 <template>
@@ -379,7 +366,7 @@ onMounted(() => { // 加载数据
 					<n-button class="h-2.4em">
 						<template #icon>
 							<n-icon>
-								<write/>
+								<write />
 							</n-icon>
 						</template>
 						筛选
@@ -387,75 +374,119 @@ onMounted(() => { // 加载数据
 				</template>
 				<span class="font-size-1.2em font-800">精确查询</span>
 				<n-form :model="entity">
-					<n-divider class="m-1!"/>
+					<n-divider class="m-1!" />
 					<n-grid :cols="2" x-gap="12">
 						<n-gi>
 							<n-form-item label="id" path="id">
-								<n-input v-model:value="entity.id" :allow-input="inputValidator.onlyAllowNumber" clearable
-								         placeholder="输入id"/>
+								<n-input
+									v-model:value="entity.id"
+									:allow-input="inputValidator.onlyAllowNumber"
+									clearable
+									placeholder="输入id"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi>
 							<n-form-item label="用户昵称" path="displayName">
-								<n-input v-model:value="entity.displayName" :allow-input="inputValidator.noSideSpace"
-								         clearable placeholder="输入用户昵称"/>
+								<n-input
+									v-model:value="entity.displayName"
+									:allow-input="inputValidator.noSideSpace"
+									clearable
+									placeholder="输入用户昵称"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi>
 							<n-form-item label="用户名" path="userName">
-								<n-input v-model:value="entity.userName" :allow-input="inputValidator.noSideSpace" clearable
-								         placeholder="输入用户名"/>
+								<n-input
+									v-model:value="entity.userName"
+									:allow-input="inputValidator.noSideSpace"
+									clearable
+									placeholder="输入用户名"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi>
 							<n-form-item label="邮箱" path="email">
-								<n-input v-model:value="entity.email" :allow-input="inputValidator.noSideSpace" clearable
-								         placeholder="输入邮箱"/>
+								<n-input
+									v-model:value="entity.email"
+									:allow-input="inputValidator.noSideSpace"
+									clearable
+									placeholder="输入邮箱"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi>
 							<n-form-item label="电话" path="phone">
-								<n-input v-model:value="entity.phoneNumber" :allow-input="inputValidator.onlyAllowNumber"
-								         clearable
-								         maxlength="11" placeholder="输入电话"/>
+								<n-input
+									v-model:value="entity.phoneNumber"
+									:allow-input="inputValidator.onlyAllowNumber"
+									clearable
+									maxlength="11"
+									placeholder="输入电话"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi>
 							<n-form-item label="角色" path="role">
-								<n-select v-model:value="entity.role.name" :options="roleOptions" clearable/>
+								<n-select
+									v-model:value="entity.role.name"
+									:options="roleOptions"
+									clearable
+								/>
 							</n-form-item>
 						</n-gi>
 					</n-grid>
 				</n-form>
 				<n-form :model="filter">
 					<span class="font-size-1.2em font-800">模糊查询</span>
-					<n-divider class="m-1!"/>
+					<n-divider class="m-1!" />
 					<n-grid :cols="2" x-gap="12">
 						<n-gi :span="2">
 							<n-form-item label="年龄">
 								<n-input-group>
-									<n-input-number v-model:value="filter.age.start" :max="filter.age.end" :min="0"
-									                :style="{ width: '50%' }"
-									                clearable/>
-									<n-input-number v-model:value="filter.age.end" :max="255" :min="filter.age.start"
-									                :style="{ width: '50%' }"
-									                clearable/>
+									<n-input-number
+										v-model:value="filter.age.start"
+										:max="filter.age.end"
+										:min="0"
+										:style="{ width: '50%' }"
+										clearable
+									/>
+									<n-input-number
+										v-model:value="filter.age.end"
+										:max="255"
+										:min="filter.age.start"
+										:style="{ width: '50%' }"
+										clearable
+									/>
 								</n-input-group>
 							</n-form-item>
 						</n-gi>
 						<n-gi :span="2">
 							<n-form-item label="创建时间">
-								<n-date-picker v-model:value="timestamp.creationTime" clearable type="datetimerange"/>
+								<n-date-picker
+									v-model:value="timestamp.creationTime"
+									clearable
+									type="datetimerange"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi :span="2">
 							<n-form-item label="最后一次登录时间">
-								<n-date-picker v-model:value="timestamp.lastLoginTime" clearable type="datetimerange"/>
+								<n-date-picker
+									v-model:value="timestamp.lastLoginTime"
+									clearable
+									type="datetimerange"
+								/>
 							</n-form-item>
 						</n-gi>
 						<n-gi :span="2">
 							<n-form-item label="最后一次更新时间">
-								<n-date-picker v-model:value="timestamp.lastUpdatedTime" clearable type="datetimerange"/>
+								<n-date-picker
+									v-model:value="timestamp.lastUpdatedTime"
+									clearable
+									type="datetimerange"
+								/>
 							</n-form-item>
 						</n-gi>
 					</n-grid>
@@ -464,7 +495,7 @@ onMounted(() => { // 加载数据
 			<n-button class="h-2.4em" @click="clickFind">
 				<template #icon>
 					<n-icon>
-						<search/>
+						<search />
 					</n-icon>
 				</template>
 				查找
@@ -472,10 +503,14 @@ onMounted(() => { // 加载数据
 		</n-flex>
 	</n-layout-header>
 
-	<n-layout id="main" :native-scrollbar="false" class="absolute top-3em bottom-2.4em left-0 right-0"
-	          content-style="padding: .3em 1em;">
+	<n-layout
+		id="main"
+		:native-scrollbar="false"
+		class="absolute top-3em bottom-2.4em left-0 right-0"
+		content-style="padding: .3em 1em;"
+	>
 		<!--   返回顶部   -->
-		<n-back-top :bottom="2" :right="20"/>
+		<n-back-top :bottom="2" :right="20" />
 		<!--   数据表   -->
 		<n-data-table
 			:columns="cols"
@@ -484,7 +519,6 @@ onMounted(() => { // 加载数据
 			:row-props="rowProps"
 			:single-line="false"
 		/>
-
 	</n-layout>
 
 	<n-layout-footer class="h-2.4em" position="absolute">
@@ -501,22 +535,15 @@ onMounted(() => { // 加载数据
 				show-size-picker
 				size="large"
 			>
-				<template #prefix="{ itemCount}">
-					共 {{ itemCount }} 项
-				</template>
-				<template #goto>
-					跳至
-				</template>
-				<template #suffix="{}">
-					页
-				</template>
+				<template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+				<template #goto> 跳至</template>
+				<template #suffix="{}"> 页</template>
 			</n-pagination>
 		</n-flex>
 	</n-layout-footer>
 </template>
 
 <style scoped>
-
 .n-menu .n-menu-item-content .n-menu-item-content-header a {
 	font-weight: 800 !important;
 }
@@ -524,5 +551,4 @@ onMounted(() => { // 加载数据
 .n-date-picker {
 	flex: 1;
 }
-
 </style>

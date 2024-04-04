@@ -1,5 +1,5 @@
-import {RSA_PUBLIC_KEY} from "@/config/config.js";
-import {JSEncrypt} from "jsencrypt";
+import { RSA_PUBLIC_KEY } from "@/config/config.js";
+import { JSEncrypt } from "jsencrypt";
 
 const encryptor = new JSEncrypt();
 
@@ -9,13 +9,10 @@ encryptor.setPublicKey(RSA_PUBLIC_KEY);
 
 const encodeByRSA = (data) => {
 	return encryptor.encrypt(data);
-}
+};
 
 const decodeByRSA = (encryptData) => {
 	return encryptor.decrypt(encryptData);
-}
+};
 
-export {
-	encodeByRSA,
-	decodeByRSA
-}
+export { encodeByRSA, decodeByRSA };

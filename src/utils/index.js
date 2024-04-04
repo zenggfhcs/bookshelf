@@ -44,11 +44,10 @@ export function traverse(array) {
 		const _item = array[i];
 		if (_item[0]) {
 			_item[1]();
-			return
+			return;
 		}
 	}
 }
-
 
 /**
  * 格式化字符串
@@ -56,14 +55,20 @@ export function traverse(array) {
  * @param formatString
  */
 export function transDateString(dateString, formatString) {
-	const dateReg = /^(\d+)(([-/])(\d+))?(([-/])(\d+))?(([ T])(\d+))?(([:])(\d+))?(([:])(\d+(\.\d+)?))?$/;
+	const dateReg =
+		/^(\d+)(([-/])(\d+))?(([-/])(\d+))?(([ T])(\d+))?(([:])(\d+))?(([:])(\d+(\.\d+)?))?$/;
 	const _execArray = dateReg.exec(dateString);
 	const _valueArray = [
-		_execArray?.[1], _execArray?.[3],
-		_execArray?.[4], _execArray?.[6],
-		_execArray?.[7], _execArray?.[9],
-		_execArray?.[10], _execArray?.[12],
-		_execArray?.[13], _execArray?.[15],
-		_execArray?.[16]
-	]
+		_execArray?.[1],
+		_execArray?.[3],
+		_execArray?.[4],
+		_execArray?.[6],
+		_execArray?.[7],
+		_execArray?.[9],
+		_execArray?.[10],
+		_execArray?.[12],
+		_execArray?.[13],
+		_execArray?.[15],
+		_execArray?.[16],
+	];
 }

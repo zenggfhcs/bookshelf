@@ -1,16 +1,14 @@
 <script setup>
-import {NProgress} from "naive-ui";
+import { NProgress } from "naive-ui";
 
-const props = defineProps(['updateMenuItem']);
+const props = defineProps(["updateMenuItem"]);
 {
-	props.updateMenuItem('j-statistics');
+	props.updateMenuItem("j-statistics");
 }
 </script>
 
 <template>
-	<n-progress :percentage="80" gap-position="bottom" type="dashboard"/>
+	<n-progress :percentage="80" gap-position="bottom" type="dashboard" />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
