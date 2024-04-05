@@ -103,12 +103,13 @@ const keywordSet = new Set();
 
 const loadingSearchPublisher = ref(false);
 
-const isModified = () => {
+function isModified() {
 	// 重新界定规则
 	return info.remark === source.remark || info.bookName === "";
-};
-const renderTag = (v, i) =>
-	h(
+}
+
+function renderTag(v, i) {
+	return h(
 		NTag,
 		{
 			type: "info",
@@ -122,6 +123,7 @@ const renderTag = (v, i) =>
 			default: () => v,
 		},
 	);
+}
 
 const update = debounce((e) => {
 	e.preventDefault();
@@ -157,7 +159,7 @@ const update = debounce((e) => {
 
 //#region query
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const findUser = (id, target) => {
+function findUser(id, target) {
 	if (!id) {
 		return;
 	}
@@ -182,9 +184,9 @@ const findUser = (id, target) => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
-const handleSearchPublisher = (query) => {
+function handleSearchPublisher(query) {
 	if (!query.length) {
 		// 空清除候选
 		publisherOptions.value = [];
@@ -192,13 +194,13 @@ const handleSearchPublisher = (query) => {
 	}
 
 	console.log(1);
-};
+}
 
-const handleSearchType = (query) => {
+function handleSearchType(query) {
 	console.log(query);
-};
+}
 
-const findPublisher = (id) => {
+function findPublisher(id) {
 	Service.Publishers.get(id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -219,9 +221,9 @@ const findPublisher = (id) => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {});
-};
+}
 
-const query = (id) => {
+function query(id) {
 	Service.BookInfos.get(id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -238,8 +240,8 @@ const query = (id) => {
 			{
 				// price
 				const priceArray = info.price?.toString().split(".");
-				priceReactive.int = priceArray?.[0];
-				priceReactive.dec = priceArray?.[1];
+				priceReactive.int = +priceArray?.[0];
+				priceReactive.dec = +priceArray?.[1];
 			}
 			{
 				// tags
@@ -260,7 +262,7 @@ const query = (id) => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {});
-};
+}
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -270,7 +272,7 @@ const query = (id) => {
 // todo 编写测试删除功能
 const showRemove = ref(false);
 
-const remove = () => {
+function remove() {
 	Service.Publishers.remove(props.id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -288,7 +290,7 @@ const remove = () => {
 		.finally(() => {
 			showRemove.value = false;
 		});
-};
+}
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

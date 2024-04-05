@@ -246,7 +246,7 @@ const cols = [
 
 const loadingQuery = ref(false);
 
-const rowProps = (row) => {
+function rowProps(row) {
 	return {
 		onDblclick: (e) => {
 			e.preventDefault();
@@ -258,7 +258,7 @@ const rowProps = (row) => {
 			});
 		},
 	};
-};
+}
 
 const timestamp = reactive({
 	creationTime: null,
@@ -284,7 +284,7 @@ const filter = reactive({
 	},
 });
 
-const query = () => {
+function query() {
 	loadingQuery.value = true;
 
 	Service.Books.list(entity, filter)
@@ -302,7 +302,7 @@ const query = () => {
 		.finally(() => {
 			loadingQuery.value = false;
 		});
-};
+}
 
 const clickQuery = debounce(query);
 
@@ -335,7 +335,7 @@ const pagination = reactive({
 	},
 });
 
-const updateCurrentPageData = (page, pageSize) => {
+function updateCurrentPageData(page, pageSize) {
 	return new Promise((resolve) => {
 		const start = (page - 1) * pageSize;
 		const end = start + pageSize;
@@ -344,7 +344,7 @@ const updateCurrentPageData = (page, pageSize) => {
 			data: data,
 		});
 	});
-};
+}
 
 /**
  * 组件挂载完成时调用

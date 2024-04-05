@@ -83,7 +83,7 @@ const showUpdateModal = debounce(() => {
 	showUpdate.value = true;
 });
 
-const queryUser = (id, target) => {
+function queryUser(id, target) {
 	if (!id) {
 		return;
 	}
@@ -106,9 +106,9 @@ const queryUser = (id, target) => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {});
-};
+}
 
-const query = (id) => {
+function query(id) {
 	if (!id) {
 		return;
 	}
@@ -131,7 +131,7 @@ const query = (id) => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
 const showRemoveConfirmation = ref(false);
 
@@ -173,22 +173,22 @@ const updateRule = {
 	},
 };
 
-const showUpdateAfterModified = () => {
+function showUpdateAfterModified() {
 	if (isModified()) {
 		showUpdateConfirmation.value = true;
 		return;
 	}
 	message.warning("没有内容存在更改", messageOptions);
-};
+}
 
 const verificationAfterInspection = debounce(() => {
 	// todo verification
 	showUpdateConfirmation.value = true;
 });
 
-const isModified = () => {
+function isModified() {
 	return !(info.name === source.name && info.remark === source.remark);
-};
+}
 
 const update = debounce((e) => {
 	e.preventDefault();

@@ -2,13 +2,11 @@
 	fill: var(--n-text-color);
 }
 
-.n-menu-item-content:hover .n-icon svg,
 .n-menu-item-content--selected .n-icon svg {
 	fill: var(--n-item-text-color-active);
 }
 
-.n-menu-item-content--selected .n-icon svg path,
-.n-menu-item-content:hover .n-icon svg path {
+.n-menu-item-content--selected .n-icon svg path {
 	fill: var(--n-item-text-color-active);
 }
 

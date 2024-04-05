@@ -14,7 +14,7 @@ import {
 
 //#region 时间戳转 yyyy-MM-ddTHH:mm:ss
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const timestampToDateTimeString = (timestamp) => {
+function timestampToDateTimeString(timestamp) {
 	if (!timestamp) {
 		return null;
 	}
@@ -32,7 +32,7 @@ const timestampToDateTimeString = (timestamp) => {
 
 	// 返回格式化后的字符串
 	return `${yyyy}-${MM}-${dd}T${HH}:${mm}:${ss}`;
-};
+}
 
 // 辅助函数，用于补零
 function padZero(num) {
@@ -41,9 +41,9 @@ function padZero(num) {
 
 export { timestampToDateTimeString };
 
-const timeFormat = (time) => {
+function timeFormat(time) {
 	return time?.toString().replace("T", " ");
-};
+}
 
 export { timeFormat };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -73,12 +73,14 @@ const getTagType = {
 
 export { getTagType };
 
-const convertGender = (g) => GENDER_MAP[g];
+function convertGender(g) {
+	return GENDER_MAP[g];
+}
+
 export { convertGender };
 
-const nullToEmptyString = (s) => {
-	if (s) return s;
-	return "";
-};
+function optional(checkObject, avoidanceValue) {
+	return checkObject ? checkObject : avoidanceValue;
+}
 
-export { nullToEmptyString };
+export { optional };

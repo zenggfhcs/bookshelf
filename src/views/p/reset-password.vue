@@ -78,9 +78,9 @@ const emailValidated = ref(false);
  * @param minutes 分钟数
  * @param seconds 秒数
  */
-const renderCountdown = ({ minutes, seconds }) => {
+function renderCountdown({ minutes, seconds }) {
 	return `(${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")})`;
-};
+}
 
 /**
  * 计时器标识ref，用于重置计时器
@@ -101,14 +101,14 @@ const duration = ref(3 * 60 * 1000);
 /**
  * 计时器完成回调函数
  */
-const countdownFinish = () => {
+function countdownFinish() {
 	// 停止计时
 	ObtainedCode.value = false;
 	// 重置计时器
 	countdownRef.value.reset();
 	// 重置验证码
 	code.value = "";
-};
+}
 
 function validatePasswordStartWith(rule, value) {
 	return (

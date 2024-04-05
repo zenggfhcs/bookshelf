@@ -27,14 +27,18 @@ const DEBIT_ADD = {
 	label: "新增",
 };
 
-const DEBIT_CHECK = (id) => ({
-	path: `/i/debits/${id}`,
-	label: "详情",
-});
+function DEBIT_CHECK(id) {
+	return {
+		path: `/i/debits/${id}`,
+		label: "详情",
+	};
+}
 
 const B_DEBIT = [I_HOME, DEBIT];
 const B_DEBIT_ADD = [I_HOME, DEBIT, DEBIT_ADD];
-const B_DEBIT_CHECK = (id) => [I_HOME, DEBIT, DEBIT_CHECK(id)];
+function B_DEBIT_CHECK(id) {
+	return [I_HOME, DEBIT, DEBIT_CHECK(id)];
+}
 export { B_DEBIT, B_DEBIT_ADD, B_DEBIT_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -51,16 +55,20 @@ const BOOK_ADD = {
 	label: "新增",
 };
 
-const BOOK_CHECK = (id) => ({
-	path: `/i/books/${id}`,
-	label: "详情",
-});
+function BOOK_CHECK(id) {
+	return {
+		path: `/i/books/${id}`,
+		label: "详情",
+	};
+}
 
 const B_BOOK = [I_HOME, BOOK];
 
 const B_BOOK_ADD = [I_HOME, BOOK, BOOK_ADD];
 
-const B_BOOK_CHECK = (id) => [I_HOME, BOOK, BOOK_CHECK(id)];
+function B_BOOK_CHECK(id) {
+	return [I_HOME, BOOK, BOOK_CHECK(id)];
+}
 
 export { B_BOOK, B_BOOK_ADD, B_BOOK_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -78,14 +86,18 @@ const BOOK_INFO_ADD = {
 	label: "新增",
 };
 
-const BOOK_INFO_CHECK = (id) => ({
-	path: `/i/bookInfos/${id}`,
-	label: "详情",
-});
+function BOOK_INFO_CHECK(id) {
+	return {
+		path: `/i/bookInfos/${id}`,
+		label: "详情",
+	};
+}
 
 const B_BOOK_INFO = [I_HOME, BOOK_INFO];
 const B_BOOK_INFO_ADD = [I_HOME, BOOK_INFO, BOOK_INFO_ADD];
-const B_BOOK_INFO_CHECK = (id) => [I_HOME, BOOK_INFO, BOOK_INFO_CHECK(id)];
+function B_BOOK_INFO_CHECK(id) {
+	return [I_HOME, BOOK_INFO, BOOK_INFO_CHECK(id)];
+}
 
 export { B_BOOK_INFO, B_BOOK_INFO_ADD, B_BOOK_INFO_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -98,10 +110,12 @@ const PUBLISHER_INDEX = {
 	label: "出版社",
 };
 
-const PUBLISHER_CHECK = (id) => ({
-	path: `/i/publishers/${id}`,
-	label: "详情",
-});
+function PUBLISHER_CHECK(id) {
+	return {
+		path: `/i/publishers/${id}`,
+		label: "详情",
+	};
+}
 
 const PUBLISHER_ADD = {
 	path: "/i/publishers/add",
@@ -110,11 +124,9 @@ const PUBLISHER_ADD = {
 
 const B_PUBLISHER_INDEX = [I_HOME, PUBLISHER_INDEX];
 
-const B_PUBLISHER_CHECK = (id) => [
-	I_HOME,
-	PUBLISHER_INDEX,
-	PUBLISHER_CHECK(id),
-];
+function B_PUBLISHER_CHECK(id) {
+	return [I_HOME, PUBLISHER_INDEX, PUBLISHER_CHECK(id)];
+}
 
 const B_PUBLISHER_ADD = [I_HOME, PUBLISHER_INDEX, PUBLISHER_ADD];
 
@@ -134,16 +146,20 @@ const USER_ADD = {
 	label: "新增",
 };
 
-const USER_CHECK = (id) => ({
-	path: `/i/users/${id}`,
-	label: "详情",
-});
+function USER_CHECK(id) {
+	return {
+		path: `/i/users/${id}`,
+		label: "详情",
+	};
+}
 
 const B_USER_INDEX = [I_HOME, USER_INDEX];
 
 const B_USER_ADD = [I_HOME, USER_INDEX, USER_ADD];
 
-const B_USER_CHECK = (id) => [I_HOME, USER_INDEX, USER_CHECK(id)];
+function B_USER_CHECK(id) {
+	return [I_HOME, USER_INDEX, USER_CHECK(id)];
+}
 
 export { B_USER_INDEX, B_USER_ADD, B_USER_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -156,14 +172,18 @@ const LOG_INDEX = {
 	label: "日志",
 };
 
-const LOG_CHECK = (id) => ({
-	path: `/i/logs/${id}`,
-	label: "详情",
-});
+function LOG_CHECK(id) {
+	return {
+		path: `/i/logs/${id}`,
+		label: "详情",
+	};
+}
 
 const B_LOG_INDEX = [I_HOME, LOG_INDEX];
 
-const B_LOG_CHECK = (id) => [I_HOME, LOG_INDEX, LOG_CHECK(id)];
+function B_LOG_CHECK(id) {
+	return [I_HOME, LOG_INDEX, LOG_CHECK(id)];
+}
 
 export { B_LOG_INDEX, B_LOG_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */

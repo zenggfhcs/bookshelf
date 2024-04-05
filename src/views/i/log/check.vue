@@ -2,7 +2,7 @@
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_LOG_CHECK } from "@/constant/breadcrumb.js";
-import { SERVICE_NAME_MAP, TYPE_MAP } from "@/constant/map.js";
+import { SERVICE_NAME_MAP, LOG_TYPE_MAP } from "@/constant/map.js";
 import { ResponseCode } from "@/constant/response-code.js";
 import { getTagType } from "@/utils/convert.js";
 import { copyMatchingProperties } from "@/utils/index.js";
@@ -56,7 +56,7 @@ const creator = reactive({
 
 //#region query
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const findLogCreator = () => {
+function findLogCreator() {
 	msgReactive.type = "loading";
 	msgReactive.content = "查找日志操作者";
 	Service.Users.get(info.createdBy)
@@ -77,9 +77,9 @@ const findLogCreator = () => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
-const query = (id) => {
+function query(id) {
 	Service.Logs.get(id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -100,7 +100,7 @@ const query = (id) => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -143,7 +143,7 @@ onMounted(() => {
 							:bordered="false"
 							:type="getTagType.byLogType(info.type)"
 						>
-							{{ TYPE_MAP.getByValue(info.type) }}
+							{{ LOG_TYPE_MAP.getByValue(info.type) }}
 						</n-tag>
 					</td>
 				</tr>
@@ -179,7 +179,7 @@ onMounted(() => {
 					<td>输入</td>
 					<td style="--n-td-color: v-bind(); --n-td-text-color: v-bind()">
 						<JsonViewer
-							:value="JSON.parse(info.input)"
+							:value="JSON.parse(info.input ? info.input : '{}')"
 							class="p-0"
 							style="
 								color: var(--n-td-text-color);
@@ -192,7 +192,7 @@ onMounted(() => {
 					<td>输出</td>
 					<td style="--n-td-color: v-bind(); --n-td-text-color: v-bind()">
 						<JsonViewer
-							:value="JSON.parse(info.output)"
+							:value="JSON.parse(info.output ? info.output : '{}')"
 							class="p-0"
 							style="
 								color: var(--n-td-text-color);

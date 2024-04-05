@@ -49,7 +49,7 @@ let tableData = [];
 let currentPageTableData = ref([]);
 
 const loadingQuery = ref(false);
-const rowProps = (row) => {
+function rowProps(row) {
 	return {
 		onDblclick: (e) => {
 			e.preventDefault();
@@ -61,7 +61,7 @@ const rowProps = (row) => {
 			});
 		},
 	};
-};
+}
 
 const timestamp = reactive({
 	creationTime: null,
@@ -83,7 +83,7 @@ const filter = reactive({
 	},
 });
 
-const query = () => {
+function query() {
 	loadingQuery.value = true;
 
 	Service.BookInfos.list(entity, filter)
@@ -100,7 +100,7 @@ const query = () => {
 		.finally(() => {
 			loadingQuery.value = false;
 		});
-};
+}
 
 const clickFind = debounce((e) => {
 	e.preventDefault();
@@ -237,8 +237,8 @@ const pagination = reactive({
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
-		paginationReactive.pageSize = pageSize;
-		paginationReactive.onUpdatePage(1);
+		pagination.pageSize = pageSize;
+		pagination.onUpdatePage(1);
 	},
 	onUpdatePage: (page) => {
 		pagination.page = page;
@@ -252,7 +252,7 @@ const pagination = reactive({
 	},
 });
 
-const updateCurrentPageData = (page, pageSize) => {
+function updateCurrentPageData(page, pageSize) {
 	return new Promise((resolve) => {
 		const start = (page - 1) * pageSize;
 		const end = start + pageSize;
@@ -261,7 +261,7 @@ const updateCurrentPageData = (page, pageSize) => {
 			data: data,
 		});
 	});
-};
+}
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -391,9 +391,5 @@ onMounted(() => {
 <style scoped>
 .n-menu .n-menu-item-content .n-menu-item-content-header a {
 	font-weight: 800 !important;
-}
-
-.n-date-picker {
-	flex: 1;
 }
 </style>

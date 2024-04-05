@@ -4,18 +4,18 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-const put = (key, value) => {
+function put(key, value) {
 	localStorage.setItem(key, JSON.stringify(value));
-};
+}
 
-const get = (key) => {
+function get(key) {
 	const _v = localStorage.getItem(key);
 	return _v && _v !== "undefined" ? JSON.parse(_v) : "";
-};
+}
 
-const remove = (key) => {
+function remove(key) {
 	localStorage.removeItem(key);
-};
+}
 
 export const local = {
 	put,

@@ -4,7 +4,7 @@
  * @param delay 防抖时间
  * @returns {(function(): void)|*}
  */
-const debounce = (fun, delay = 777) => {
+function debounce(fun, delay = 777) {
 	let running = false;
 	return (args) => {
 		if (running) {
@@ -16,6 +16,6 @@ const debounce = (fun, delay = 777) => {
 		}, delay);
 		fun(args);
 	};
-};
+}
 
 export { debounce };

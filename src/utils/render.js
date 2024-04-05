@@ -13,8 +13,8 @@ function expandIcon() {
 
 export { expandIcon };
 
-const renderCell = () => {
+function renderCell() {
 	return h(NText, { depth: 3 }, { default: () => "无数据" });
-};
+}
 
 export { renderCell };

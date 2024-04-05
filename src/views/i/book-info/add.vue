@@ -1,5 +1,7 @@
 <script setup>
+import { Service } from "@/api/index.js";
 import { B_BOOK_INFO_ADD } from "@/constant/breadcrumb.js";
+import { LANG_TYPE_PRE_DEFINED } from "@/constant/map.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
@@ -22,7 +24,7 @@ import {
 	NUpload,
 	useMessage,
 } from "naive-ui";
-import { h, reactive, ref } from "vue";
+import { computed, h, reactive, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
@@ -33,8 +35,6 @@ const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
 const message = useMessage();
 
-const keywords = ref([]);
-
 const loadingSearchType = ref(false);
 
 const loadingSearchPublisher = ref(false);
@@ -43,6 +43,8 @@ const priceReactive = reactive({
 	int: null,
 	dec: null,
 });
+
+const keywordsRef = ref([]);
 
 const info = reactive({
 	id: null,
@@ -59,9 +61,12 @@ const info = reactive({
 	author: null,
 	describe: null,
 	publishDate: null,
-	keyword: null,
+	keyword: computed(() => keywordsRef.value.join("-")),
 	lang: null,
-	price: null,
+	price: computed(
+		() =>
+			`${priceReactive.int}${priceReactive.dec ? "." + priceReactive.dec : ""}`,
+	),
 	stock: null,
 	createdBy: null,
 	creationTime: null,
@@ -109,79 +114,126 @@ const rules = {
 			message: "请输入",
 		},
 	],
+	keyword: [
+		{
+			required: true,
+		},
+	],
+	price: [
+		{
+			required: true,
+			trigger: ["blur"],
+			message: "请选择",
+		},
+	],
+	publishDate: [
+		{
+			required: true,
+			trigger: ["blur"],
+			message: "请选择",
+		},
+	],
+	publisher: [
+		{
+			required: true,
+			trigger: ["blur"],
+			message: "请选择",
+		},
+	],
 };
 
 const publisherOptions = ref([]);
 
-const typeOptions = ref([]);
+const typeOptionsRef = ref([]);
 
-const addKeyword = (l) => {
+function addKeyword(l) {
 	l = l?.toString().trim();
-	if (l === "" || keywords.value.indexOf(l) !== -1) {
-		return "";
+	let _i = keywordsRef.value.length;
+	if (l === "" || (_i = keywordsRef.value.indexOf(l)) !== -1) {
+		setTimeout(() => {
+			keywordsRef.value.splice(_i, 1);
+		});
 	}
-	return l;
-};
 
-const renderTag = (v, i) =>
-	h(
+	return l;
+}
+
+function renderTag(v, i) {
+	return h(
 		NTag,
 		{
 			type: "info",
 			bordered: false,
 			closable: true,
 			onClose: () => {
-				keywords.value.splice(i, 1);
+				keywordsRef.value.splice(i, 1);
 			},
 		},
 		{
 			default: () => v,
 		},
 	);
+}
 
-const handleSearchPublisher = (query) => {
+function handleSearchPublisher(query) {
 	if (!query.length) {
 		// 空清除候选
 		publisherOptions.value = [];
 		// todo
 		// return;
 	}
-};
+}
 
-const handleSearchType = (query) => {
-	// todo
-};
+const handleSearchType = debounce((queryKeyword) => {
+	if (!queryKeyword) {
+		typeOptionsRef.value = [];
+		return;
+	}
+	Service.BookInfos.getType(queryKeyword)
+		.then((res) => {
+			const { data } = res.data;
+			typeOptionsRef.value = data?.map((item) => {
+				return {
+					label: `${item.key}:${item.value}`,
+					value: `${item.id}:${item.value}`,
+				};
+			});
+		})
+		.catch()
+		.finally();
+}, 100);
 
 const add = debounce(() => {
+	console.log(info);
 	formValidator(addFormRef, message, () => {});
 });
 
 const showPreviewModal = ref(false);
 const previewCoverUrl = ref("");
 
-const setCover = ({ file, event }) => {
+function setCover({ file, event }) {
 	const response = JSON.parse(event.target?.response);
 	// todo data
 	previewCoverUrl.value = response.data;
 	info.cover = response.data;
 	return file;
-};
+}
 
-const removeCover = () => {
+function removeCover() {
 	// todo data
 	previewCoverUrl.value = "";
 	info.cover = "";
-};
+}
 
-const handlePreview = () => {
+function handlePreview() {
 	showPreviewModal.value = true;
-};
+}
 </script>
 
 <template>
 	<n-layout-header class="top-0 h-3em" position="absolute">
 		<n-flex class="items-center h-3em" justify="right" style="margin: 0 1em">
-			<n-button type="success" @click.prevent="add"> 新增</n-button>
+			<n-button type="success" @click.prevent="add">新增</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -230,7 +282,7 @@ const handlePreview = () => {
 						<n-select
 							v-model:value="info.bookType"
 							:loading="loadingSearchType"
-							:options="typeOptions"
+							:options="typeOptionsRef"
 							clearable
 							filterable
 							placeholder="查找类型"
@@ -269,23 +321,23 @@ const handlePreview = () => {
 							type="textarea"
 						/>
 					</n-form-item>
-					<n-form-item label="主题词">
+					<n-form-item label="主题词" path="keyword">
 						<n-dynamic-tags
-							v-model:value="keywords"
+							v-model:value="keywordsRef"
 							:render-tag="renderTag"
 							@create="addKeyword"
 						/>
 					</n-form-item>
 					<n-form-item label="正文语种">
-						<n-input
+						<n-select
 							v-model:value="info.lang"
-							:allow-input="inputValidator.noSideSpace"
+							:options="LANG_TYPE_PRE_DEFINED"
 							clearable
-							maxlength="32"
-							placeholder="输入"
+							filterable
+							placeholder="选择语种"
 						/>
 					</n-form-item>
-					<n-form-item label="售价">
+					<n-form-item label="售价" path="price">
 						<n-input-group class="w-100%">
 							<n-input-number
 								v-model:value="priceReactive.int"
@@ -295,8 +347,8 @@ const handlePreview = () => {
 								placeholder="整数部分"
 							/>
 							<n-input-group-label class="text-center"
-								>.</n-input-group-label
-							>
+								>.
+							</n-input-group-label>
 							<n-input-number
 								v-model:value="priceReactive.dec"
 								:max="99"
@@ -306,7 +358,7 @@ const handlePreview = () => {
 							/>
 						</n-input-group>
 					</n-form-item>
-					<n-form-item label="出版日期">
+					<n-form-item label="出版日期" path="publishDate">
 						<n-date-picker
 							v-model:formatted-value="info.publishDate"
 							class="w-100%"
@@ -316,7 +368,7 @@ const handlePreview = () => {
 							value-format="yyyy-MM-dd"
 						/>
 					</n-form-item>
-					<n-form-item label="出版社">
+					<n-form-item label="出版社" path="publisher">
 						<n-select
 							v-model:value="info.publisher.id"
 							:loading="loadingSearchPublisher"

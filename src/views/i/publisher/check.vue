@@ -80,13 +80,13 @@ const updater = reactive({
 	phoneNumber: null,
 });
 
-const showUpdateModal = () => {
+function showUpdateModal() {
 	copyMatchingProperties(info, source);
 	copyMatchingProperties(info, target);
 	showUpdate.value = true;
-};
+}
 
-const findUser = (id, target) => {
+function findUser(id, target) {
 	if (!id) {
 		return;
 	}
@@ -101,9 +101,9 @@ const findUser = (id, target) => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
-const query = (id) => {
+function query(id) {
 	Service.Publishers.get(id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -122,11 +122,11 @@ const query = (id) => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
 const showRemoveConfirmation = ref(false);
 
-const remove = () => {
+function remove() {
 	Service.Publishers.remove(props.id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -144,7 +144,7 @@ const remove = () => {
 		.finally(() => {
 			showRemoveConfirmation.value = false;
 		});
-};
+}
 
 const showUpdate = ref(false);
 
@@ -180,14 +180,14 @@ const updateRules = {
 	],
 };
 
-const isModified = (source, target) => {
+function isModified(source, target) {
 	for (const key in target) {
 		if (source[key] !== target[key]) {
 			return true;
 		}
 	}
 	return false;
-};
+}
 
 const verificationAfterInspection = debounce(() => {
 	formValidator(updateFormRef, message, () => {
@@ -201,15 +201,11 @@ const verificationAfterInspection = debounce(() => {
 
 const update = debounce(() => {
 	const _entity = subMatchingProperties(source, target);
+	console.log(source, target, _entity);
 	_entity.id = info.id;
 	_entity.revision = info.revision;
 	Service.Publishers.update(_entity)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData.message, messageOptions);
-				return;
-			}
+		.then((_) => {
 			message.success("修改成功", messageOptions);
 			query(props.id); // 修改之后，刷新一下
 		})

@@ -112,11 +112,11 @@ onMounted(() => {
 	});
 });
 
-const rowKey = (rowData) => {
+function rowKey(rowData) {
 	return rowData.column1;
-};
+}
 
-const handleSorterChange = (sorterReactive) => {
+function handleSorterChange(sorterReactive) {
 	if (!sorter || sorter.columnKey === "column1") {
 		if (!loading.value) {
 			loading.value = true;
@@ -134,9 +134,9 @@ const handleSorterChange = (sorterReactive) => {
 			});
 		}
 	}
-};
+}
 
-const handleFiltersChange = (filters) => {
+function handleFiltersChange(filters) {
 	if (!loading.value) {
 		loading.value = true;
 		const filterValues = filters.column2 || [];
@@ -153,8 +153,8 @@ const handleFiltersChange = (filters) => {
 			loading.value = false;
 		});
 	}
-};
-const handlePageChange = (currentPage) => {
+}
+function handlePageChange(currentPage) {
 	if (!loading.value) {
 		loading.value = true;
 		query(
@@ -170,5 +170,5 @@ const handlePageChange = (currentPage) => {
 			loading.value = false;
 		});
 	}
-};
+}
 </script>

@@ -45,9 +45,9 @@ const bookInfoOptions = [{}];
 const loadingSearchBookInfo = ref(false);
 
 // todo 定义 search bookInfo
-const handleSearchBookInfo = (v) => {
+function handleSearchBookInfo(v) {
 	console.log(v);
-};
+}
 
 const states = ref([]);
 
@@ -67,7 +67,7 @@ const addRule = {
 };
 
 // todo pre add 编辑添加前的转换
-const preAdd = () => {};
+function preAdd() {}
 
 // todo add
 const add = debounce((e) => {

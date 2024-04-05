@@ -67,7 +67,7 @@ const updater = reactive({
 
 //#region query
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const queryUser = (id, target) => {
+function queryUser(id, target) {
 	if (!id) {
 		return;
 	}
@@ -85,9 +85,9 @@ const queryUser = (id, target) => {
 			message.error(err.message, messageOptions);
 		})
 		.finally(() => {});
-};
+}
 
-const query = (id) => {
+function query(id) {
 	Service.Logs.get(id)
 		.then((res) => {
 			const _returnData = res.data;
@@ -105,7 +105,7 @@ const query = (id) => {
 			message.error(err.message);
 		})
 		.finally(() => {});
-};
+}
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

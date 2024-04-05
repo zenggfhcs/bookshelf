@@ -3,8 +3,8 @@
  * @param m max
  * @returns {number}
  */
-const randomInt = (m) => {
+function randomInt(m) {
 	return Math.floor(Math.random() * m + 1);
-};
+}
 
 export { randomInt };

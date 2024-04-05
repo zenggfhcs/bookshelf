@@ -11,7 +11,7 @@ import { randomInt } from "@/utils/random.js";
  * @param check
  * @returns {{set: *, get: (function(): *), configurable: boolean}}
  */
-const generateProperty = (internal, property, check) => {
+function generateProperty(internal, property, check) {
 	generateProperty_check(internal, property, check);
 	return {
 		get: () => {
@@ -23,13 +23,13 @@ const generateProperty = (internal, property, check) => {
 		},
 		configurable: false,
 	};
-};
+}
 
-const generateProperty_check = (internal, property, check) => {
+function generateProperty_check(internal, property, check) {
 	// TypeCheck.typeCorrect('internal', ParameterType.OBJECT, internal);
 	TypeCheck.typeCorrect("property", ParameterType.STRING, property);
 	TypeCheck.typeCorrect("check", ParameterType.FUNCTION, check);
-};
+}
 
 export { generateProperty };
 //#endregion
@@ -40,13 +40,13 @@ export { generateProperty };
  * @param name 对应 router 配置里面的 name
  * @returns {{to: {name: string}}}
  */
-const gProps = (name) => {
+function gProps(name) {
 	return {
 		to: {
 			name: `${name}`,
 		},
 	};
-};
+}
 
 export { gProps };
 //#endregion
@@ -55,14 +55,14 @@ export { gProps };
  * 生成验证码
  * @returns {string}
  */
-const gCode = () => {
+function gCode() {
 	let code = "";
 	const l = randomInt(randomInt(3)) + 7;
 	while (code.length < l) {
-		code += Math.ceil(Math.random() * 10000000).toString(16);
+		code += Math.ceil(Math.random() * 1000).toString(16);
 	}
 	code = shuffleArray(code.split("")).join("");
 	return code.substring(0, l);
-};
+}
 
 export { gCode };

@@ -7,12 +7,12 @@ const RSA_PRIVATE_KEY = ``;
 
 encryptor.setPublicKey(RSA_PUBLIC_KEY);
 
-const encodeByRSA = (data) => {
+function encodeByRSA(data) {
 	return encryptor.encrypt(data);
-};
+}
 
-const decodeByRSA = (encryptData) => {
+function decodeByRSA(encryptData) {
 	return encryptor.decrypt(encryptData);
-};
+}
 
 export { encodeByRSA, decodeByRSA };

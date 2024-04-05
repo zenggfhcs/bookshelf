@@ -53,42 +53,42 @@ const message = useMessage();
 
 const breadcrumbArray = ref([]);
 
-const updateBreadcrumbArray = (array) => {
+function updateBreadcrumbArray(array) {
 	breadcrumbArray.value = array;
-};
+}
 
 const showLogout = ref(false);
 
-const switchShowLogout = (targetValue = !showLogout.value) => {
+function switchShowLogout(targetValue = !showLogout.value) {
 	showLogout.value = targetValue;
-};
+}
 
 const collapsed = ref(false);
 
 const menuItemValue = ref("");
 
-const updateMenuItem = (itemValue) => {
+function updateMenuItem(itemValue) {
 	menuItemValue.value = itemValue;
-};
+}
 
 const showUserPopover = ref(false);
 
 const canSwitch = ref(true);
 
 // todo
-const switchShowUserPopover = (target = !showUserPopover.value) => {
+function switchShowUserPopover(target = !showUserPopover.value) {
 	if (canSwitch.value) {
 		showUserPopover.value = target;
 	}
-};
+}
 
-const handleClickPopoverOutSide = () => {
+function handleClickPopoverOutSide() {
 	showUserPopover.value = false;
 	canSwitch.value = false;
 	setTimeout(() => {
 		canSwitch.value = true;
 	}, 100);
-};
+}
 
 const menuOptions = [
 	{

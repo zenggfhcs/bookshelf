@@ -46,30 +46,32 @@ const logoutConfirmationShow = ref(false);
 
 const loginStatus = ref(false);
 
-const showLogout = () => (logoutConfirmationShow.value = true);
+function showLogout() {
+	logoutConfirmationShow.value = true;
+}
 
-const updateMenuItem = (v) => {
+function updateMenuItem(v) {
 	menuItemValue.value = v;
-};
+}
 
 const showUserPopover = ref(false);
 
 const canSwitch = ref(true);
 
 // todo
-const switchShowUserPopover = (target = !showUserPopover.value) => {
+function switchShowUserPopover(target = !showUserPopover.value) {
 	if (canSwitch.value) {
 		showUserPopover.value = target;
 	}
-};
+}
 
-const handleClickPopoverOutSide = () => {
+function handleClickPopoverOutSide() {
 	showUserPopover.value = false;
 	canSwitch.value = false;
 	setTimeout(() => {
 		canSwitch.value = true;
 	}, 100);
-};
+}
 
 onMounted(() => {
 	checkLoginState();

@@ -16,11 +16,11 @@ const message = useMessage();
 
 const msgReactive = message.create("", messageOptions);
 
-const updateMessage = (type, content) => {
+function updateMessage(type, content) {
 	msgReactive.type = type;
 	msgReactive.content = content;
 	sleep();
-};
+}
 
 const start = async () => {
 	updateMessage("success", "连接成功");

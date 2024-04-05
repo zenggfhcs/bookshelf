@@ -1,5 +1,5 @@
 /**
- * 打乱数组 array
+ * 打乱数组
  * @param array
  * @returns {*} 打乱后的数组
  */
@@ -27,6 +27,12 @@ export function subProperty(v1, v2) {
 	return v1 === v2 ? null : v2;
 }
 
+/**
+ * 消消乐，将 target 里面与 source 同名的属性中同值的设为 null
+ * @param source
+ * @param target
+ * @returns {{}}
+ */
 export function subMatchingProperties(source, target) {
 	const _res = {};
 	for (const key in target) {
@@ -37,7 +43,7 @@ export function subMatchingProperties(source, target) {
 
 /**
  * if else 简写
- * @param array 要求是 [([bool, fuc],)[true, fuc]]
+ * @param array 要求是 [([bool, fuc],)*[true, fuc]]
  */
 export function traverse(array) {
 	for (let i = 0; i < array.length; i++) {

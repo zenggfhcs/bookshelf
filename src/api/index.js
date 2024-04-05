@@ -45,7 +45,7 @@ class BaseService {
 		this.list = () => request.get(`/${serviceName}`);
 		this.add = (entity) => request.post(`/${serviceName}`, entity);
 		this.get = (id) => request.get(`/${serviceName}/${id}`);
-		this.remove = (id) => request.delete(`/${serviceName}/${id}/`);
+		this.remove = (id) => request.delete(`/${serviceName}/${id}`);
 		this.update = (entity) =>
 			request.patch(`/${serviceName}/${entity?.id}`, entity);
 	}
@@ -63,6 +63,10 @@ const Books = new BaseService(ServiceName.BOOK);
 //#region book info api
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BookInfos = new BaseService(ServiceName.BOOK_INFO);
+
+BookInfos.getType = (keyword) => {
+	return request.get(`/bookInfos/bookType/${keyword}`);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 

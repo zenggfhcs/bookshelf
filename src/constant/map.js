@@ -6,7 +6,7 @@
 
 import BiMap from "@/model/BiMap.js";
 
-const g = (l, v, map = undefined) => {
+function g(l, v, map = undefined) {
 	if (map) {
 		map.set(l, v);
 	}
@@ -14,20 +14,20 @@ const g = (l, v, map = undefined) => {
 		label: l,
 		value: v,
 	};
-};
+}
 
 //#region log type
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const TYPE_MAP = new BiMap();
+const LOG_TYPE_MAP = new BiMap();
 
-const select = g("查询", "select", TYPE_MAP);
-const update = g("修改", "update", TYPE_MAP);
-const create = g("新增", "create", TYPE_MAP);
-const remove = g("删除", "delete", TYPE_MAP);
+const select = g("查询", "select", LOG_TYPE_MAP);
+const update = g("修改", "update", LOG_TYPE_MAP);
+const create = g("新增", "create", LOG_TYPE_MAP);
+const remove = g("删除", "delete", LOG_TYPE_MAP);
 
 const LOG_PRE_DEFINED_TYPE = [select, update, create, remove];
 
-export { LOG_PRE_DEFINED_TYPE, TYPE_MAP };
+export { LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -59,6 +59,57 @@ const limit = g("受限用户", "limited", ROLE_MAP);
 const ROLE_PRE_DEFINED = [root, admin, common, limit];
 
 export { ROLE_MAP, ROLE_PRE_DEFINED };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region 语种 type
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const LANG_TYPE_MAP = new BiMap();
+const en = g("英文", "en", LANG_TYPE_MAP);
+const zh = g("中文", "zh", LANG_TYPE_MAP);
+const es = g("西班牙文", "es", LANG_TYPE_MAP);
+const fr = g("法文", "fr", LANG_TYPE_MAP);
+const de = g("德文", "de", LANG_TYPE_MAP);
+const ru = g("俄文", "ru", LANG_TYPE_MAP);
+const ja = g("日文", "ja", LANG_TYPE_MAP);
+const ko = g("韩文", "ko", LANG_TYPE_MAP);
+const it = g("意大利文", "it", LANG_TYPE_MAP);
+const pt = g("葡萄牙文", "pt", LANG_TYPE_MAP);
+const ar = g("阿拉伯文", "ar", LANG_TYPE_MAP);
+const el = g("希腊文", "el", LANG_TYPE_MAP);
+const nl = g("荷兰文", "nl", LANG_TYPE_MAP);
+const sv = g("瑞典文", "sv", LANG_TYPE_MAP);
+const no = g("挪威文", "no", LANG_TYPE_MAP);
+const da = g("丹麦文", "da", LANG_TYPE_MAP);
+const fi = g("芬兰文", "fi", LANG_TYPE_MAP);
+const tr = g("土耳其文", "tr", LANG_TYPE_MAP);
+const pl = g("波兰文", "pl", LANG_TYPE_MAP);
+const hu = g("匈牙利文", "hu", LANG_TYPE_MAP);
+
+const LANG_TYPE_PRE_DEFINED = [
+	en,
+	zh,
+	es,
+	fr,
+	de,
+	ru,
+	ja,
+	ko,
+	it,
+	pt,
+	ar,
+	el,
+	nl,
+	sv,
+	no,
+	da,
+	fi,
+	tr,
+	pl,
+	hu,
+];
+
+export { LANG_TYPE_MAP, LANG_TYPE_PRE_DEFINED };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 

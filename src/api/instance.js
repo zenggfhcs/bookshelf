@@ -84,14 +84,16 @@ const instance = axios.create({
 	},
 });
 
-const requestAgain = (config) => instance(config);
+function requestAgain(config) {
+	return instance(config);
+}
 
-const canRefresh = (response) => {
+function canRefresh(response) {
 	return (
 		response?.data?.code === ResponseCode.TOKEN_E &&
 		!response?.config.url?.toString().endsWith("/token:refresh")
 	);
-};
+}
 
 const refreshToken = async () =>
 	await Service.Token.refresh()

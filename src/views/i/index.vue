@@ -40,7 +40,7 @@ const tableData = Array.from({ length: 100 }).map((_, index) => {
 	};
 });
 
-const rowProps = (row) => {
+function rowProps(row) {
 	return {
 		onDblclick: (e) => {
 			e.preventDefault();
@@ -52,7 +52,7 @@ const rowProps = (row) => {
 			});
 		},
 	};
-};
+}
 
 {
 	props.updateMenuItem("i-index");

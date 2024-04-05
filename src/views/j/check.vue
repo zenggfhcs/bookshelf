@@ -123,7 +123,7 @@ const containerRef = ref();
 </template>
 
 <style scoped>
-.n-grid div:nth-child(n * 2) {
+.n-grid div:nth-child(2n) {
 	text-align: right;
 }
 </style>

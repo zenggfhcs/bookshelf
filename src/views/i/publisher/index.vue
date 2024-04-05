@@ -18,8 +18,6 @@ import {
 	NFlex,
 	NForm,
 	NFormItem,
-	NGi,
-	NGrid,
 	NIcon,
 	NInput,
 	NInputGroup,
@@ -52,7 +50,7 @@ const filterResetHandler = debounce(() => {
 });
 
 const filterHandler = debounce(() => {
-	filter(true);
+	filterByFlag(true);
 });
 
 const message = useMessage();
@@ -147,7 +145,7 @@ function query() {
 				item.name = /^(.*?)出?版?社?$/.exec(item.name)?.[1];
 			});
 
-			filter();
+			filterByFlag();
 		})
 		.catch((err) => {
 			message.error(err.message, messageOptions);
@@ -180,27 +178,25 @@ const pagination = reactive({
 		pagination.page = page;
 		loadingRefresh.value = true;
 
-		filter();
+		filterByFlag();
 	},
 });
 
-function updateCurrentPageData(page = 1, pageSize = 10, filterFlag = false) {
+function updateCurrentPageData(page = 1, pageSize = 10, filterModel = null) {
 	return new Promise((resolve) => {
 		// filterHandler
-		filteredData = filterFlag
+		filteredData = filterModel
 			? tableData.filter((item) => {
 					// id
-					const _f1 = filterReactive.id
-						? +item.id === +filterReactive.id
-						: true;
+					const _f1 = !filterModel.id || +item.id === +filterModel.id;
 					// name
-					const _f2 = filterReactive.name
-						? item.name.indexOf(filterReactive.name) !== -1
-						: true;
+					const _f2 =
+						!filterModel.name ||
+						item.name.indexOf(filterModel.name) !== -1;
 					// place
-					const _f3 = filterReactive.place
-						? item.place.indexOf(filterReactive.place) !== -1
-						: true;
+					const _f3 =
+						!filterModel.place ||
+						item.place.indexOf(filterModel.place) !== -1;
 					return _f1 && _f2 && _f3;
 				})
 			: filteredData;
@@ -218,14 +214,16 @@ function updateCurrentPageData(page = 1, pageSize = 10, filterFlag = false) {
 	});
 }
 
-function filter(filterFlag = false) {
-	updateCurrentPageData(pagination.page, pagination.pageSize, filterFlag).then(
-		(res) => {
-			currentPageData.value = res.data;
-			itemCount.value = res.total;
-			loadingRefresh.value = false;
-		},
-	);
+function filterByFlag(flag = false) {
+	updateCurrentPageData(
+		flag ? 1 : pagination.page,
+		pagination.pageSize,
+		flag ? filterReactive : null,
+	).then((res) => {
+		currentPageData.value = res.data;
+		itemCount.value = res.total;
+		loadingRefresh.value = false;
+	});
 }
 
 /**
@@ -240,8 +238,12 @@ onMounted(() => {
 
 <template>
 	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em">
-			<router-link :to="PUBLISHER_ADD.path" class="m-r-a">
+		<n-flex
+			class="h-2.4em items-center"
+			style="margin: 0.3em 1em"
+			justify="center"
+		>
+			<router-link :to="PUBLISHER_ADD.path">
 				<n-button>
 					<template #icon>
 						<addCircle />
@@ -350,31 +352,20 @@ onMounted(() => {
 				/>
 			</n-form-item>
 		</n-form>
-		<n-grid cols="5" x-gap="12">
-			<n-gi>
-				<n-button
-					class="w-100%"
-					tertiary
-					type="warning"
-					@click.prevent="filterResetHandler"
-					>清空
-				</n-button>
-			</n-gi>
-			<n-gi />
-			<n-gi />
-			<n-gi />
-			<n-gi>
-				<n-button
-					class="w-100%"
-					type="success"
-					@click.prevent="
-						filterHandler();
-						showFilterModal = false;
-					"
-					>确定
-				</n-button>
-			</n-gi>
-		</n-grid>
+		<n-flex justify="space-between">
+			<n-button tertiary type="warning" @click.prevent="filterResetHandler">
+				重置
+			</n-button>
+			<n-button
+				type="success"
+				@click.prevent="
+					filterHandler();
+					showFilterModal = false;
+				"
+			>
+				确定
+			</n-button>
+		</n-flex>
 	</n-modal>
 </template>
 
