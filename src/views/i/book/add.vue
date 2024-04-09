@@ -1,10 +1,16 @@
 <script setup>
+import { Service } from "@/api/index.js";
+import { B_BOOK_ADD } from "@/constant/breadcrumb.js";
+import { messageOptions } from "@/constant/options.js";
+import { goto } from "@/router/goto.js";
+import { BOOK } from "@/router/RouterValue.js";
+import { addItem } from "@/utils/add.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NButton,
 	NCard,
-	NCheckbox,
 	NFlex,
 	NForm,
 	NFormItem,
@@ -12,48 +18,63 @@ import {
 	NLayout,
 	NLayoutHeader,
 	NSelect,
+	NTable,
+	NTag,
 	useMessage,
 } from "naive-ui";
-import { reactive, ref } from "vue";
+import { computed, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem"]);
+const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
-props.updateMenuItem("i-book");
+{
+	props.updateMenuItem("i-book");
+	props.updateBreadcrumbArray(B_BOOK_ADD);
+}
 
 const message = useMessage();
 
 const addFormRef = ref(null);
 
-const entity = reactive({
+const bookInfoRef = ref(null);
+
+const info = reactive({
 	damageLevel: "",
 	borrowable: "",
 	remark: "",
-	bookInfo: {
-		id: "",
-	},
+	bookInfo: computed(() => {
+		return bookInfoRef.value ? JSON.parse(bookInfoRef.value) : undefined;
+	}),
 });
 
-const damageLevelValue = ref("");
-// todo 定义 damageLevel options
-const damageLevelOptions = [];
+const damageLevelOptionsRef = ref([]);
 
-const bookInfoValue = ref("");
+const bookInfoOptionsRef = ref([]);
 
-// todo 定义 bookInfo options
-const bookInfoOptions = [{}];
+const loadingQueryBookInfo = ref(false);
 
-const loadingSearchBookInfo = ref(false);
-
-// todo 定义 search bookInfo
-function handleSearchBookInfo(v) {
-	console.log(v);
-}
-
-const states = ref([]);
+const handleQueryBookInfo = debounce((queryKeyword) => {
+	if (!queryKeyword) {
+		bookInfoOptionsRef.value = [];
+		return;
+	}
+	Service.Books.getBookInfoByKeyword(queryKeyword)
+		.then((res) => {
+			bookInfoOptionsRef.value = res?.map((item) => {
+				return {
+					label: `${item.bookName}`,
+					value: JSON.stringify(item),
+				};
+			});
+		})
+		.catch((err) => {
+			message.error(err.message, messageOptions);
+		})
+		.finally(() => {});
+}, 100);
 
 const loadingAdd = ref(false);
 
-const addRule = {
+const rules = {
 	damageLevel: {
 		trigger: ["blur"],
 		required: true,
@@ -62,18 +83,34 @@ const addRule = {
 	bookInfo: {
 		trigger: ["blur"],
 		required: true,
-		message: "请选择",
+		validator(_, value) {
+			if (!value) {
+				return new Error("请选择");
+			}
+		},
 	},
 };
 
-// todo pre add 编辑添加前的转换
-function preAdd() {}
-
 // todo add
-const add = debounce((e) => {
-	e.preventDefault();
-	// todo
-	formValidator(addFormRef, message, () => {});
+const add = debounce(() => {
+	formValidator(addFormRef, message, () => {
+		addItem(message, Service.Books.add(info));
+	});
+});
+
+onBeforeMount(() => {
+	checkLoginState();
+});
+
+onMounted(() => {
+	Service.Books.getDamageLevels().then((res) => {
+		damageLevelOptionsRef.value = res?.map((item) => {
+			return {
+				label: `${item.value}`,
+				value: `${item.key}`,
+			};
+		});
+	});
 });
 </script>
 
@@ -81,7 +118,7 @@ const add = debounce((e) => {
 	<n-layout-header>
 		<n-flex class="items-center m-l-1em m-r-1em">
 			<h1 class="m-r-a">新增书籍</h1>
-			<n-button :loading="loadingAdd" type="success" @click="add">
+			<n-button :loading="loadingAdd" type="success" @click.prevent="add">
 				确定
 			</n-button>
 		</n-flex>
@@ -93,34 +130,58 @@ const add = debounce((e) => {
 	>
 		<n-flex justify="center">
 			<n-card class="w-44em">
-				<n-form ref="addFormRef" :model="entity" :rules="addRule">
+				<n-form ref="addFormRef" :model="info" :rules="rules">
 					<n-form-item label="书籍破损程度" path="damageLevel">
 						<n-select
-							v-model:value="damageLevelValue"
-							:options="damageLevelOptions"
+							clearable
+							v-model:value="info.damageLevel"
+							:options="damageLevelOptionsRef"
 							placeholder="破损程度"
 						/>
 					</n-form-item>
 					<n-form-item label="书籍信息" path="bookInfo">
 						<n-select
-							v-model:value="bookInfoValue"
-							:loading="loadingSearchBookInfo"
-							:options="bookInfoOptions"
+							v-model:value="bookInfoRef"
+							:loading="loadingQueryBookInfo"
+							:options="bookInfoOptionsRef"
 							clearable
 							filterable
-							placeholder="搜索"
+							placeholder="输入"
 							remote
-							@search="handleSearchBookInfo"
+							@search="handleQueryBookInfo"
 						/>
 					</n-form-item>
-					<!--								todo 书籍信息-->
-					todo 书籍信息
-					<n-form-item>
-						<n-checkbox label="可借的" value="borrowable" />
-					</n-form-item>
+					<n-table v-show="info.bookInfo" class="m-b-1.5em">
+						<tbody>
+							<tr>
+								<td class="w-43%">名称</td>
+								<td>
+									<n-tag :bordered="false" type="info">
+										{{ info.bookInfo?.bookName }}
+									</n-tag>
+								</td>
+							</tr>
+							<tr>
+								<td>ISBN</td>
+								<td>
+									<n-tag :bordered="false" type="default">
+										{{ info.bookInfo?.isbn }}
+									</n-tag>
+								</td>
+							</tr>
+							<tr>
+								<td>CIP</td>
+								<td>
+									<n-tag :bordered="false" type="default">
+										{{ info.bookInfo?.cip }}
+									</n-tag>
+								</td>
+							</tr>
+						</tbody>
+					</n-table>
 					<n-form-item label="备注" path="remark">
 						<n-input
-							v-model:value="entity.remark"
+							v-model:value="info.remark"
 							:allow-input="inputValidator.noSideSpace"
 							autosize
 							clearable

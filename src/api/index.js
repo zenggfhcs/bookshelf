@@ -48,6 +48,8 @@ class BaseService {
 		this.remove = (id) => request.delete(`/${serviceName}/${id}`);
 		this.update = (entity) =>
 			request.patch(`/${serviceName}/${entity?.id}`, entity);
+		this.filteredList = (filterPayload) =>
+			request.post(`/${serviceName}/list:filter`, filterPayload);
 	}
 }
 
@@ -57,6 +59,14 @@ class BaseService {
 //#region book api
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Books = new BaseService(ServiceName.BOOK);
+
+Books.getDamageLevels = () => {
+	return request.get(`/books/damageLevels`);
+};
+
+Books.getBookInfoByKeyword = (keyword) => {
+	return request.get(`/books/bookInfo/${keyword}`);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -64,8 +74,12 @@ const Books = new BaseService(ServiceName.BOOK);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BookInfos = new BaseService(ServiceName.BOOK_INFO);
 
-BookInfos.getType = (keyword) => {
+BookInfos.getTypeByKeyword = (keyword) => {
 	return request.get(`/bookInfos/bookType/${keyword}`);
+};
+
+BookInfos.getPublisherByKeyword = (keyword) => {
+	return request.get(`/bookInfos/publisher/${keyword}`);
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

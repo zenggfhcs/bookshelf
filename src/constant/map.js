@@ -20,14 +20,14 @@ function g(l, v, map = undefined) {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const LOG_TYPE_MAP = new BiMap();
 
-const select = g("查询", "select", LOG_TYPE_MAP);
-const update = g("修改", "update", LOG_TYPE_MAP);
-const create = g("新增", "create", LOG_TYPE_MAP);
-const remove = g("删除", "delete", LOG_TYPE_MAP);
+const LOG_SELECT = g("查询", "select", LOG_TYPE_MAP);
+const LOG_UPDATE = g("修改", "update", LOG_TYPE_MAP);
+const LOG_CREATE = g("新增", "create", LOG_TYPE_MAP);
+const LOG_DELETE = g("删除", "delete", LOG_TYPE_MAP);
 
-const LOG_PRE_DEFINED_TYPE = [select, update, create, remove];
+const LOG_PRE_DEFINED_TYPE = [LOG_SELECT, LOG_UPDATE, LOG_CREATE, LOG_DELETE];
 
-export { LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP };
+export { LOG_SELECT, LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -35,13 +35,13 @@ export { LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const SERVICE_NAME_MAP = new BiMap();
 
-const publisher = g("出版社", "Publisher", SERVICE_NAME_MAP);
+// const publisher = g("出版社", "Publisher", SERVICE_NAME_MAP);
 const user = g("用户", "User", SERVICE_NAME_MAP);
 const debit = g("借阅记录", "Debit", SERVICE_NAME_MAP);
 const bookInfo = g("书籍信息", "BookInfo", SERVICE_NAME_MAP);
-const book = g("书籍", "Book", SERVICE_NAME_MAP);
+// const book = g("书籍", "Book", SERVICE_NAME_MAP);
 
-const LOG_PRE_DEFINED_SERVICE_NAME = [publisher, debit, user, bookInfo, book];
+const LOG_PRE_DEFINED_SERVICE_NAME = [debit, user, bookInfo];
 
 export { SERVICE_NAME_MAP, LOG_PRE_DEFINED_SERVICE_NAME };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */

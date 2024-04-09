@@ -8,6 +8,7 @@ import {
 	NDialogProvider,
 	NMessageProvider,
 	NModalProvider,
+	NLayout,
 	NWatermark,
 	zhCN,
 } from "naive-ui";

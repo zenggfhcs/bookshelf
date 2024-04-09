@@ -2,75 +2,59 @@
 import { Service } from "@/api/index.js";
 import { B_USER_INDEX } from "@/constant/breadcrumb.js";
 import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
+import IDelete from "@/icons/i-delete.vue";
+import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { USER_CHECK } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
+import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import { inputValidator } from "@/utils/validator.js";
-import { Search } from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
 	NDataTable,
-	NDatePicker,
-	NDivider,
 	NFlex,
 	NForm,
 	NFormItem,
-	NGi,
-	NGrid,
 	NIcon,
 	NInput,
 	NInputGroup,
-	NInputNumber,
+	NInputGroupLabel,
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
+	NModal,
 	NPagination,
-	NPopover,
 	NSelect,
 	NTag,
 	useMessage,
 } from "naive-ui";
-import { h, onMounted, reactive, ref } from "vue";
+import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 const message = useMessage();
 
-const messageOptions = {
-	duration: 10000,
-};
+function filterResetHandler() {}
 
-let tableData = [];
+function filterHandler() {
+	query();
+}
 
-let currentPageTableData = ref([]);
+const itemCount = ref(0);
+
+const tableData = ref([]);
 
 const cols = [
 	{
-		title: "id",
-		key: "id",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		width: 100,
-		minWidth: 50,
-		render: (row) =>
-			h(
-				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.id,
-				},
-			),
+		type: "selection",
 	},
 	{
 		title: "用户昵称",
@@ -184,6 +168,7 @@ const cols = [
 			tooltip: true,
 		},
 		render: (row) => {
+			if (typeof row?.age !== "number" || row?.age <= 0) return renderCell();
 			return h(
 				NTag,
 				{
@@ -206,6 +191,7 @@ const cols = [
 			tooltip: true,
 		},
 		render: (row) => {
+			if (!convertGender(row?.gender)) return renderCell();
 			return h(
 				NTag,
 				{
@@ -220,7 +206,15 @@ const cols = [
 	},
 ];
 
+const checkedRowKeysRef = ref([]);
+
+function handleCheck(rowKeys) {
+	checkedRowKeysRef.value = rowKeys;
+}
+
 const loadingQuery = ref(false);
+
+const showFilterModal = ref(false);
 
 function rowProps(row) {
 	return {
@@ -236,74 +230,41 @@ function rowProps(row) {
 	};
 }
 
-const timestamp = reactive({
-	creationTime: null,
-	lastLoginTime: null,
-	lastUpdatedTime: null,
-});
-
-const filter = reactive({
-	page: {
-		start: 0,
-		end: 10,
-	},
-	age: {
-		start: null,
-		end: null,
-	},
-	creationTime: {
-		start: null,
-		end: null,
-	},
-	lastUpdatedTime: {
-		start: null,
-		end: null,
-	},
-	lastLoginTime: {
-		start: null,
-		end: null,
-	},
-});
-
-const entity = reactive({
-	id: "",
-	displayName: "",
-	userName: "",
-	email: "",
-	phoneNumber: "",
-	role: {
-		id: "",
+const filterReactive = reactive({
+	entity: {
+		surname: "",
 		name: "",
+		email: "",
+		phoneNumber: "",
+		role: {
+			id: "",
+			name: "",
+		},
+	},
+	filter: {
+		page: {
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize),
+		},
 	},
 });
 
 const roleOptions = ROLE_PRE_DEFINED;
 
-function query() {
+async function query() {
 	loadingQuery.value = true;
-
-	Service.Users.list(entity, filter)
-		.then((res) => {
-			const _returnData = res.data;
-			itemCount.value = _returnData?.data?.total;
-			tableData = _returnData?.data?.list;
-
-			pagination.onUpdatePage();
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			loadingQuery.value = false;
-		});
+	await queryList(
+		message,
+		Service.Users.filteredList(filterReactive),
+		itemCount,
+		tableData,
+	);
+	loadingQuery.value = false;
 }
 
-const clickFind = debounce((e) => {
-	e.preventDefault();
+const clickQuery = debounce(() => {
 	query();
 });
-
-const itemCount = ref(0);
 
 const pagination = reactive({
 	page: 1,
@@ -325,180 +286,64 @@ const pagination = reactive({
 		if (!loadingQuery.value) {
 			loadingQuery.value = true;
 		}
-		updateCurrentPageData(page, pagination.pageSize).then((res) => {
-			currentPageTableData.value = res?.data;
-			loadingQuery.value = false;
-		});
+		query();
 	},
 });
 
-function updateCurrentPageData(page, pageSize) {
-	return new Promise((resolve) => {
-		const start = (page - 1) * pageSize;
-		const end = start + pageSize;
-		const data = tableData.slice(start, end);
-		resolve({
-			data: data,
-		});
-	});
-}
-
-/**
- * 组件挂载完成时调用
- */
-onMounted(() => {
-	// 加载数据
+onBeforeMount(() => {
 	checkLoginState();
-	query();
 });
 
-{
+onMounted(() => {
 	props.updateMenuItem("i-user");
 	props.updateBreadcrumbArray(B_USER_INDEX);
-}
+	query();
+});
 </script>
 
 <template>
 	<n-layout-header bordered class="h-3em" position="absolute">
-		<n-flex class="h-3em items-center m-l-1em m-r-1em" justify="right">
-			<n-popover trigger="click">
-				<template #trigger>
-					<n-button class="h-2.4em">
-						<template #icon>
-							<n-icon>
-								<write />
-							</n-icon>
-						</template>
-						筛选
-					</n-button>
+		<n-flex class="h-3em items-center m-l-1em m-r-1em" justify="center">
+			<n-button
+				v-if="checkedRowKeysRef.length"
+				type="error"
+				@click.prevent="
+					props.showModal(
+						'error',
+						'删除二次确认',
+						'是否要删除所选？',
+						() => {},
+					)
+				"
+			>
+				<template #icon>
+					<IDelete />
 				</template>
-				<span class="font-size-1.2em font-800">精确查询</span>
-				<n-form :model="entity">
-					<n-divider class="m-1!" />
-					<n-grid :cols="2" x-gap="12">
-						<n-gi>
-							<n-form-item label="id" path="id">
-								<n-input
-									v-model:value="entity.id"
-									:allow-input="inputValidator.onlyAllowNumber"
-									clearable
-									placeholder="输入id"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi>
-							<n-form-item label="用户昵称" path="displayName">
-								<n-input
-									v-model:value="entity.displayName"
-									:allow-input="inputValidator.noSideSpace"
-									clearable
-									placeholder="输入用户昵称"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi>
-							<n-form-item label="用户名" path="userName">
-								<n-input
-									v-model:value="entity.userName"
-									:allow-input="inputValidator.noSideSpace"
-									clearable
-									placeholder="输入用户名"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi>
-							<n-form-item label="邮箱" path="email">
-								<n-input
-									v-model:value="entity.email"
-									:allow-input="inputValidator.noSideSpace"
-									clearable
-									placeholder="输入邮箱"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi>
-							<n-form-item label="电话" path="phone">
-								<n-input
-									v-model:value="entity.phoneNumber"
-									:allow-input="inputValidator.onlyAllowNumber"
-									clearable
-									maxlength="11"
-									placeholder="输入电话"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi>
-							<n-form-item label="角色" path="role">
-								<n-select
-									v-model:value="entity.role.name"
-									:options="roleOptions"
-									clearable
-								/>
-							</n-form-item>
-						</n-gi>
-					</n-grid>
-				</n-form>
-				<n-form :model="filter">
-					<span class="font-size-1.2em font-800">模糊查询</span>
-					<n-divider class="m-1!" />
-					<n-grid :cols="2" x-gap="12">
-						<n-gi :span="2">
-							<n-form-item label="年龄">
-								<n-input-group>
-									<n-input-number
-										v-model:value="filter.age.start"
-										:max="filter.age.end"
-										:min="0"
-										:style="{ width: '50%' }"
-										clearable
-									/>
-									<n-input-number
-										v-model:value="filter.age.end"
-										:max="255"
-										:min="filter.age.start"
-										:style="{ width: '50%' }"
-										clearable
-									/>
-								</n-input-group>
-							</n-form-item>
-						</n-gi>
-						<n-gi :span="2">
-							<n-form-item label="创建时间">
-								<n-date-picker
-									v-model:value="timestamp.creationTime"
-									clearable
-									type="datetimerange"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi :span="2">
-							<n-form-item label="最后一次登录时间">
-								<n-date-picker
-									v-model:value="timestamp.lastLoginTime"
-									clearable
-									type="datetimerange"
-								/>
-							</n-form-item>
-						</n-gi>
-						<n-gi :span="2">
-							<n-form-item label="最后一次更新时间">
-								<n-date-picker
-									v-model:value="timestamp.lastUpdatedTime"
-									clearable
-									type="datetimerange"
-								/>
-							</n-form-item>
-						</n-gi>
-					</n-grid>
-				</n-form>
-			</n-popover>
-			<n-button class="h-2.4em" @click="clickFind">
+				删除所选
+			</n-button>
+			<n-button
+				type="info"
+				secondary
+				class="h-2.4em"
+				@click.prevent="showFilterModal = true"
+			>
 				<template #icon>
 					<n-icon>
-						<search />
+						<write />
 					</n-icon>
 				</template>
-				查找
+				筛选
+			</n-button>
+			<n-button
+				type="info"
+				class="h-2.4em"
+				@click.prevent="clickQuery"
+				:loading="loadingQuery"
+			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
 			</n-button>
 		</n-flex>
 	</n-layout-header>
@@ -514,10 +359,11 @@ onMounted(() => {
 		<!--   数据表   -->
 		<n-data-table
 			:columns="cols"
-			:data="currentPageTableData"
+			:data="tableData"
 			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
+			@update-checked-row-keys="handleCheck"
 		/>
 	</n-layout>
 
@@ -541,14 +387,77 @@ onMounted(() => {
 			</n-pagination>
 		</n-flex>
 	</n-layout-footer>
+
+	<n-modal
+		id="filter-modal"
+		v-model:show="showFilterModal"
+		:mask-closable="false"
+		class="w-25em"
+		preset="dialog"
+		title="筛选"
+		transform-origin="center"
+	>
+		<n-form :model="filterReactive">
+			<n-form-item label="用户名" path="id">
+				<n-input-group>
+					<n-input
+						:style="{ width: '30%' }"
+						v-model:value="filterReactive.entity.surname"
+						:allow-input="inputValidator.noSideSpace"
+						placeholder="姓"
+					/>
+					<n-input-group-label>&nbsp;</n-input-group-label>
+					<n-input
+						v-model:value="filterReactive.entity.name"
+						:allow-input="inputValidator.noSideSpace"
+						placeholder="名"
+					/>
+				</n-input-group>
+			</n-form-item>
+			<n-form-item label="邮箱" path="email">
+				<n-input
+					v-model:value="filterReactive.entity.email"
+					:allow-input="inputValidator.noSideSpace"
+					clearable
+					placeholder="输入邮箱"
+				/>
+			</n-form-item>
+			<n-form-item label="电话" path="phone">
+				<n-input
+					v-model:value="filterReactive.entity.phoneNumber"
+					:allow-input="inputValidator.onlyAllowNumber"
+					clearable
+					maxlength="11"
+					placeholder="输入电话"
+				/>
+			</n-form-item>
+			<n-form-item label="角色" path="role">
+				<n-select
+					v-model:value="filterReactive.entity.role.name"
+					:options="roleOptions"
+					clearable
+				/>
+			</n-form-item>
+		</n-form>
+		<n-flex justify="space-between">
+			<n-button tertiary type="warning" @click.prevent="filterResetHandler">
+				重置
+			</n-button>
+			<n-button
+				type="success"
+				@click.prevent="
+					filterHandler();
+					showFilterModal = false;
+				"
+			>
+				确定
+			</n-button>
+		</n-flex>
+	</n-modal>
 </template>
 
 <style scoped>
 .n-menu .n-menu-item-content .n-menu-item-content-header a {
 	font-weight: 800 !important;
-}
-
-.n-date-picker {
-	flex: 1;
 }
 </style>

@@ -1,8 +1,8 @@
 <script setup>
 import BookBrain from "@/icons/book-brain.vue";
 import WorkBenchIcon from "@/icons/home.vue";
+import IStatisticsIcon from "@/icons/i-statistics.vue";
 import LogIcon from "@/icons/log.vue";
-import PublisherIcon from "@/icons/publisher.vue";
 import SelfIcon from "@/icons/self.vue";
 import sun from "@/icons/sun.vue";
 import {
@@ -13,15 +13,14 @@ import {
 	I_HOME,
 	I_MY,
 	LOG,
-	PUBLISHER,
 	USER,
 } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
+import BookManagerIcon from "@/icons/i-book.vue";
 import {
-	Book as BookManagerIcon,
 	BookOpen as BookInfoManagerIcon,
 	BookReader as DebitManagerIcon,
 	UsersCog as UserManagerIcon,
@@ -44,7 +43,7 @@ import {
 	NSpace,
 	useMessage,
 } from "naive-ui";
-import { h, onMounted, ref } from "vue";
+import { h, onMounted, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 const props = defineProps(["switchTheme"]);
@@ -55,12 +54,6 @@ const breadcrumbArray = ref([]);
 
 function updateBreadcrumbArray(array) {
 	breadcrumbArray.value = array;
-}
-
-const showLogout = ref(false);
-
-function switchShowLogout(targetValue = !showLogout.value) {
-	showLogout.value = targetValue;
 }
 
 const collapsed = ref(false);
@@ -99,7 +92,7 @@ const menuOptions = [
 	},
 	{
 		label: () =>
-			h(RouterLink, gProps(DEBIT.name), { default: () => "借阅记录" }),
+			h(RouterLink, gProps(DEBIT.name), { default: () => "借阅管理" }),
 		key: "i-debit",
 		icon: renderIcon(DebitManagerIcon),
 	},
@@ -117,12 +110,12 @@ const menuOptions = [
 		key: "i-book-info",
 		icon: renderIcon(BookInfoManagerIcon),
 	},
-	{
-		label: () =>
-			h(RouterLink, gProps(PUBLISHER.name), { default: () => "出版社管理" }),
-		key: "i-publisher",
-		icon: renderIcon(PublisherIcon),
-	},
+	// {
+	// 	label: () =>
+	// 		h(RouterLink, gProps(PUBLISHER.name), { default: () => "出版社管理" }),
+	// 	key: "i-publisher",
+	// 	icon: renderIcon(PublisherIcon),
+	// },
 	{
 		label: () =>
 			h(RouterLink, gProps(USER.name), { default: () => "用户管理" }),
@@ -131,16 +124,39 @@ const menuOptions = [
 	},
 	{
 		label: () =>
+			h(RouterLink, gProps(USER.name), { default: () => "统计报表" }),
+		key: "i-statistics",
+		icon: renderIcon(IStatisticsIcon),
+	},
+	{
+		label: () =>
 			h(RouterLink, gProps(LOG.name), { default: () => "系统日志" }),
 		key: "i-log",
 		icon: renderIcon(LogIcon),
 	},
 	{
-		label: () => h(RouterLink, gProps(I_MY.name), { default: () => "我的" }),
+		label: () =>
+			h(RouterLink, gProps(I_MY.name), { default: () => "我的信息" }),
 		key: "i-my",
 		icon: renderIcon(SelfIcon),
 	},
 ];
+
+const modal = reactive({
+	show: false,
+	type: "default",
+	title: "",
+	content: "",
+	action: () => {},
+});
+
+function showModal(type, title, content, action) {
+	modal.show = true;
+	modal.type = type;
+	modal.title = title;
+	modal.content = content;
+	modal.action = action;
+}
 
 onMounted(() => {
 	checkLoginState();
@@ -220,9 +236,9 @@ onMounted(() => {
 				<n-flex :wrap="false" class="m-r-4 items-center m-l-4">
 					<n-breadcrumb>
 						<n-breadcrumb-item v-for="item in breadcrumbArray">
-							<router-link :to="item?.path">{{
-								item?.label
-							}}</router-link>
+							<router-link :to="item?.path"
+								>{{ item?.label }}
+							</router-link>
 						</n-breadcrumb-item>
 					</n-breadcrumb>
 					<n-popover
@@ -246,11 +262,13 @@ onMounted(() => {
 						</template>
 						<n-form label-placement="left">
 							<n-flex vertical>
-								<router-link :to="I_MY.path">
+								<router-link
+									:to="I_MY"
+									@click.prevent="switchShowUserPopover()"
+								>
 									<n-button
 										:bordered="false"
 										class="w-100% no-border-btn"
-										@click.prevent="switchShowUserPopover()"
 									>
 										个人信息
 									</n-button>
@@ -260,7 +278,14 @@ onMounted(() => {
 									class="no-border-btn"
 									@click.prevent="
 										switchShowUserPopover();
-										switchShowLogout();
+										showModal(
+											'warning',
+											'登出二次确认',
+											'是否要确认登出？',
+											() => {
+												logout(message);
+											},
+										);
 									"
 								>
 									登出
@@ -276,31 +301,42 @@ onMounted(() => {
 				<router-view v-slot="{ Component }">
 					<component
 						:is="Component"
+						:showModal="showModal"
 						:updateBreadcrumbArray="updateBreadcrumbArray"
 						:updateMenuItem="updateMenuItem"
 					/>
 				</router-view>
 			</n-layout>
-
-			<n-modal
-				id="logout-modal"
-				v-model:show="showLogout"
-				preset="dialog"
-				style="--n-font-size: 16px"
-				title="退出二次确认"
-				transform-origin="center"
-				type="warning"
-			>
-				<n-space vertical>
-					<span> 您是否要退出登录？ </span>
-					<n-flex justify="right">
-						<n-button type="warning" @click="logout(message)">
-							确定</n-button
-						>
-					</n-flex>
-				</n-space>
-			</n-modal>
 		</n-layout>
+
+		<n-modal
+			id="delete-checked-confirmed-modal"
+			v-model:show="modal.show"
+			:mask-closable="false"
+			class="w-25em"
+			style="--n-font-size: 16px"
+			preset="dialog"
+			:type="modal.type"
+			:title="modal.title"
+			transform-origin="center"
+		>
+			<n-space vertical>
+				<div class="text-center m-t-1em m-b-1em font-size-1.2em">
+					{{ modal.content }}
+				</div>
+				<n-flex justify="right">
+					<n-button
+						:type="modal.type"
+						@click.prevent="
+							modal.action();
+							modal.show = false;
+						"
+					>
+						是
+					</n-button>
+				</n-flex>
+			</n-space>
+		</n-modal>
 	</n-layout>
 </template>
 

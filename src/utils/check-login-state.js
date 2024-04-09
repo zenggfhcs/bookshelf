@@ -4,9 +4,9 @@ import router from "@/router/index.js";
 function checkLoginState() {
 	const token = localStorage.getItem(Header.TOKEN);
 	if (token === null || token === undefined || token === "") {
-		router.push("/login").then(() => {});
+		return router.push("/login");
 	}
-	// console.log(token);
+	return new Promise((resolve) => {});
 	// todo 最后的最后，检查一遍
 }
 

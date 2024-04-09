@@ -4,10 +4,9 @@ import { B_LOG_INDEX } from "@/constant/breadcrumb.js";
 import {
 	LOG_PRE_DEFINED_SERVICE_NAME,
 	LOG_PRE_DEFINED_TYPE,
-	SERVICE_NAME_MAP,
 	LOG_TYPE_MAP,
+	SERVICE_NAME_MAP,
 } from "@/constant/map.js";
-import { messageOptions } from "@/constant/options.js";
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
@@ -17,10 +16,9 @@ import { session } from "@/storage/session.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { getTagType, timestampToDateTimeString } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
-import { copyMatchingProperties } from "@/utils/index.js";
+import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import { inputValidator } from "@/utils/validator.js";
-import { Search } from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
@@ -44,7 +42,11 @@ import {
 } from "naive-ui";
 import { computed, h, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 const message = useMessage();
 
@@ -57,7 +59,8 @@ const cols = [
 			tooltip: true,
 		},
 		render: (row) => {
-			if (!row?.dataId || row?.dataId === "") return renderCell();
+			const _dataId = JSON.parse(row.input)?.id;
+			if (!_dataId || _dataId === "") return renderCell();
 			return h(
 				NTag,
 				{
@@ -65,7 +68,7 @@ const cols = [
 					bordered: false,
 				},
 				{
-					default: () => row?.dataId,
+					default: () => _dataId,
 				},
 			);
 		},
@@ -173,11 +176,7 @@ const cols = [
 	},
 ];
 
-let tableData = [];
-
-let filteredData = [];
-
-let currentPageData = ref([]);
+let tableData = ref([]);
 
 const loadingRefresh = ref(false);
 
@@ -205,81 +204,59 @@ const timestamp = reactive({
 	creationTime: null,
 });
 
-const filterModel = {
-	id: null,
-	dataId: null,
-	type: null,
-	serviceName: null,
-	creationTime: {
-		start: null,
-		end: null,
-	},
-	elapsedTime: {
-		start: null,
-		end: null,
-	},
-};
-
 const filterReactive = reactive({
-	createdBy: null,
-	dataId: null,
-	type: null,
-	serviceName: null,
-	creationTime: {
-		start: computed(() => {
-			return timestampToDateTimeString(timestamp.creationTime?.[0]);
-		}),
-		end: computed(() => {
-			return timestampToDateTimeString(timestamp.creationTime?.[1]);
-		}),
+	entity: {
+		createdBy: null,
+		dataId: null,
+		type: null,
+		serviceName: null,
 	},
-	elapsedTime: {
-		start: null,
-		end: null,
+	filter: {
+		page: {
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize),
+		},
+		creationTime: {
+			start: computed(() => {
+				return timestampToDateTimeString(timestamp.creationTime?.[0]);
+			}),
+			end: computed(() => {
+				return timestampToDateTimeString(timestamp.creationTime?.[1]);
+			}),
+		},
+		elapsedTime: {
+			start: null,
+			end: null,
+		},
 	},
 });
 
 const filterResetHandler = debounce(() => {
-	copyMatchingProperties(filterModel, filterReactive);
 	timestamp.creationTime = null;
 });
 
 const filterHandler = debounce(() => {
-	console.log(filterReactive);
-	filterByFlag(true);
+	pagination.onUpdatePage(1);
 });
 
-function query() {
+async function query() {
 	loadingRefresh.value = true;
-
-	Service.Logs.list()
-		.then((res) => {
-			const data = res?.data;
-			// todo 会不会出现 data 为空的情况
-			itemCount.value = data?.data?.total;
-			tableData = data?.data?.list;
-			filteredData = data?.data?.list;
-
-			filterByFlag(true);
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			loadingRefresh.value = false;
-		});
+	await queryList(
+		message,
+		Service.Logs.filteredList(filterReactive),
+		itemCount,
+		tableData,
+	);
+	loadingRefresh.value = false;
 }
 
 const clickQuery = debounce(query);
 
 const itemCount = ref(0);
 
-// const pageValue = session.get(PAGE);
-// const pageSizeValue = session.get(PAGE_SIZE);
-
 const pagination = reactive({
-	page: 1, // pageValue ? +pageValue : 1,
-	pageSize: 10, // pageSizeValue ? +pageSizeValue : 10,
+	page: 1,
+	pageSize: 10,
 	showSizePicker: true,
 	pageSizes: [
 		{ label: "10 每页", value: 10 },
@@ -297,90 +274,59 @@ const pagination = reactive({
 		if (!loadingRefresh.value) {
 			loadingRefresh.value = true;
 		}
-		filterByFlag();
+		query();
 	},
 });
 
-function updateCurrentPageData(page, pageSize, filterModel = null) {
-	return new Promise((resolve) => {
-		// filterHandler
-		filteredData = filterModel
-			? tableData.filter((item) => {
-					// user id
-					const _f1 =
-						!filterModel.createdBy ||
-						+item.createdBy === +filterModel.createdBy;
-					// data id
-					const _f2 =
-						!filterModel.dataId || +item.dataId === +filterModel.dataId;
-					// type
-					const _f3 =
-						!filterModel.type ||
-						filterModel.type.indexOf(item.type) !== -1;
-					// service name
-					const _f4 =
-						!filterModel.serviceName ||
-						filterModel.serviceName.indexOf(item.serviceName) !== -1;
-					// creationTime
-					const _f5 =
-						(!filterModel.creationTime.start ||
-							filterModel.creationTime.start <= item.creationTime) &&
-						(!filterModel.creationTime.end ||
-							filterModel.creationTime.end >= item.creationTime);
-					// elapsedTime
-					const _f6 =
-						(!filterModel.elapsedTime.start ||
-							filterModel.elapsedTime.start <= item.elapsedTime) &&
-						(!filterModel.elapsedTime.end ||
-							filterModel.elapsedTime.end >= item.elapsedTime);
-					return _f1 && _f2 && _f3 && _f4 && _f5 && _f6;
-				})
-			: filteredData;
-		// order
-
-		// pagination
-		setTimeout(
-			() =>
-				resolve({
-					data: filteredData.slice((page - 1) * pageSize, page * pageSize),
-					total: filteredData.length,
-				}),
-			100,
-		);
-	});
+function specificFilter(item, filterModel) {
+	// user id
+	const _f1 =
+		!filterModel.createdBy || +item?.createdBy === +filterModel.createdBy;
+	// data id
+	const _f2 = !filterModel.dataId || +item?.dataId === +filterModel.dataId;
+	// type
+	const _f3 = !filterModel.type || filterModel.type.indexOf(item?.type) !== -1;
+	// service name
+	const _f4 =
+		!filterModel.serviceName ||
+		filterModel.serviceName.indexOf(item?.serviceName) !== -1;
+	// creationTime
+	const _f5 =
+		(!filterModel.creationTime.start ||
+			filterModel.creationTime.start <= item?.creationTime) &&
+		(!filterModel.creationTime.end ||
+			filterModel.creationTime.end >= item?.creationTime);
+	// elapsedTime
+	const _f6 =
+		(!filterModel.elapsedTime.start ||
+			filterModel.elapsedTime.start <= item?.elapsedTime) &&
+		(!filterModel.elapsedTime.end ||
+			filterModel.elapsedTime.end >= item?.elapsedTime);
+	return _f1 && _f2 && _f3 && _f4 && _f5 && _f6;
 }
-
-function filterByFlag(flag = false) {
-	updateCurrentPageData(
-		flag ? 1 : pagination.page,
-		pagination.pageSize,
-		flag ? filterReactive : null,
-	).then((res) => {
-		currentPageData.value = res.data;
-		itemCount.value = res.total;
-		loadingRefresh.value = false;
-	});
-}
-
-onMounted(() => {
-	checkLoginState();
-	{
-		props.updateMenuItem("i-log");
-		props.updateBreadcrumbArray(B_LOG_INDEX);
-	}
-	query();
-});
 
 onBeforeUnmount(() => {
+	checkLoginState();
+});
+
+onMounted(() => {
+	props.updateMenuItem("i-log");
+	props.updateBreadcrumbArray(B_LOG_INDEX);
 	session.put(PAGE, pagination.page);
 	session.put(PAGE_SIZE, pagination.pageSize);
+	query();
 });
 </script>
 
 <template>
 	<n-layout-header bordered class="h-3em" position="absolute">
 		<n-flex class="h-3em items-center" justify="center">
-			<n-button class="h-2.4em" @click.prevent="showFilterModal = true">
+			<n-button
+				type="info"
+				secondary
+				class="h-2.4em"
+				@click.prevent="showFilterModal = true"
+			>
 				<template #icon>
 					<n-icon>
 						<write />
@@ -390,6 +336,7 @@ onBeforeUnmount(() => {
 			</n-button>
 			<n-button
 				class="h-2.4em"
+				type="info"
 				@click.prevent="clickQuery"
 				:loading="loadingRefresh"
 			>
@@ -411,7 +358,7 @@ onBeforeUnmount(() => {
 		<n-data-table
 			remote
 			:columns="cols"
-			:data="currentPageData"
+			:data="tableData"
 			:loading="loadingRefresh"
 			:render-cell="renderCell"
 			:row-props="rowProps"
@@ -437,7 +384,7 @@ onBeforeUnmount(() => {
 			<n-form :model="filterReactive">
 				<n-form-item label="操作者 id" path="createdBy">
 					<n-input
-						v-model:value="filterReactive.createdBy"
+						v-model:value="filterReactive.entity.createdBy"
 						:allow-input="inputValidator.onlyAllowNumber"
 						clearable
 						placeholder="操作者 id"
@@ -445,7 +392,7 @@ onBeforeUnmount(() => {
 				</n-form-item>
 				<n-form-item label="数据 id" path="dataId">
 					<n-input
-						v-model:value="filterReactive.dataId"
+						v-model:value="filterReactive.entity.dataId"
 						:allow-input="inputValidator.onlyAllowNumber"
 						clearable
 						placeholder="数据 id"
@@ -453,7 +400,7 @@ onBeforeUnmount(() => {
 				</n-form-item>
 				<n-form-item label="操作类型" path="type">
 					<n-select
-						v-model:value="filterReactive.type"
+						v-model:value="filterReactive.entity.type"
 						:options="typeOptions"
 						clearable
 						multiple
@@ -462,10 +409,9 @@ onBeforeUnmount(() => {
 				</n-form-item>
 				<n-form-item label="数据类型" path="serviceName">
 					<n-select
-						v-model:value="filterReactive.serviceName"
+						v-model:value="filterReactive.entity.serviceName"
 						:options="serviceNameOptions"
 						clearable
-						multiple
 						placeholder="选择数据类型"
 					/>
 				</n-form-item>
@@ -480,16 +426,16 @@ onBeforeUnmount(() => {
 				<n-form-item label="运行时间-毫秒">
 					<n-input-group>
 						<n-input-number
-							v-model:value="filterReactive.elapsedTime.start"
-							:max="filterReactive.elapsedTime.end"
+							v-model:value="filterReactive.filter.elapsedTime.start"
+							:max="filterReactive.filter.elapsedTime.end"
 							:min="0"
 							:style="{ width: '50%' }"
 							clearable
 						/>
 						<n-input-number
-							v-model:value="filterReactive.elapsedTime.end"
+							v-model:value="filterReactive.filter.elapsedTime.end"
 							:max="100000"
-							:min="filterReactive.elapsedTime.start"
+							:min="filterReactive.filter.elapsedTime.start"
 							:style="{ width: '50%' }"
 							clearable
 						/>

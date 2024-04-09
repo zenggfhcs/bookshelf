@@ -1,37 +1,35 @@
 <script setup>
 import { Service } from "@/api/index.js";
 import { B_BOOK } from "@/constant/breadcrumb.js";
-import { messageOptions } from "@/constant/options.js";
+import IAdd from "@/icons/i-add.vue";
+import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { BOOK_ADD, BOOK_CHECK } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
+import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
-import { inputValidator } from "@/utils/validator.js";
-import { AddCircle, Search } from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
 	NDataTable,
-	NDatePicker,
-	NDivider,
 	NFlex,
-	NForm,
-	NFormItem,
 	NIcon,
-	NInput,
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
 	NPagination,
-	NPopover,
 	NTag,
 	useMessage,
 } from "naive-ui";
-import { h, onMounted, reactive, ref } from "vue";
+import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 props.updateMenuItem("i-book");
 props.updateBreadcrumbArray(B_BOOK);
@@ -50,34 +48,9 @@ const entity = reactive({
 
 const message = useMessage();
 
-let tableData = [];
-
-let currentPageTableData = ref([]);
+const tableData = ref([]);
 
 const cols = [
-	{
-		title: "id",
-		key: "id",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		width: 100,
-		minWidth: 50,
-		render: (row) =>
-			h(
-				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.id,
-				},
-			),
-	},
 	{
 		title: "书籍名称",
 		key: "bookInfo.bookName",
@@ -149,99 +122,6 @@ const cols = [
 				},
 			),
 	},
-	{
-		title: "创建时间",
-		key: "creationTime",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		render: (row) =>
-			h(
-				NTag,
-				{
-					type: "primary",
-					bordered: false,
-				},
-				{
-					default: () => row?.creationTime?.toString().replace("T", " "),
-				},
-			),
-	},
-	{
-		title: "创建者",
-		key: "createdBy",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		render: (row) => {
-			if (!row?.createdBy) {
-				return renderCell();
-			}
-			return h(
-				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.createdBy,
-				},
-			);
-		},
-	},
-	{
-		title: "最后更新时间",
-		key: "lastUpdatedTime",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		render: (row) =>
-			h(
-				NTag,
-				{
-					type: "primary",
-					bordered: false,
-				},
-				{
-					default: () =>
-						row?.lastUpdatedTime?.toString().replace("T", " "),
-				},
-			),
-	},
-	{
-		title: "更新者-id",
-		key: "updatedBy",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		render: (row) => {
-			if (!row?.updatedBy) {
-				return renderCell();
-			}
-			return h(
-				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.updatedBy,
-				},
-			);
-		},
-	},
 ];
 
 const loadingQuery = ref(false);
@@ -266,10 +146,6 @@ const timestamp = reactive({
 });
 
 const filter = reactive({
-	page: {
-		start: 0,
-		end: 10,
-	},
 	age: {
 		start: 0,
 		end: 255,
@@ -284,24 +160,25 @@ const filter = reactive({
 	},
 });
 
-function query() {
+const filterReactive = reactive({
+	entity: {},
+	filter: {
+		page: {
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize),
+		},
+	},
+});
+
+async function query() {
 	loadingQuery.value = true;
-
-	Service.Books.list(entity, filter)
-		.then((res) => {
-			const data = res.data;
-
-			itemCount.value = data?.data?.total;
-			tableData = data?.data?.list;
-
-			pagination.onUpdatePage();
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			loadingQuery.value = false;
-		});
+	await queryList(
+		message,
+		Service.Books.filteredList(filterReactive),
+		itemCount,
+		tableData,
+	);
+	loadingQuery.value = false;
 }
 
 const clickQuery = debounce(query);
@@ -328,112 +205,48 @@ const pagination = reactive({
 		if (!loadingQuery.value) {
 			loadingQuery.value = true;
 		}
-		updateCurrentPageData(page, pagination.pageSize).then((res) => {
-			currentPageTableData.value = res?.data;
-			loadingQuery.value = false;
-		});
+		query();
 	},
 });
 
-function updateCurrentPageData(page, pageSize) {
-	return new Promise((resolve) => {
-		const start = (page - 1) * pageSize;
-		const end = start + pageSize;
-		const data = tableData.slice(start, end);
-		resolve({
-			data: data,
-		});
-	});
-}
-
-/**
- * 组件挂载完成时调用
- */
-onMounted(() => {
-	// 加载数据
+onBeforeMount(() => {
 	checkLoginState();
+});
+
+onMounted(() => {
 	query();
 });
 </script>
 
 <template>
 	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em">
+		<n-flex class="h-3em items-center" justify="center">
 			<router-link :to="BOOK_ADD.path">
-				<n-button>
+				<n-button type="success">
 					<template #icon>
-						<addCircle />
+						<IAdd />
 					</template>
 					新增
 				</n-button>
 			</router-link>
-			<n-popover placement="top" trigger="click">
-				<template #trigger>
-					<n-button class="h-2.4em m-l-a">
-						<template #icon>
-							<n-icon>
-								<write />
-							</n-icon>
-						</template>
-						筛选
-					</n-button>
-				</template>
-				<span class="font-size-1.2em font-800">精确查询</span>
-				<n-form :model="entity">
-					<n-divider class="m-1!" />
-					<n-form-item label="id" path="id">
-						<n-input
-							v-model:value="entity.id"
-							:allow-input="inputValidator.onlyAllowNumber"
-							clearable
-							placeholder="输入id"
-						/>
-					</n-form-item>
-					<n-form-item label="出版社名称" path="name">
-						<n-input
-							v-model:value="entity.name"
-							:allow-input="inputValidator.noSideSpace"
-							clearable
-							placeholder="输入出版社名称"
-						/>
-					</n-form-item>
-					<n-form-item label="出版地" path="name">
-						<n-input
-							v-model:value="entity.place"
-							:allow-input="inputValidator.noSideSpace"
-							clearable
-							placeholder="输入出版地，如 '北京'"
-						/>
-					</n-form-item>
-				</n-form>
-				<n-form :model="filter">
-					<span class="font-size-1.2em font-800">模糊查询</span>
-					<n-divider class="m-1!" />
-					<n-form-item label="创建时间">
-						<n-date-picker
-							v-model:value="timestamp.creationTime"
-							clearable
-							type="datetimerange"
-							update-value-on-close
-						/>
-					</n-form-item>
-					<n-form-item label="最后修改时间">
-						<n-date-picker
-							v-model:value="timestamp.lastUpdatedTime"
-							clearable
-							type="datetimerange"
-							update-value-on-close
-						/>
-					</n-form-item>
-				</n-form>
-			</n-popover>
-			<n-button class="h-2.4em" @click.prevent="clickQuery">
+			<n-button type="info" secondary class="h-2.4em">
 				<template #icon>
 					<n-icon>
-						<search />
+						<write />
 					</n-icon>
 				</template>
-				查找
+				筛选
+			</n-button>
+			<n-button
+				type="info"
+				class="h-2.4em"
+				@click.prevent="clickQuery"
+				:loading="loadingQuery"
+			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
 			</n-button>
 		</n-flex>
 	</n-layout-header>

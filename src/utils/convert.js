@@ -12,8 +12,6 @@ import {
 	USER_TAG_TYPE_MAP,
 } from "@/constant/user-info.js";
 
-//#region 时间戳转 yyyy-MM-ddTHH:mm:ss
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 function timestampToDateTimeString(timestamp) {
 	if (!timestamp) {
 		return null;
@@ -84,3 +82,33 @@ function optional(checkObject, avoidanceValue) {
 }
 
 export { optional };
+
+function convertToChineseNum(num) {
+	if (typeof num !== "number" || num < 0 || isNaN(num)) {
+		return num;
+	}
+	const chineseNums = [
+		"零",
+		"一",
+		"二",
+		"三",
+		"四",
+		"五",
+		"六",
+		"七",
+		"八",
+		"九",
+	];
+
+	if (num > 0 && num < 10) {
+		return chineseNums[num];
+	}
+	if (num === 10) {
+		return "十";
+	}
+	if (num > 10) {
+		return `${chineseNums[Math.floor(num / 10)]}十${chineseNums[num % 10]}`;
+	}
+}
+
+export { convertToChineseNum };

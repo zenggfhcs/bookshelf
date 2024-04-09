@@ -3,8 +3,16 @@ import { B_I } from "@/constant/breadcrumb.js";
 import router from "@/router/index.js";
 import { DEBIT_CHECK } from "@/router/RouterValue.js";
 import { renderCell } from "@/utils/render.js";
-import { NCard, NDataTable, NGi, NGrid, NLayout, NTag } from "naive-ui";
-import { h } from "vue";
+import {
+	NCard,
+	NDataTable,
+	NGi,
+	NGrid,
+	NLayout,
+	NNumberAnimation,
+	NTag,
+} from "naive-ui";
+import { h, onMounted, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
@@ -34,11 +42,20 @@ const cols = [
 	},
 ];
 
-const tableData = Array.from({ length: 100 }).map((_, index) => {
-	return {
-		id: index,
-	};
-});
+const tableData = ref([]);
+
+async function init() {
+	const _array = Array.from({ length: 100 }).map((_, index) => {
+		return {
+			id: index,
+		};
+	});
+	return new Promise((resolve) => {
+		resolve({
+			list: _array,
+		});
+	});
+}
 
 function rowProps(row) {
 	return {
@@ -53,7 +70,11 @@ function rowProps(row) {
 		},
 	};
 }
-
+onMounted(async () => {
+	init().then((res) => {
+		tableData.value = res.list;
+	});
+});
 {
 	props.updateMenuItem("i-index");
 	props.updateBreadcrumbArray(B_I);
@@ -61,10 +82,20 @@ function rowProps(row) {
 </script>
 
 <template>
-	<n-layout :native-scrollbar="false" content-class="p-.875em">
+	<n-layout
+		:native-scrollbar="false"
+		content-class="p-1em"
+		position="absolute"
+	>
 		<n-grid :cols="4" :x-gap="14" :y-gap="14">
 			<n-gi>
-				<n-card title="今日借阅"> 第1个card</n-card>
+				<n-card title="借阅">
+					<n-number-animation
+						ref="numberAnimationInstRef"
+						:from="0"
+						:to="12039"
+					/>
+				</n-card>
 			</n-gi>
 			<n-gi>
 				<n-card title="今日归还"> 第2个card</n-card>
@@ -75,8 +106,47 @@ function rowProps(row) {
 			<n-gi>
 				<n-card title="今日归还"> 第4个card</n-card>
 			</n-gi>
-			<n-gi :span="4">
+			<n-gi :span="2">
 				<n-card title="逾期未还">
+					<n-data-table
+						:columns="cols"
+						:data="tableData"
+						:max-height="300"
+						:render-cell="renderCell"
+						:row-props="rowProps"
+						:single-line="false"
+						striped
+					/>
+				</n-card>
+			</n-gi>
+			<n-gi :span="4">
+				<n-card title="馆藏全览">
+					<n-data-table
+						:columns="cols"
+						:data="tableData"
+						:max-height="300"
+						:render-cell="renderCell"
+						:row-props="rowProps"
+						:single-line="false"
+						striped
+					/>
+				</n-card>
+			</n-gi>
+			<n-gi :span="2">
+				<n-card title="借阅数排行榜">
+					<n-data-table
+						:columns="cols"
+						:data="tableData"
+						:max-height="300"
+						:render-cell="renderCell"
+						:row-props="rowProps"
+						:single-line="false"
+						striped
+					/>
+				</n-card>
+			</n-gi>
+			<n-gi :span="2">
+				<n-card title="借阅天数排行榜">
 					<n-data-table
 						:columns="cols"
 						:data="tableData"

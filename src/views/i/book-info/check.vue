@@ -2,30 +2,43 @@
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_BOOK_INFO_CHECK } from "@/constant/breadcrumb.js";
-import { messageOptions } from "@/constant/options.js";
-import { ResponseCode } from "@/constant/response-code.js";
-import { goto } from "@/router/goto.js";
+import IAdd from "@/icons/i-add.vue";
+import IBack from "@/icons/i-back.vue";
+import IDelete from "@/icons/i-delete.vue";
+import IEdit from "@/icons/i-edit.vue";
+import IReload from "@/icons/i-reload.vue";
 import { BOOK_INFO } from "@/router/RouterValue.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
 import { formatTime } from "@/utils/format.js";
-import { copyMatchingProperties } from "@/utils/index.js";
+import { transMouth } from "@/utils/index.js";
+import { queryInfo } from "@/utils/query.js";
+import { removeItem } from "@/utils/remove.js";
 import {
 	NButton,
 	NFlex,
+	NIcon,
+	NImage,
 	NLayout,
 	NLayoutHeader,
+	NLayoutSider,
 	NModal,
 	NSpace,
 	NTable,
 	NTag,
-	NTd,
 	NText,
-	NTr,
 	useMessage,
 } from "naive-ui";
-import { h, onBeforeMount, reactive, ref } from "vue";
+import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["id", "updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"id",
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
+
+const loadingQuery = ref(false);
 
 {
 	props.updateMenuItem("i-book-info");
@@ -33,8 +46,6 @@ const props = defineProps(["id", "updateMenuItem", "updateBreadcrumbArray"]);
 }
 
 const message = useMessage();
-
-const msgReactive = message.create("查找信息", { type: "loading" });
 
 const source = reactive({
 	remark: null,
@@ -47,7 +58,6 @@ const priceReactive = reactive({
 
 const info = reactive({
 	id: null,
-	publisher: null,
 	isbn: null,
 	cip: null,
 	bookName: "",
@@ -55,7 +65,10 @@ const info = reactive({
 	cover: null,
 	author: null,
 	describe: null,
-	publishDate: null,
+	publishedDate: null,
+	publisher: "",
+	edition: "",
+	printing: "",
 	keyword: null,
 	lang: null,
 	price: null,
@@ -90,18 +103,10 @@ const updater = reactive({
 	phoneNumber: null,
 });
 
-//#region update
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 // todo 编写测试更新功能
 const showUpdate = ref(false);
 
-const updateFormRef = ref(null);
-
 const keywords = ref([]);
-
-const keywordSet = new Set();
-
-const loadingSearchPublisher = ref(false);
 
 function isModified() {
 	// 重新界定规则
@@ -125,216 +130,100 @@ function renderTag(v, i) {
 	);
 }
 
-const update = debounce((e) => {
-	e.preventDefault();
-
-	const _entity = {
-		id: info.id,
-		bookName: info.bookName,
-		remark: info.remark,
-		revision: info.revision,
-	};
-	Service.Publishers.update(_entity)
-		.then((res) => {
-			const _returnData = res.data;
-
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData.message, messageOptions);
-				return;
-			}
-
-			message.success("修改成功", messageOptions);
-
-			query(props.id); // 修改之后，刷新一下
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			showUpdate.value = false;
-		});
+const publishedMouth = computed(() => {
+	return transMouth(info.publishedDate);
 });
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-function findUser(id, target) {
-	if (!id) {
-		return;
+const update = debounce(() => {});
+
+async function query(id) {
+	loadingQuery.value = true;
+	await queryInfo(message, Service.BookInfos.get(id), info, creator, updater);
+	loadingQuery.value = false;
+}
+
+const queryHandler = debounce(() => {
+	if (info.id) {
+		query(info.id);
 	}
+});
 
-	msgReactive.type = "loading";
-	msgReactive.content = "查找操作者";
-	Service.Users.get(id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				msgReactive.type = "error";
-				msgReactive.content = _returnData.message;
-				return;
-			}
-
-			copyMatchingProperties(_returnData.data, target);
-
-			msgReactive.type = "success";
-			msgReactive.content = "查找完成";
-		})
-		.catch((err) => {
-			message.error(err.message);
-		})
-		.finally(() => {});
-}
-
-function handleSearchPublisher(query) {
-	if (!query.length) {
-		// 空清除候选
-		publisherOptions.value = [];
-		return;
-	}
-
-	console.log(1);
-}
-
-function handleSearchType(query) {
-	console.log(query);
-}
-
-function findPublisher(id) {
-	Service.Publishers.get(id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				msgReactive.type = "error";
-				msgReactive.content = _returnData.message;
-				return;
-			}
-
-			const _publisher = _returnData?.data;
-
-			publisherOptions.value.push({
-				label: _publisher?.name,
-				value: id,
-			});
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {});
-}
-
-function query(id) {
-	Service.BookInfos.get(id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				msgReactive.type = "error";
-				msgReactive.content = _returnData.message;
-				return;
-			}
-
-			copyMatchingProperties(_returnData?.data, info);
-
-			copyMatchingProperties(info, source);
-
-			{
-				// price
-				const priceArray = info.price?.toString().split(".");
-				priceReactive.int = +priceArray?.[0];
-				priceReactive.dec = +priceArray?.[1];
-			}
-			{
-				// tags
-				info.keyword
-					?.toString()
-					.split("－")
-					.forEach((item) => {
-						keywords.value.push(item);
-						keywordSet.add(item);
-					});
-			}
-
-			findPublisher(info.publisher.id);
-			findUser(info.createdBy, creator);
-			findUser(info.updatedBy, updater);
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {});
-}
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region remove
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-// todo 编写测试删除功能
 const showRemove = ref(false);
 
 function remove() {
-	Service.Publishers.remove(props.id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				message.error(_returnData.message, messageOptions);
-			}
-
-			message.success("删除成功", messageOptions);
-
-			goto(BOOK_INFO);
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			showRemove.value = false;
-		});
+	removeItem(message, Service.BookInfos.remove(props.id), BOOK_INFO);
 }
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+function showDeleteConfirmModal() {
+	props.showModal("error", "删除二次确认", "您是否要删除？", () => {});
+}
 
 onBeforeMount(() => {
+	checkLoginState();
+});
+
+onMounted(() => {
 	query(props.id);
 });
 </script>
 
 <template>
 	<n-layout-header class="top-0 h-3em" position="absolute">
-		<n-flex class="items-center" style="margin: 0 1em">
-			<h1 class="m-r-a">书籍信息</h1>
-			<n-button type="error" @click="showRemove = true"> 删除</n-button>
-			<n-button type="warning" @click="showUpdate = true"> 修改</n-button>
+		<n-flex class="h-3em items-center" justify="center">
+			<router-link :to="BOOK_INFO">
+				<n-button type="tertiary">
+					<template #icon>
+						<n-icon :component="IBack" />
+					</template>
+					后退
+				</n-button>
+			</router-link>
+			<n-button
+				type="info"
+				class="h-2.4em"
+				@click.prevent="queryHandler"
+				:loading="loadingQuery"
+			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
+			</n-button>
+			<n-button type="error" @click.prevent="showDeleteConfirmModal">
+				<template #icon>
+					<n-icon :component="IDelete" />
+				</template>
+				删除
+			</n-button>
+			<n-button type="warning" @click.prevent="showUpdate = true">
+				<template #icon>
+					<n-icon :component="IEdit" />
+				</template>
+				修改
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
 		:native-scrollbar="false"
 		class="absolute top-3em bottom-0 left-0 right-0"
 		content-style="padding: .3em 1em"
+		has-sider
 	>
+		<n-layout-sider class="p-20px" collapse-mode="width" width="400">
+			<n-image :src="info.cover" alt="书籍图片链接" width="360" />
+		</n-layout-sider>
 		<n-table :single-line="false" class="w-100%">
 			<tbody class="trc">
 				<tr>
-					<td class="w-43%">id</td>
-					<td>
-						<n-tag :bordered="false" type="info">
-							{{ info.id }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
 					<td>ISBN</td>
 					<td>
-						<n-tag :bordered="false" type="default">
+						<n-tag :bordered="false" type="error">
 							{{ info.isbn }}
 						</n-tag>
 					</td>
-				</tr>
-				<tr>
 					<td>CIP</td>
 					<td>
-						<n-tag :bordered="false" type="default">
+						<n-tag :bordered="false" type="error">
 							{{ info.cip }}
 						</n-tag>
 					</td>
@@ -344,42 +233,27 @@ onBeforeMount(() => {
 					<td>
 						{{ info.bookName }}
 					</td>
+					<td>作者</td>
+					<td>
+						<span v-if="info.author">{{ info.author }}</span>
+						<NoData v-else />
+					</td>
 				</tr>
 				<tr>
 					<td>中图法分类号</td>
-					<td>
+					<td colspan="3">
 						<n-tag :bordered="false" type="default">
 							{{ info.bookType }}
 						</n-tag>
 					</td>
 				</tr>
 				<tr>
-					<td>封面链接</td>
-					<td>
-						<img :src="info.cover" alt="书籍图片链接" class="h-20em" />
-					</td>
-				</tr>
-				<tr>
-					<td>作者</td>
-					<td>
-						<n-tag :bordered="false" type="default">
-							{{ info.author }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>描述</td>
-					<td>
-						<n-text class="w-70%">
-							{{ info.describe }}
-						</n-text>
-					</td>
-				</tr>
-				<tr>
 					<td>主题词</td>
-					<td>
+					<td colspan="3">
 						<n-tag
-							v-for="(item, index) in keywords"
+							v-for="(item, index) in info.keyword
+								?.toString()
+								?.split('－')"
 							:key="index"
 							:bordered="false"
 							class="m-l-1"
@@ -392,7 +266,7 @@ onBeforeMount(() => {
 				</tr>
 				<tr>
 					<td>正文语种</td>
-					<td>
+					<td colspan="3">
 						<n-tag :bordered="false" type="default">
 							{{ info.lang }}
 						</n-tag>
@@ -400,106 +274,88 @@ onBeforeMount(() => {
 				</tr>
 				<tr>
 					<td>价格</td>
-					<td>
+					<td colspan="3">
 						<n-tag :bordered="false" type="default">
 							{{ info.price }}
 						</n-tag>
 					</td>
 				</tr>
 				<tr>
-					<td>库存量</td>
+					<td colspan="4">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>出版社</td>
 					<td>
-						<n-tag :bordered="false" type="info">
-							{{ info.stock }}
+						<n-tag v-if="info.publisher" :bordered="false" type="default">
+							{{ info.publisher }}
 						</n-tag>
+						<NoData v-else />
 					</td>
-				</tr>
-
-				<tr>
-					<td>出版信息</td>
-					<td style="--n-td-padding: 0">
-						<n-table :bordered="false" :single-line="false">
-							<tbody class="trc">
-								<tr>
-									<td class="w-30">出版日期</td>
-									<td>
-										<n-tag
-											v-if="info.publishDate"
-											:bordered="false"
-											type="default"
-										>
-											<!--								 todo yyyy-MM	-->
-											{{ info.publishDate }}
-										</n-tag>
-										<NoData v-else />
-										<!--								<n-date-picker v-model:formatted-value="info.publishDate" clearable type="month"-->
-										<!--								               update-value-on-close-->
-										<!--								               value-format="yyyy-MM-dd"/>-->
-									</td>
-								</tr>
-								<tr>
-									<td>出版社</td>
-									<td>
-										<n-tag
-											v-if="info.publisher?.name"
-											:bordered="false"
-											type="default"
-										>
-											{{ `${info.publisher?.name}出版社` }}
-										</n-tag>
-										<NoData v-else />
-									</td>
-								</tr>
-								<tr>
-									<td>出版地</td>
-									<td>
-										<n-tag
-											v-if="info.publisher?.place"
-											:bordered="false"
-											type="default"
-										>
-											{{ info.publisher.place }}
-										</n-tag>
-										<NoData v-else />
-									</td>
-								</tr>
-							</tbody>
-						</n-table>
-					</td>
-				</tr>
-				<tr>
-					<td>备注</td>
-					<td>
-						<n-text v-if="info.remark">
-							{{ info.remark }}
-						</n-text>
+					<td class="w-30">出版日期</td>
+					<td colspan="3">
+						<n-tag
+							v-if="info.publishedDate"
+							:bordered="false"
+							type="default"
+						>
+							<!--								 todo yyyy-MM	-->
+							{{ publishedMouth }}
+						</n-tag>
 						<NoData v-else />
 					</td>
 				</tr>
-				<n-tr>
-					<n-td>创建者</n-td>
-					<n-td :style="info.createdBy ? '--n-td-padding: 0;' : ''">
+				<tr>
+					<td>版次</td>
+					<td>
+						<n-tag v-if="info.edition" :bordered="false" type="default">
+							{{ info.edition }}
+						</n-tag>
+						<NoData v-else />
+					</td>
+					<td>印次</td>
+					<td>
+						<n-tag v-if="info.printing" :bordered="false" type="default">
+							{{ info.printing }}
+						</n-tag>
+						<NoData v-else />
+					</td>
+				</tr>
+				<tr>
+					<td>内容摘要</td>
+					<td colspan="3">
+						<n-text class="w-70%">
+							{{ info.describe }}
+						</n-text>
+					</td>
+				</tr>
+				<tr>
+					<td>库存量</td>
+					<td colspan="3">
+						<n-tag
+							v-if="typeof info.stock != 'number' && info.stock >= 0"
+							:bordered="false"
+							type="info"
+						>
+							{{ info.stock }}
+						</n-tag>
+						<NoData v-else />
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>创建者</td>
+					<td style="padding: 0">
 						<n-table
 							v-if="info.createdBy"
 							:bordered="false"
 							:single-line="false"
 						>
 							<tbody>
-								<n-tr>
-									<n-td class="w-30">id</n-td>
-									<n-td>
-										<n-tag :bordered="false" type="info">
-											{{ creator.id }}
-										</n-tag>
-									</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>用户昵称</n-td>
-									<n-td>{{ creator.displayName }}</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>用户名</n-td>
-									<n-td>
+								<tr>
+									<td>用户名</td>
+									<td>
 										<n-tag :bordered="false" type="primary">
 											{{ creator.surname }}
 										</n-tag>
@@ -510,61 +366,39 @@ onBeforeMount(() => {
 										>
 											{{ creator.name }}
 										</n-tag>
-									</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>邮箱</n-td>
-									<n-td>
+									</td>
+								</tr>
+								<tr>
+									<td>邮箱</td>
+									<td>
 										<n-tag :bordered="false" type="error">
 											{{ creator.email }}
 										</n-tag>
-									</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>电话</n-td>
-									<n-td>
+									</td>
+								</tr>
+								<tr>
+									<td>电话</td>
+									<td>
 										<n-tag :bordered="false" type="error">
 											{{ creator.phoneNumber }}
 										</n-tag>
-									</n-td>
-								</n-tr>
+									</td>
+								</tr>
 							</tbody>
 						</n-table>
 						<NoData v-else />
-					</n-td>
-				</n-tr>
-				<n-tr>
-					<n-td>创建时间</n-td>
-					<n-td>
-						<n-tag :bordered="false" type="primary">
-							{{ formatTime(info.creationTime) }}
-						</n-tag>
-					</n-td>
-				</n-tr>
-				<n-tr>
-					<n-td>更新者</n-td>
-					<n-td :style="info.updatedBy ? '--n-td-padding: 0;' : ''">
+					</td>
+					<td>更新者</td>
+					<td style="padding: 0">
 						<n-table
 							v-if="info.updatedBy"
 							:bordered="false"
 							:single-line="false"
 						>
 							<tbody class="trc">
-								<n-tr>
-									<n-td class="w-30">id</n-td>
-									<n-td>
-										<n-tag :bordered="false" type="info">
-											{{ updater.id }}
-										</n-tag>
-									</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>用户昵称</n-td>
-									<n-td>{{ updater.displayName }}</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>用户名</n-td>
-									<n-td>
+								<tr>
+									<td>用户名</td>
+									<td>
 										<n-tag :bordered="false" type="primary">
 											{{ updater.surname }}
 										</n-tag>
@@ -575,117 +409,114 @@ onBeforeMount(() => {
 										>
 											{{ updater.name }}
 										</n-tag>
-									</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>邮箱</n-td>
-									<n-td>
+									</td>
+								</tr>
+								<tr>
+									<td>邮箱</td>
+									<td>
 										<n-tag :bordered="false" type="error">
 											{{ updater.email }}
 										</n-tag>
-									</n-td>
-								</n-tr>
-								<n-tr>
-									<n-td>电话</n-td>
-									<n-td>
+									</td>
+								</tr>
+								<tr>
+									<td>电话</td>
+									<td>
 										<n-tag :bordered="false" type="error">
 											{{ updater.phoneNumber }}
 										</n-tag>
-									</n-td>
-								</n-tr>
+									</td>
+								</tr>
 							</tbody>
 						</n-table>
 						<NoData v-else />
-					</n-td>
-				</n-tr>
-				<n-tr>
-					<n-td>最后更新时间</n-td>
-					<n-td>
+					</td>
+				</tr>
+				<tr>
+					<td>创建时间</td>
+					<td>
+						<n-tag :bordered="false" type="primary">
+							{{ formatTime(info.creationTime) }}
+						</n-tag>
+					</td>
+					<td>最后更新时间</td>
+					<td>
 						<n-tag :bordered="false" type="warning">
 							{{ formatTime(info.lastUpdatedTime) }}
 						</n-tag>
-					</n-td>
-				</n-tr>
+					</td>
+				</tr>
+				<tr>
+					<td>备注</td>
+					<td colspan="3">
+						<n-text v-if="info.remark">
+							{{ info.remark }}
+						</n-text>
+						<NoData v-else />
+					</td>
+				</tr>
 			</tbody>
 		</n-table>
-
-		<!--   删除面板   -->
-		<n-modal
-			id="remove-modal"
-			v-model:show="showRemove"
-			preset="dialog"
-			style="--n-font-size: 16px"
-			title="删除二次确认"
-			transform-origin="center"
-			type="error"
-		>
-			<n-space vertical>
-				<span> 您是否要删除？ </span>
-				<n-flex justify="right">
-					<n-button type="error" @click="remove"> 确定</n-button>
-				</n-flex>
-			</n-space>
-		</n-modal>
-
-		<!--   更新面板   -->
-		<n-modal
-			id="update-modal"
-			v-model:show="showUpdate"
-			preset="dialog"
-			title="修改二次确认"
-			type="warning"
-		>
-			<n-space vertical>
-				<span> 您是否要行以下修改？ </span>
-				<n-table :single-line="false">
-					<tbody>
-						<tr>
-							<td class="w-6em">修改内容</td>
-							<td>原有值</td>
-							<td>新值</td>
-						</tr>
-						<tr v-if="info.name !== source.name">
-							<td class="text-center">
-								<n-tag type="info"> 名称</n-tag>
-							</td>
-							<td>
-								<n-tag type="success">
-									{{ source.name }}
-								</n-tag>
-							</td>
-							<td>
-								<n-tag type="warning">
-									{{ info.name }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr v-if="info.remark !== source.remark">
-							<td class="text-center">
-								<n-tag type="info"> 备注</n-tag>
-							</td>
-							<td>
-								<n-tag type="success">
-									{{ source.name }}
-								</n-tag>
-							</td>
-							<td>
-								<n-tag type="warning">
-									{{ info.name }}
-								</n-tag>
-							</td>
-						</tr>
-					</tbody>
-				</n-table>
-				<n-flex justify="right">
-					<n-button type="warning" @click="update"> 确认</n-button>
-				</n-flex>
-			</n-space>
-		</n-modal>
 	</n-layout>
+
+	<!--   更新面板   -->
+	<n-modal
+		id="update-modal"
+		v-model:show="showUpdate"
+		preset="dialog"
+		title="修改二次确认"
+		type="warning"
+	>
+		<n-space vertical>
+			<span> 您是否要行以下修改？ </span>
+			<n-table :single-line="false">
+				<tbody>
+					<tr>
+						<td class="w-6em">修改内容</td>
+						<td>原有值</td>
+						<td>新值</td>
+					</tr>
+					<tr v-if="info.name !== source.name">
+						<td class="text-center">
+							<n-tag type="info"> 名称</n-tag>
+						</td>
+						<td>
+							<n-tag type="success">
+								{{ source.name }}
+							</n-tag>
+						</td>
+						<td>
+							<n-tag type="warning">
+								{{ info.name }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr v-if="info.remark !== source.remark">
+						<td class="text-center">
+							<n-tag type="info"> 备注</n-tag>
+						</td>
+						<td>
+							<n-tag type="success">
+								{{ source.name }}
+							</n-tag>
+						</td>
+						<td>
+							<n-tag type="warning">
+								{{ info.name }}
+							</n-tag>
+						</td>
+					</tr>
+				</tbody>
+			</n-table>
+			<n-flex justify="right">
+				<n-button type="warning" @click.prevent="update"> 修改</n-button>
+			</n-flex>
+		</n-space>
+	</n-modal>
 </template>
 
 <style scoped>
-.trc tr > td:first-child {
+.trc tr > td:nth-child(2n - 1) {
 	text-align: right;
 }
 </style>

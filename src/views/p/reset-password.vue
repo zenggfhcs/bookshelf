@@ -215,9 +215,8 @@ const sendCode = debounce(() => {
 	};
 	sendCodeLoading.value = true;
 	Service.Users.sendMailForResetPassword(_entity)
-		.then((res) => {
+		.then((_) => {
 			message.success("发送成功，请查看邮箱邮件", messageOptions);
-			console.log(res);
 			ObtainedCode.value = true;
 		})
 		.catch((err) => {
@@ -249,7 +248,7 @@ const resetPassword = debounce(() => {
 				}, 3000);
 			})
 			.catch((err) => {
-				message.error(err.message);
+				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
 				loading.value = false;

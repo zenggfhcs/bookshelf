@@ -1,5 +1,6 @@
 .fill {
 	fill: var(--n-text-color);
+	stroke: var(--n-text-color);
 }
 
 .n-menu-item-content--selected .n-icon svg {

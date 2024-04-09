@@ -1,31 +1,35 @@
 <script setup>
 import { Service } from "@/api/index.js";
-import NoData from "@/components/no-data.vue";
 import { B_LOG_CHECK } from "@/constant/breadcrumb.js";
-import { SERVICE_NAME_MAP, LOG_TYPE_MAP } from "@/constant/map.js";
-import { ResponseCode } from "@/constant/response-code.js";
+import { LOG_SELECT, LOG_TYPE_MAP, SERVICE_NAME_MAP } from "@/constant/map.js";
+import IBack from "@/icons/i-back.vue";
+import { LOG } from "@/router/RouterValue.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
 import { getTagType } from "@/utils/convert.js";
-import { copyMatchingProperties } from "@/utils/index.js";
-import { sleep } from "@/utils/sleep.js";
+import { queryInfo } from "@/utils/query.js";
 import {
+	NButton,
 	NFlex,
+	NIcon,
 	NLayout,
 	NLayoutHeader,
 	NTable,
 	NTag,
-	NText,
 	useMessage,
 } from "naive-ui";
-import { onMounted, reactive } from "vue";
+import { onBeforeMount, onMounted, reactive } from "vue";
 import JsonViewer from "vue-json-viewer";
 
-const props = defineProps(["id", "updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"id",
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 props.updateMenuItem("i-log");
 
 const message = useMessage();
-
-const msgReactive = message.create("查找日志信息", { type: "loading" });
 
 const info = reactive({
 	id: null,
@@ -35,7 +39,6 @@ const info = reactive({
 	output: null,
 	createdBy: null,
 	creationTime: null,
-	dataId: null,
 	elapsedTime: null,
 });
 
@@ -48,77 +51,39 @@ const creator = reactive({
 	phoneNumber: null,
 });
 
-//#region transform
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-function findLogCreator() {
-	msgReactive.type = "loading";
-	msgReactive.content = "查找日志操作者";
-	Service.Users.get(info.createdBy)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				msgReactive.type = "error";
-				msgReactive.content = _returnData.message;
-				return;
-			}
-
-			copyMatchingProperties(_returnData.data, creator);
-
-			msgReactive.type = "success";
-			msgReactive.content = "查找完成";
-		})
-		.catch((err) => {
-			message.error(err.message);
-		})
-		.finally(() => {});
+async function query(id) {
+	await queryInfo(message, Service.Logs.get(id), info, creator, null);
 }
 
-function query(id) {
-	Service.Logs.get(id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				msgReactive.type = "error";
-				msgReactive.content = _returnData.message;
-				return;
-			}
-
-			copyMatchingProperties(_returnData?.data, info);
-
-			msgReactive.type = "success";
-			msgReactive.content = "查找完成";
-			sleep();
-			findLogCreator();
-		})
-		.catch((err) => {
-			message.error(err.message);
-		})
-		.finally(() => {});
-}
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-onMounted(() => {
-	query(props.id);
+onBeforeMount(() => {
+	checkLoginState();
 });
 
-{
+onMounted(() => {
 	props.updateMenuItem("i-log");
 	props.updateBreadcrumbArray(B_LOG_CHECK(props.id));
-}
+	query(props.id);
+});
 </script>
 
 <template>
 	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="items-center h-3em" style="margin: 0 1em">
-			<h1>日志信息</h1>
+		<n-flex class="items-center h-3em" justify="center">
+			<router-link :to="LOG">
+				<n-button type="tertiary">
+					<template #icon>
+						<n-icon :component="IBack" />
+					</template>
+					后退
+				</n-button>
+			</router-link>
+			<n-button
+				v-if="info.type !== LOG_SELECT.value"
+				type="error"
+				title="操作回退会根据日志的内容，将影响到的数据回退到该日志生成前一刻；这个操作会生成新的日志"
+			>
+				操作回退
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -156,15 +121,6 @@ onMounted(() => {
 					</td>
 				</tr>
 				<tr>
-					<td>数据 id</td>
-					<td>
-						<n-text v-if="info.dataId">
-							{{ info.dataId }}
-						</n-text>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
 					<td>操作持续时间-毫秒</td>
 					<td>
 						<n-tag
@@ -177,33 +133,33 @@ onMounted(() => {
 				</tr>
 				<tr>
 					<td>输入</td>
-					<td style="--n-td-color: v-bind(); --n-td-text-color: v-bind()">
+					<td style="--td-color: v-bind(); --td-text-color: v-bind()">
 						<JsonViewer
 							:value="JSON.parse(info.input ? info.input : '{}')"
 							class="p-0"
 							style="
-								color: var(--n-td-text-color);
-								background-color: var(--n-td-color);
+								color: var(--td-text-color);
+								background-color: var(--td-color);
 							"
 						/>
 					</td>
 				</tr>
 				<tr>
 					<td>输出</td>
-					<td style="--n-td-color: v-bind(); --n-td-text-color: v-bind()">
+					<td style="--td-color: v-bind(); --td-text-color: v-bind()">
 						<JsonViewer
 							:value="JSON.parse(info.output ? info.output : '{}')"
 							class="p-0"
 							style="
-								color: var(--n-td-text-color);
-								background-color: var(--n-td-color);
+								color: var(--td-text-color);
+								background-color: var(--td-color);
 							"
 						/>
 					</td>
 				</tr>
 				<tr>
 					<td>操作者</td>
-					<td style="--n-td-padding: 0">
+					<td style="--td-padding: 0">
 						<n-table :bordered="false">
 							<tbody>
 								<tr>

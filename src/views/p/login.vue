@@ -2,7 +2,6 @@
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
-import { ResponseCode } from "@/constant/response-code.js";
 import router from "@/router/index.js";
 import { REGISTER, RESET_PASSWORD } from "@/router/RouterValue.js";
 import { debounce } from "@/utils/debounce.js";
@@ -70,20 +69,9 @@ const login = debounce((e) => {
 		console.log(model);
 		Service.Users.login(model)
 			.then((res) => {
-				// todo
-				console.log(res);
-				const data = res.data;
-				if (data?.code === ResponseCode.SUCCESS) {
-					// 登录
-					// localStorage.setItem(TOKEN, data?.data?.token); todo
-
-					const _tokenInfo = JSON.parse(data?.data?.token);
-					resetToken(_tokenInfo);
-
-					router.push("/");
-				} else {
-					message.error(data.message);
-				}
+				const _tokenInfo = JSON.parse(res?.token);
+				resetToken(_tokenInfo);
+				router.push("/");
 			})
 			.catch((err) => {
 				message.error(err.message, messageOptions);

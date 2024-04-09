@@ -1,20 +1,22 @@
 <script setup>
 import { Service } from "@/api/index.js";
 import { B_BOOK_INFO } from "@/constant/breadcrumb.js";
-import { messageOptions } from "@/constant/options.js";
+import { LANG_TYPE_MAP } from "@/constant/map.js";
+import IAdd from "@/icons/i-add.vue";
+import IDelete from "@/icons/i-delete.vue";
+import IReload from "@/icons/i-reload.vue";
 import write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
-import { inputValidator } from "@/utils/validator.js";
-import { AddCircle, Search } from "@vicons/ionicons5";
+import { queryList } from "@/utils/query.js";
+import { renderCell } from "@/utils/render.js";
 import {
 	NBackTop,
 	NButton,
 	NDataTable,
 	NDatePicker,
-	NDivider,
 	NFlex,
 	NForm,
 	NFormItem,
@@ -23,32 +25,32 @@ import {
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
+	NModal,
 	NPagination,
-	NPopover,
 	NTag,
 	useMessage,
 } from "naive-ui";
-import { h, onMounted, reactive, ref } from "vue";
+import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 {
 	props.updateMenuItem("i-book-info");
 	props.updateBreadcrumbArray(B_BOOK_INFO);
 }
 
-const entity = reactive({
-	id: "",
-	name: "",
-});
-
 const message = useMessage();
 
-let tableData = [];
-
-let currentPageTableData = ref([]);
+const tableData = ref([]);
 
 const loadingQuery = ref(false);
+
+const showFilterModal = ref(false);
+
 function rowProps(row) {
 	return {
 		onDblclick: (e) => {
@@ -68,74 +70,59 @@ const timestamp = reactive({
 	lastUpdatedTime: null,
 });
 
-const filter = reactive({
-	page: {
-		start: 0,
-		end: 10,
-	},
-	creationTime: {
-		start: null,
-		end: null,
-	},
-	lastUpdatedTime: {
-		start: null,
-		end: null,
-	},
-});
-
-function query() {
+async function query() {
 	loadingQuery.value = true;
-
-	Service.BookInfos.list(entity, filter)
-		.then((res) => {
-			const data = res.data;
-			itemCount.value = data?.data?.total;
-			tableData = data?.data?.list;
-
-			pagination.onUpdatePage();
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			loadingQuery.value = false;
-		});
+	await queryList(
+		message,
+		Service.BookInfos.filteredList(filterReactive),
+		itemCount,
+		tableData,
+	);
+	loadingQuery.value = false;
 }
 
-const clickFind = debounce((e) => {
-	e.preventDefault();
+const queryHandler = debounce(() => {
 	query();
 });
 
 const cols = [
 	{
-		title: "id",
-		key: "id",
-		// 可拖动
-		resizable: true,
+		type: "selection",
+	},
+	{
+		title: "ISBN",
+		key: "isbn",
+		width: 172,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
 		},
-		width: 100,
-		minWidth: 50,
-		render: (row) =>
-			h(
+		render: (row) => {
+			return h(
 				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.id,
-				},
-			),
+				{ type: "error", bordered: false },
+				{ default: () => row?.isbn },
+			);
+		},
+	},
+	{
+		title: "CIP",
+		key: "cip",
+		// 溢出省略
+		ellipsis: {
+			tooltip: true,
+		},
+		render: (row) => {
+			return h(
+				NTag,
+				{ type: "error", bordered: false },
+				{ default: () => row?.cip },
+			);
+		},
 	},
 	{
 		title: "名称",
 		key: "bookName",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -144,8 +131,6 @@ const cols = [
 	{
 		title: "作者",
 		key: "author",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -154,8 +139,6 @@ const cols = [
 	{
 		title: "类型",
 		key: "bookType",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -164,18 +147,17 @@ const cols = [
 	{
 		title: "正文语种",
 		key: "lang",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
+		},
+		render: (row) => {
+			return LANG_TYPE_MAP.getByValue(row?.lang);
 		},
 	},
 	{
 		title: "关键字",
 		key: "keyword",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -202,10 +184,24 @@ const cols = [
 		},
 	},
 	{
-		title: "价格-元",
-		key: "price",
-		// 可拖动
-		resizable: true,
+		title: "出版社",
+		key: "publisher",
+		// 溢出省略
+		ellipsis: {
+			tooltip: true,
+		},
+	},
+	{
+		title: "版次",
+		key: "edition",
+		// 溢出省略
+		ellipsis: {
+			tooltip: true,
+		},
+	},
+	{
+		title: "印次",
+		key: "printing",
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -214,11 +210,30 @@ const cols = [
 	{
 		title: "库存",
 		key: "stock",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
+		},
+		render: (row) => {
+			if (!row?.stock) {
+				return renderCell();
+			}
+			return row?.stock;
+		},
+	},
+	{
+		// todo 没有借出这个数据
+		title: "借出",
+		key: "stock",
+		// 溢出省略
+		ellipsis: {
+			tooltip: true,
+		},
+		render: (row) => {
+			if (!row?.stock) {
+				return renderCell();
+			}
+			return row?.stock;
 		},
 	},
 ];
@@ -245,105 +260,94 @@ const pagination = reactive({
 		if (!loadingQuery.value) {
 			loadingQuery.value = true;
 		}
-		updateCurrentPageData(page, pagination.pageSize).then((res) => {
-			currentPageTableData.value = res?.data;
-			loadingQuery.value = false;
-		});
+
+		query();
 	},
 });
 
-function updateCurrentPageData(page, pageSize) {
-	return new Promise((resolve) => {
-		const start = (page - 1) * pageSize;
-		const end = start + pageSize;
-		const data = tableData.slice(start, end);
-		resolve({
-			data: data,
-		});
-	});
+const filterReactive = reactive({
+	entity: {
+		isbn: "",
+		cip: "",
+	},
+	filter: {
+		page: {
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize),
+		},
+	},
+});
+
+function filterResetHandler() {}
+
+function filterHandler() {
+	showFilterModal.value = false;
 }
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+const checkedRowKeysRef = ref([]);
 
-/**
- * 组件挂载完成时调用
- */
-onMounted(() => {
-	// 加载数据
+function handleCheck(rowKeys) {
+	checkedRowKeysRef.value = rowKeys;
+}
+
+onBeforeMount(() => {
 	checkLoginState();
+});
+
+onMounted(() => {
 	query();
 });
 </script>
 
 <template>
 	<n-layout-header class="h-3em top-0" position="absolute">
-		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em">
+		<n-flex class="h-3em items-center" justify="center">
+			<n-button
+				v-if="checkedRowKeysRef.length"
+				type="error"
+				@click.prevent="
+					props.showModal(
+						'error',
+						'删除二次确认',
+						'是否要删除所选？',
+						() => {},
+					)
+				"
+			>
+				<template #icon>
+					<IDelete />
+				</template>
+				删除所选
+			</n-button>
 			<router-link :to="BOOK_INFO_ADD.path">
-				<n-button>
+				<n-button type="success">
 					<template #icon>
-						<addCircle />
+						<IAdd />
 					</template>
 					新增
 				</n-button>
 			</router-link>
-			<n-popover placement="top" trigger="click">
-				<template #trigger>
-					<n-button class="h-2.4em m-l-a">
-						<template #icon>
-							<n-icon :component="write" />
-						</template>
-						筛选
-					</n-button>
-				</template>
-				<span class="font-size-1.2em font-800">精确查询</span>
-				<n-form :model="entity">
-					<n-divider class="m-1!" />
-					<n-form-item label="id" path="id">
-						<n-input
-							v-model:value="entity.id"
-							:allow-input="inputValidator.onlyAllowNumber"
-							clearable
-							placeholder="输入id"
-						/>
-					</n-form-item>
-					<n-form-item label="出版社名称" path="name">
-						<n-input
-							v-model:value="entity.name"
-							:allow-input="inputValidator.noSideSpace"
-							clearable
-							placeholder="输入出版社名称"
-						/>
-					</n-form-item>
-				</n-form>
-				<n-form :model="filter">
-					<span class="font-size-1.2em font-800">模糊查询</span>
-					<n-divider class="m-1!" />
-					<n-form-item label="创建时间">
-						<n-date-picker
-							v-model:value="timestamp.creationTime"
-							clearable
-							type="datetimerange"
-							update-value-on-close
-						/>
-					</n-form-item>
-					<n-form-item label="最后修改时间">
-						<n-date-picker
-							v-model:value="timestamp.lastUpdatedTime"
-							clearable
-							type="datetimerange"
-							update-value-on-close
-						/>
-					</n-form-item>
-				</n-form>
-			</n-popover>
-			<n-button class="h-2.4em" @click="clickFind">
+			<n-button
+				type="info"
+				secondary
+				class="h-2.4em"
+				@click.prevent="showFilterModal = true"
+			>
 				<template #icon>
-					<n-icon>
-						<search />
-					</n-icon>
+					<n-icon :component="write" />
 				</template>
-				查找
+				筛选
+			</n-button>
+			<n-button
+				type="info"
+				class="h-2.4em"
+				@click.prevent="queryHandler"
+				:loading="loadingQuery"
+			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
 			</n-button>
 		</n-flex>
 	</n-layout-header>
@@ -363,7 +367,56 @@ onMounted(() => {
 			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
+			@update:checked-row-keys="handleCheck"
 		/>
+
+		<!-- 筛选 modal -->
+		<n-modal
+			id="filter-modal"
+			v-model:show="showFilterModal"
+			:mask-closable="false"
+			class="w-25em"
+			preset="dialog"
+			title="筛选"
+			transform-origin="center"
+		>
+			<n-form :model="filterReactive">
+				<n-form-item label="ISBN">
+					<n-input v-model:value="filterReactive.entity.isbn" clearable />
+				</n-form-item>
+				<n-form-item label="CIP">
+					<n-input v-model:value="filterReactive.entity.cip" clearable />
+				</n-form-item>
+				<n-form-item label="借阅时间">
+					<n-date-picker
+						v-model:value="timestamp.creationTime"
+						clearable
+						type="datetimerange"
+						update-value-on-close
+					/>
+				</n-form-item>
+				<n-form-item label="归还时间">
+					<n-date-picker
+						v-model:value="timestamp.lastUpdatedTime"
+						clearable
+						type="datetimerange"
+						update-value-on-close
+					/>
+				</n-form-item>
+			</n-form>
+			<n-flex justify="space-between">
+				<n-button
+					tertiary
+					type="warning"
+					@click.prevent="filterResetHandler"
+				>
+					重置
+				</n-button>
+				<n-button type="success" @click.prevent="filterHandler">
+					确定
+				</n-button>
+			</n-flex>
+		</n-modal>
 	</n-layout>
 
 	<n-layout-footer class="h-2.4em" position="absolute">

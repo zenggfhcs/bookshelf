@@ -1,6 +1,6 @@
 import { Service } from "@/api/index.js";
 import { Header } from "@/constant/Header.js";
-import { ResponseCode } from "@/constant/response-code.js";
+import { SC } from "@/constant/response-code.js";
 import { REFRESH_TOKEN } from "@/storage/key.js";
 import { local } from "@/storage/local.js";
 import { resetToken } from "@/utils/storage-operation.js";
@@ -10,7 +10,7 @@ const instance = axios.create({
 	// `baseURL` 将自动加在 `url` 前面，除非 `url` 是一个绝对 URL。
 	// 它可以通过设置一个 `baseURL` 便于为 axios 实例的方法传递相对 URL
 	baseURL: "http://10.3.105.0:9090/", // `${BASE_URL}`, // todo import base url
-
+	// "http://10.3.106.248:9090/", // `${BASE_URL}`, // todo import base url
 	// `transformRequest` 允许在向服务器发送前，修改请求数据
 	// 它只能用于 'PUT', 'POST' 和 'PATCH' 这几个请求方法
 	// 数组中最后一个函数必须返回一个字符串， 一个Buffer实例，ArrayBuffer，FormData，或 Stream
@@ -90,7 +90,7 @@ function requestAgain(config) {
 
 function canRefresh(response) {
 	return (
-		response?.data?.code === ResponseCode.TOKEN_E &&
+		response?.data?.code === SC.UNAUTHORIZED &&
 		!response?.config.url?.toString().endsWith("/token:refresh")
 	);
 }
@@ -99,7 +99,7 @@ const refreshToken = async () =>
 	await Service.Token.refresh()
 		.then((res) => {
 			const _data = res?.data;
-			if (_data?.code === ResponseCode.SUCCESS) {
+			if (_data?.code === SC.SUCCESS) {
 				const _tokenInfo = JSON.parse(res?.data?.data?.token);
 				resetToken(_tokenInfo);
 			}
@@ -111,7 +111,7 @@ const refresh = async (response) => {
 	const { config } = response;
 	const _refreshRes = await refreshToken();
 
-	if (_refreshRes?.data?.code === ResponseCode.SUCCESS) {
+	if (_refreshRes?.data?.code === SC.SUCCESS) {
 		// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
 		const _dataString = config?.data;
 		if (_dataString) {
@@ -158,11 +158,11 @@ instance.interceptors.response.use(
 		 */
 
 		// 预设错误
-		if (response?.data?.code !== ResponseCode.SUCCESS) {
+		if (response?.data?.code !== SC.SUCCESS) {
 			return Promise.reject(response?.data);
 		}
 
-		return Promise.resolve(response);
+		return Promise.resolve(response?.data?.data);
 	},
 	async (error) => {
 		// 超出 2xx 范围的状态码都会触发该函数。

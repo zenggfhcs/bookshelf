@@ -1,5 +1,5 @@
 <script setup>
-import Index from "@/layout/error.vue";
+import Index from "@/layouts/error.vue";
 import { NLayout, NResult } from "naive-ui";
 </script>
 

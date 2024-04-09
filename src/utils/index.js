@@ -58,13 +58,12 @@ export function traverse(array) {
 /**
  * 格式化字符串
  * @param dateString
- * @param formatString
  */
-export function transDateString(dateString, formatString) {
+export function transDateString(dateString) {
 	const dateReg =
 		/^(\d+)(([-/])(\d+))?(([-/])(\d+))?(([ T])(\d+))?(([:])(\d+))?(([:])(\d+(\.\d+)?))?$/;
 	const _execArray = dateReg.exec(dateString);
-	const _valueArray = [
+	return [
 		_execArray?.[1],
 		_execArray?.[3],
 		_execArray?.[4],
@@ -78,3 +77,13 @@ export function transDateString(dateString, formatString) {
 		_execArray?.[16],
 	];
 }
+
+function transMouth(dateString) {
+	if (!dateString) {
+		return "";
+	}
+	const _array = transDateString(dateString);
+	return `${_array[0]}年${_array[2]}月`;
+}
+
+export { transMouth };

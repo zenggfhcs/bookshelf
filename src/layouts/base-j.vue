@@ -212,7 +212,11 @@ onBeforeMount(() => {
 				</n-flex>
 			</n-flex>
 		</n-layout-header>
-		<n-layout content-style="padding: 1em;">
+		<n-layout
+			class="absolute top-3em bottom-0 left-0 right-0"
+			content-style="padding: 0 1em;"
+			:native-scrollbar="false"
+		>
 			<router-view v-slot="{ Component }">
 				<component :is="Component" :updateMenuItem="updateMenuItem" />
 			</router-view>
@@ -230,7 +234,7 @@ onBeforeMount(() => {
 		<n-space vertical>
 			<span> 您是否要退出登录？ </span>
 			<n-flex justify="right">
-				<n-button type="warning" @click="logout(message)"> 确定</n-button>
+				<n-button type="warning" @click="logout(message)"> 是</n-button>
 			</n-flex>
 		</n-space>
 	</n-modal>

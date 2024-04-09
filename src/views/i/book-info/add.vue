@@ -1,7 +1,17 @@
 <script setup>
 import { Service } from "@/api/index.js";
 import { B_BOOK_INFO_ADD } from "@/constant/breadcrumb.js";
+import { Header } from "@/constant/Header.js";
 import { LANG_TYPE_PRE_DEFINED } from "@/constant/map.js";
+import { messageOptions } from "@/constant/options.js";
+import IAdd from "@/icons/i-add.vue";
+import IBack from "@/icons/i-back.vue";
+import { goto } from "@/router/goto.js";
+import { BOOK_INFO } from "@/router/RouterValue.js";
+import { local } from "@/storage/local.js";
+import { addItem } from "@/utils/add.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
+import { convertToChineseNum, optional } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
@@ -12,6 +22,7 @@ import {
 	NFlex,
 	NForm,
 	NFormItem,
+	NIcon,
 	NInput,
 	NInputGroup,
 	NInputGroupLabel,
@@ -24,9 +35,13 @@ import {
 	NUpload,
 	useMessage,
 } from "naive-ui";
-import { computed, h, reactive, ref } from "vue";
+import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 {
 	props.updateMenuItem("i-book-info");
@@ -35,24 +50,32 @@ const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
 const message = useMessage();
 
+const loadingAdd = ref(false);
+
 const loadingSearchType = ref(false);
 
-const loadingSearchPublisher = ref(false);
+const publishedDateDisabled = (ts) => {
+	return ts > Date.now();
+};
 
 const priceReactive = reactive({
 	int: null,
 	dec: null,
 });
 
+const coverHeaders = {
+	"Access-Control-Allow-Origin": "*",
+};
+coverHeaders[Header.TOKEN] = local.get(Header.TOKEN);
+
 const keywordsRef = ref([]);
+
+const editionRef = ref(1);
+
+const printingRef = ref(1);
 
 const info = reactive({
 	id: null,
-	publisher: {
-		id: null,
-		name: null,
-		place: null,
-	},
 	isbn: null,
 	cip: null,
 	bookName: "",
@@ -60,14 +83,18 @@ const info = reactive({
 	cover: "",
 	author: null,
 	describe: null,
-	publishDate: null,
-	keyword: computed(() => keywordsRef.value.join("-")),
+	publishedDate: null,
+	publisher: "",
+	publishedPlace: "",
+	edition: computed(() => `第${convertToChineseNum(editionRef.value)}版`),
+	printing: computed(() => `第${convertToChineseNum(printingRef.value)}次`),
+	keyword: computed(() => keywordsRef.value.join("－")),
 	lang: null,
 	price: computed(
 		() =>
-			`${priceReactive.int}${priceReactive.dec ? "." + priceReactive.dec : ""}`,
+			`${optional(priceReactive.int, 0)}${priceReactive.dec ? "." + priceReactive.dec : ""}`,
 	),
-	stock: null,
+	stock: 0,
 	createdBy: null,
 	creationTime: null,
 	updatedBy: null,
@@ -100,6 +127,7 @@ const rules = {
 			message: "请输入",
 		},
 	],
+
 	bookType: [
 		{
 			required: true,
@@ -114,19 +142,49 @@ const rules = {
 			message: "请输入",
 		},
 	],
+	describe: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入",
+		},
+	],
 	keyword: [
 		{
 			required: true,
+			trigger: ["blur"],
+			validator(_, value) {
+				if (value === undefined || value === null || value.length === 0) {
+					return new Error("需要主题词");
+				}
+			},
 		},
 	],
-	price: [
+	lang: [
 		{
 			required: true,
 			trigger: ["blur"],
 			message: "请选择",
 		},
 	],
-	publishDate: [
+	price: [
+		{
+			required: true,
+			trigger: ["blur"],
+			validator(_, value) {
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value === "null" ||
+					value === "0"
+				) {
+					return new Error("需要售价");
+				}
+			},
+		},
+	],
+	publishedDate: [
 		{
 			required: true,
 			trigger: ["blur"],
@@ -137,12 +195,59 @@ const rules = {
 		{
 			required: true,
 			trigger: ["blur"],
-			message: "请选择",
+			message: "请输入",
+		},
+	],
+	edition: [
+		{
+			required: true,
+			trigger: ["blur", "input"],
+			validator(_, value) {
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value.toString().includes("null")
+				) {
+					return new Error("请输入");
+				}
+			},
+		},
+	],
+	printing: [
+		{
+			required: true,
+			trigger: ["blur", "input"],
+			validator(_, value) {
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value.toString().includes("null")
+				) {
+					return new Error("请输入");
+				}
+			},
+		},
+	],
+	stock: [
+		{
+			required: true,
+			trigger: ["blur", "input"],
+			validator(_, value) {
+				console.log(value);
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value.toString().includes("null")
+				) {
+					return new Error("请输入");
+				}
+			},
 		},
 	],
 };
-
-const publisherOptions = ref([]);
 
 const typeOptionsRef = ref([]);
 
@@ -175,27 +280,17 @@ function renderTag(v, i) {
 	);
 }
 
-function handleSearchPublisher(query) {
-	if (!query.length) {
-		// 空清除候选
-		publisherOptions.value = [];
-		// todo
-		// return;
-	}
-}
-
 const handleSearchType = debounce((queryKeyword) => {
 	if (!queryKeyword) {
 		typeOptionsRef.value = [];
 		return;
 	}
-	Service.BookInfos.getType(queryKeyword)
+	Service.BookInfos.getTypeByKeyword(queryKeyword)
 		.then((res) => {
-			const { data } = res.data;
-			typeOptionsRef.value = data?.map((item) => {
+			typeOptionsRef.value = res?.map((item) => {
 				return {
 					label: `${item.key}:${item.value}`,
-					value: `${item.id}:${item.value}`,
+					value: `${item.value}`,
 				};
 			});
 		})
@@ -205,17 +300,28 @@ const handleSearchType = debounce((queryKeyword) => {
 
 const add = debounce(() => {
 	console.log(info);
-	formValidator(addFormRef, message, () => {});
+	formValidator(addFormRef, message, async () => {
+		loadingAdd.value = true;
+		await addItem(message, Service.BookInfos.add(info));
+		loadingAdd.value = false;
+		goto(BOOK_INFO);
+	});
 });
 
 const showPreviewModal = ref(false);
 const previewCoverUrl = ref("");
 
-function setCover({ file, event }) {
+function handleUploadCoverFinish({ file, event }) {
 	const response = JSON.parse(event.target?.response);
-	// todo data
+	console.log(event);
 	previewCoverUrl.value = response.data;
 	info.cover = response.data;
+	return file;
+}
+
+function handleUploadCoverError({ file, event }) {
+	const response = JSON.parse(event.target?.response);
+	message.error(response.message, messageOptions);
 	return file;
 }
 
@@ -228,12 +334,31 @@ function removeCover() {
 function handlePreview() {
 	showPreviewModal.value = true;
 }
+
+onBeforeMount(() => {
+	checkLoginState();
+});
+
+onMounted(() => {});
 </script>
 
 <template>
 	<n-layout-header class="top-0 h-3em" position="absolute">
-		<n-flex class="items-center h-3em" justify="right" style="margin: 0 1em">
-			<n-button type="success" @click.prevent="add">新增</n-button>
+		<n-flex class="items-center h-3em" justify="center">
+			<router-link :to="BOOK_INFO">
+				<n-button type="tertiary">
+					<template #icon>
+						<n-icon :component="IBack" />
+					</template>
+					后退
+				</n-button>
+			</router-link>
+			<n-button type="success" :loading="loadingAdd" @click.prevent="add">
+				<template #icon>
+					<n-icon :component="IAdd" />
+				</template>
+				新增
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -278,7 +403,6 @@ function handlePreview() {
 						/>
 					</n-form-item>
 					<n-form-item label="中图法分类号" path="bookType">
-						<!--                  todo 完善 options 和查找逻辑-->
 						<n-select
 							v-model:value="info.bookType"
 							:loading="loadingSearchType"
@@ -292,11 +416,12 @@ function handlePreview() {
 					</n-form-item>
 					<n-form-item label="封面">
 						<n-upload
-							:headers="{ 'Access-Control-Allow-Origin': '*' }"
+							:headers="coverHeaders"
 							:max="1"
-							action="http://10.3.105.0:9090/upload/cover"
+							action="http://10.3.105.0:9090/bookInfos/cover:upload"
 							list-type="image-card"
-							@finish="setCover"
+							@finish="handleUploadCoverFinish"
+							@error="handleUploadCoverError"
 							@preview="handlePreview"
 							@remove="removeCover"
 						/>
@@ -310,7 +435,7 @@ function handlePreview() {
 							placeholder="输入"
 						/>
 					</n-form-item>
-					<n-form-item label="描述" path="describe">
+					<n-form-item label="内容摘要" path="describe">
 						<n-input
 							v-model:value="info.describe"
 							:allow-input="inputValidator.noSideSpace"
@@ -328,11 +453,10 @@ function handlePreview() {
 							@create="addKeyword"
 						/>
 					</n-form-item>
-					<n-form-item label="正文语种">
+					<n-form-item label="正文语种" path="lang">
 						<n-select
 							v-model:value="info.lang"
 							:options="LANG_TYPE_PRE_DEFINED"
-							clearable
 							filterable
 							placeholder="选择语种"
 						/>
@@ -342,7 +466,6 @@ function handlePreview() {
 							<n-input-number
 								v-model:value="priceReactive.int"
 								:min="0"
-								class=""
 								clearable
 								placeholder="整数部分"
 							/>
@@ -358,26 +481,51 @@ function handlePreview() {
 							/>
 						</n-input-group>
 					</n-form-item>
-					<n-form-item label="出版日期" path="publishDate">
+					<n-form-item label="出版日期" path="publishedDate">
 						<n-date-picker
-							v-model:formatted-value="info.publishDate"
+							v-model:formatted-value="info.publishedDate"
 							class="w-100%"
 							clearable
 							type="month"
 							update-value-on-close
+							:is-date-disabled="publishedDateDisabled"
 							value-format="yyyy-MM-dd"
 						/>
 					</n-form-item>
 					<n-form-item label="出版社" path="publisher">
-						<n-select
-							v-model:value="info.publisher.id"
-							:loading="loadingSearchPublisher"
-							:options="publisherOptions"
+						<n-input
+							v-model:value="info.publisher"
 							clearable
-							filterable
-							placeholder="查找出版社"
-							remote
-							@search="handleSearchPublisher"
+							maxlength="32"
+							placeholder="输入出版社"
+						/>
+					</n-form-item>
+					<n-form-item label="版次" path="edition">
+						<n-input-number
+							v-model:value="editionRef"
+							:min="1"
+							class="w-100%"
+							clearable
+							placeholder="版次"
+						/>
+					</n-form-item>
+					<n-form-item label="印次" path="printing">
+						<n-input-number
+							v-model:value="printingRef"
+							:min="1"
+							class="w-100%"
+							clearable
+							placeholder="印次"
+						/>
+					</n-form-item>
+					<n-form-item label="库存" path="stock">
+						<n-input-number
+							v-model:value="info.stock"
+							:min="0"
+							:max="99999999"
+							class="w-100%"
+							clearable
+							placeholder="库存"
 						/>
 					</n-form-item>
 

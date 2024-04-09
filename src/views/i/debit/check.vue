@@ -2,22 +2,30 @@
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_DEBIT_CHECK } from "@/constant/breadcrumb.js";
-import { messageOptions } from "@/constant/options.js";
-import { ResponseCode } from "@/constant/response-code.js";
+import IBack from "@/icons/i-back.vue";
+import Send from "@/icons/send.vue";
+import { DEBIT } from "@/router/RouterValue.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
 import { timeFormat } from "@/utils/convert.js";
-import { copyMatchingProperties } from "@/utils/index.js";
-import { sleep } from "@/utils/sleep.js";
+import { queryInfo } from "@/utils/query.js";
 import {
+	NButton,
 	NFlex,
+	NIcon,
 	NLayout,
 	NLayoutHeader,
 	NTable,
 	NTag,
 	useMessage,
 } from "naive-ui";
-import { onMounted, reactive } from "vue";
+import { onBeforeMount, onMounted, reactive } from "vue";
 
-const props = defineProps(["id", "updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"id",
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 {
 	props.updateMenuItem("i-debit");
@@ -59,56 +67,17 @@ const updater = reactive({
 	phoneNumber: null,
 });
 
-//#region transform
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
-
-//#region query
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-function queryUser(id, target) {
-	if (!id) {
-		return;
-	}
-	Service.Users.get(id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				return;
-			}
-
-			copyMatchingProperties(_returnData.data, target);
-		})
-		.catch((err) => {
-			console.log(err);
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {});
-}
-
 function query(id) {
-	Service.Logs.get(id)
-		.then((res) => {
-			const _returnData = res.data;
-			if (_returnData?.code !== ResponseCode.SUCCESS) {
-				return;
-			}
-
-			copyMatchingProperties(_returnData?.data, info);
-
-			sleep();
-			queryUser(info.createdBy, creator);
-			queryUser(info.updatedBy, updater);
-		})
-		.catch((err) => {
-			message.error(err.message);
-		})
-		.finally(() => {});
+	queryInfo(message, Service.Debits.get(id), info, creator, updater);
 }
 
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
+function showRepayConfirmModal() {
+	props.showModal("error", "催还二次确认", "是否要进行催还？", () => {});
+}
+
+onBeforeMount(() => {
+	checkLoginState();
+});
 
 onMounted(() => {
 	query(props.id);
@@ -117,8 +86,24 @@ onMounted(() => {
 
 <template>
 	<n-layout-header class="absolute top-0 h-3em left-0 right-0">
-		<n-flex class="items-center" style="margin: 0 1em">
-			<h1>借阅信息</h1>
+		<n-flex class="h-3em items-center" justify="center">
+			<router-link :to="DEBIT">
+				<n-button type="tertiary">
+					<template #icon>
+						<n-icon :component="IBack" />
+					</template>
+					后退
+				</n-button>
+			</router-link>
+			<n-button type="error" @click.prevent="showRepayConfirmModal">
+				<template #icon>
+					<n-icon>
+						<send />
+					</n-icon>
+				</template>
+				催还
+				<!-- todo 催还 -->
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -137,12 +122,6 @@ onMounted(() => {
 					</td>
 				</tr>
 				<tr>
-					<td>书籍信息</td>
-					<td>
-						{{ JSON.stringify(info.book) }}
-					</td>
-				</tr>
-				<tr>
 					<td>归还期限</td>
 					<td>
 						<!--					todo date -->
@@ -155,23 +134,30 @@ onMounted(() => {
 						{{ info.returnDate }}
 					</td>
 				</tr>
+
 				<tr>
-					<td>操作者</td>
-					<td :style="info.createdBy ? '--n-td-padding: 0;' : ''">
-						<n-table v-if="info.createdBy" :bordered="false">
+					<td>书籍信息</td>
+					<td>
+						{{ JSON.stringify(info.book) }}
+					</td>
+				</tr>
+				<tr>
+					<td>借阅时间</td>
+					<td>
+						<n-tag :bordered="false" type="primary">
+							{{ info.creationTime?.toString().replace("T", " ") }}
+						</n-tag>
+					</td>
+				</tr>
+				<tr>
+					<td>创建者</td>
+					<td :style="info.createdBy ? 'padding: 0;' : ''">
+						<n-table
+							v-if="info.createdBy"
+							:bordered="false"
+							:single-line="false"
+						>
 							<tbody>
-								<tr>
-									<td class="w-30">id</td>
-									<td>
-										<n-tag :bordered="false" type="info">
-											{{ creator.id }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>用户昵称</td>
-									<td>{{ creator.displayName }}</td>
-								</tr>
 								<tr>
 									<td>用户名</td>
 									<td>
@@ -209,30 +195,27 @@ onMounted(() => {
 					</td>
 				</tr>
 				<tr>
-					<td>借阅时间</td>
+					<td>最后更新时间</td>
 					<td>
-						<n-tag :bordered="false" type="primary">
-							{{ info.creationTime?.toString().replace("T", " ") }}
+						<n-tag
+							v-if="info.lastUpdatedTime"
+							:bordered="false"
+							type="primary"
+						>
+							{{ timeFormat(info.lastUpdatedTime) }}
 						</n-tag>
+						<NoData v-else />
 					</td>
 				</tr>
 				<tr>
 					<td>更新者</td>
-					<td :style="info.updatedBy ? '--n-td-padding: 0;' : ''">
-						<n-table v-if="info.updatedBy" :bordered="false">
-							<tbody>
-								<tr>
-									<td class="w-30">id</td>
-									<td>
-										<n-tag :bordered="false" type="info">
-											{{ updater.id }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>用户昵称</td>
-									<td>{{ updater.displayName }}</td>
-								</tr>
+					<td :style="info.updatedBy ? 'padding: 0;' : ''">
+						<n-table
+							v-if="info.updatedBy"
+							:bordered="false"
+							:single-line="false"
+						>
+							<tbody class="trc">
 								<tr>
 									<td>用户名</td>
 									<td>
@@ -270,17 +253,8 @@ onMounted(() => {
 					</td>
 				</tr>
 				<tr>
-					<td>最后更新时间</td>
-					<td>
-						<n-tag
-							v-if="info.lastUpdatedTime"
-							:bordered="false"
-							type="primary"
-						>
-							{{ timeFormat(info.lastUpdatedTime) }}
-						</n-tag>
-						<NoData v-else />
-					</td>
+					<td>备注</td>
+					<td></td>
 				</tr>
 			</tbody>
 		</n-table>

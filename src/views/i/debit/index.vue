@@ -1,6 +1,8 @@
 <script setup>
 import { Service } from "@/api/index.js";
 import { B_DEBIT } from "@/constant/breadcrumb.js";
+import { messageOptions } from "@/constant/options.js";
+import IReload from "@/icons/i-reload.vue";
 import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
@@ -9,30 +11,30 @@ import { checkLoginState } from "@/utils/check-login-state.js";
 import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { renderCell } from "@/utils/render.js";
-import { inputValidator } from "@/utils/validator.js";
-import { Search } from "@vicons/ionicons5";
 import {
 	NBackTop,
 	NButton,
 	NDataTable,
 	NDatePicker,
-	NDivider,
 	NFlex,
 	NForm,
 	NFormItem,
 	NIcon,
-	NInput,
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
+	NModal,
 	NPagination,
-	NPopover,
 	NTag,
 	useMessage,
 } from "naive-ui";
-import { h, onMounted, reactive, ref } from "vue";
+import { h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
+const props = defineProps([
+	"showModal",
+	"updateMenuItem",
+	"updateBreadcrumbArray",
+]);
 
 {
 	props.updateMenuItem("i-debit");
@@ -47,41 +49,21 @@ const entity = reactive({
 
 const message = useMessage();
 
-const messageOptions = {
-	duration: 10000,
-};
+const tableData = ref([]);
 
-let tableData = [];
-
-let currentPageTableData = ref([]);
+const currentPageTableData = ref([]);
 
 const cols = [
 	{
-		title: "id",
-		key: "id",
-		// 溢出省略
+		title: "借阅人 id",
+		key: "createdBy",
 		ellipsis: {
 			tooltip: true,
 		},
-		width: 100,
-		minWidth: 50,
-		render: (row) =>
-			h(
-				NTag,
-				{
-					type: "info",
-					bordered: false,
-				},
-				{
-					default: () => row?.id,
-				},
-			),
 	},
 	{
 		title: "书籍",
-		key: "bookName",
-		// 可拖动
-		resizable: true,
+		key: "bookInfo.bookName",
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -89,18 +71,8 @@ const cols = [
 		//render: (row) => h()
 	},
 	{
-		title: "借阅人 id",
-		key: "createdBy",
-		resizable: true,
-		ellipsis: {
-			tooltip: true,
-		},
-	},
-	{
 		title: "借阅时间",
 		key: "creationTime",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -120,8 +92,6 @@ const cols = [
 	{
 		title: "应还日期",
 		key: "returnDeadline",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -141,8 +111,6 @@ const cols = [
 	{
 		title: "归还时间",
 		key: "lastUpdatedTime",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -166,8 +134,6 @@ const cols = [
 	{
 		title: "状态",
 		key: "state",
-		// 可拖动
-		resizable: true,
 		// 溢出省略
 		ellipsis: {
 			tooltip: true,
@@ -207,6 +173,16 @@ const timestamp = reactive({
 	lastUpdatedTime: null,
 });
 
+const showFilterModal = ref(false);
+
+const filterReactive = reactive({});
+
+function filterResetHandler() {}
+
+function filterHandler() {
+	showFilterModal.value = false;
+}
+
 const filter = reactive({
 	page: {
 		start: 0,
@@ -231,9 +207,8 @@ function query() {
 
 	Service.Debits.list(entity, filter)
 		.then((res) => {
-			const data = res.data;
-			itemCount.value = data?.data?.total;
-			tableData = data?.data?.list;
+			itemCount.value = res?.length;
+			tableData.value = res;
 
 			pagination.onUpdatePage();
 		})
@@ -280,101 +255,61 @@ function updateCurrentPageData(page, pageSize) {
 	return new Promise((resolve) => {
 		const start = (page - 1) * pageSize;
 		const end = start + pageSize;
-		const data = tableData.slice(start, end);
+		const data = tableData.value.slice(start, end);
 		resolve({
 			data: data,
 		});
 	});
 }
-/**
- * 组件挂载完成时调用
- */
-onMounted(() => {
-	// 加载数据
+
+function showRepayConfirmModal() {
+	props.showModal("error", "催还二次确认", "是否要进行一键催还？", () => {});
+}
+
+onBeforeMount(() => {
 	checkLoginState();
+});
+
+onMounted(() => {
 	query();
 });
 </script>
 
 <template>
 	<n-layout-header class="h-3em" position="absolute">
-		<n-flex class="h-2.4em items-center" style="margin: 0.3em 1em">
-			<n-button>
+		<n-flex class="h-3em items-center" justify="center">
+			<n-button type="error" @click.prevent="showRepayConfirmModal">
 				<template #icon>
 					<n-icon>
 						<send />
 					</n-icon>
 				</template>
-				一键催还
-				<!-- todo 一键催还 -->
+				催还
+				<!-- todo 催还 -->
 			</n-button>
-			<n-popover placement="top" trigger="click">
-				<template #trigger>
-					<n-button class="h-2.4em m-l-a">
-						<template #icon>
-							<n-icon>
-								<write />
-							</n-icon>
-						</template>
-						筛选
-					</n-button>
-				</template>
-				<span class="font-size-1.2em font-800">精确查询</span>
-				<n-form :model="entity">
-					<n-divider class="m-1!" />
-					<n-form-item label="id" path="id">
-						<n-input
-							v-model:value="entity.id"
-							:allow-input="inputValidator.onlyAllowNumber"
-							clearable
-							placeholder="输入id"
-						/>
-					</n-form-item>
-					<n-form-item label="出版社名称" path="name">
-						<n-input
-							v-model:value="entity.name"
-							:allow-input="inputValidator.noSideSpace"
-							clearable
-							placeholder="输入出版社名称"
-						/>
-					</n-form-item>
-					<n-form-item label="出版地" path="name">
-						<n-input
-							v-model:value="entity.place"
-							:allow-input="inputValidator.noSideSpace"
-							clearable
-							placeholder="输入出版地，如 '北京'"
-						/>
-					</n-form-item>
-				</n-form>
-				<n-form :model="filter">
-					<span class="font-size-1.2em font-800">模糊查询</span>
-					<n-divider class="m-1!" />
-					<n-form-item label="创建时间">
-						<n-date-picker
-							v-model:value="timestamp.creationTime"
-							clearable
-							type="datetimerange"
-							update-value-on-close
-						/>
-					</n-form-item>
-					<n-form-item label="最后修改时间">
-						<n-date-picker
-							v-model:value="timestamp.lastUpdatedTime"
-							clearable
-							type="datetimerange"
-							update-value-on-close
-						/>
-					</n-form-item>
-				</n-form>
-			</n-popover>
-			<n-button class="h-2.4em" @click.prevent="clickQuery">
+			<n-button
+				type="info"
+				secondary
+				class="h-2.4em"
+				@click="showFilterModal = true"
+			>
 				<template #icon>
 					<n-icon>
-						<search />
+						<write />
 					</n-icon>
 				</template>
-				查找
+				筛选
+			</n-button>
+			<n-button
+				type="info"
+				class="h-2.4em"
+				@click.prevent="clickQuery"
+				:loading="loadingQuery"
+			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
 			</n-button>
 		</n-flex>
 	</n-layout-header>
@@ -396,6 +331,48 @@ onMounted(() => {
 			@update:sorter=""
 		/>
 		<!-- todo sorterReactive https://www.naiveui.com/zh-CN/os-theme/components/data-table#ajax-usage -->
+
+		<!-- 筛选 modal -->
+		<n-modal
+			id="filter-modal"
+			v-model:show="showFilterModal"
+			:mask-closable="false"
+			class="w-25em"
+			preset="dialog"
+			title="筛选"
+			transform-origin="center"
+		>
+			<n-form :model="filterReactive">
+				<n-form-item label="借阅时间">
+					<n-date-picker
+						v-model:value="timestamp.creationTime"
+						clearable
+						type="datetimerange"
+						update-value-on-close
+					/>
+				</n-form-item>
+				<n-form-item label="归还时间">
+					<n-date-picker
+						v-model:value="timestamp.lastUpdatedTime"
+						clearable
+						type="datetimerange"
+						update-value-on-close
+					/>
+				</n-form-item>
+			</n-form>
+			<n-flex justify="space-between">
+				<n-button
+					tertiary
+					type="warning"
+					@click.prevent="filterResetHandler"
+				>
+					重置
+				</n-button>
+				<n-button type="success" @click.prevent="filterHandler">
+					确定
+				</n-button>
+			</n-flex>
+		</n-modal>
 	</n-layout>
 
 	<n-layout-footer class="h-2.4em" position="absolute">
@@ -413,7 +390,6 @@ onMounted(() => {
 				size="large"
 			>
 				<template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
-				<template #goto> 跳至</template>
 				<template #suffix="{}"> 页</template>
 			</n-pagination>
 		</n-flex>

@@ -1,32 +1,30 @@
+import BaseI from "@/layouts/base-i.vue";
+import BaseJ from "@/layouts/base-j.vue";
+import Public from "@/layouts/base-p.vue";
 import Page404 from "@/views/error/404.vue";
-import BaseI from "@/layout/base-i.vue";
 import BookInfoAdd from "@/views/i/book-info/add.vue";
 import BookInfoCheck from "@/views/i/book-info/check.vue";
 import BookInfoManager from "@/views/i/book-info/index.vue";
-import BookAdd from "@/views/i/book/add.vue";
-import BookCheck from "@/views/i/book/check.vue";
-import BookManager from "@/views/i/book/index.vue";
 import DebitCheck from "@/views/i/debit/check.vue";
 import DebitManager from "@/views/i/debit/index.vue";
 import I from "@/views/i/index.vue";
 import LogCheck from "@/views/i/log/check.vue";
 import LogManager from "@/views/i/log/index.vue";
 import My from "@/views/i/my/index.vue";
-import PublisherAdd from "@/views/i/publisher/add.vue";
-import PublisherCheck from "@/views/i/publisher/check.vue";
-import PublisherManager from "@/views/i/publisher/index.vue";
 import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
-import BaseJ from "@/layout/base-j.vue";
-import Check from "@/views/j/check.vue";
+import Check from "@/views/j/query/index.vue";
 import J from "@/views/j/index.vue";
 import Statistics from "@/views/j/statistics.vue";
-import Public from "@/layout/base-p.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
 import UserInfo from "@/views/p/user-info.vue";
 import Verify from "@/views/p/verify.vue";
+
+import BookManager from "@/views/i/book/index.vue";
+import BookCheck from "@/views/i/book/check.vue";
+import BookAdd from "@/views/i/book/add.vue";
 
 //#region route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -253,30 +251,30 @@ const LOG_CHECK = {
 
 //#region publisher
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-const PUBLISHER = {
-	component: PublisherManager,
-
-	name: "publisherManager",
-	path: "/i/publishers",
-	hidden: true,
-};
-
-const PUBLISHER_ADD = {
-	component: PublisherAdd,
-
-	name: "publisherAdd",
-	path: "/i/publishers/add",
-	hidden: true,
-};
-
-const PUBLISHER_CHECK = {
-	component: PublisherCheck,
-
-	name: "publisherCheck",
-	path: "/i/publishers/:id",
-	props: true,
-	hidden: true,
-};
+// const PUBLISHER = {
+// 	component: PublisherManager,
+//
+// 	name: "publisherManager",
+// 	path: "/i/publishers",
+// 	hidden: true,
+// };
+//
+// const PUBLISHER_ADD = {
+// 	component: PublisherAdd,
+//
+// 	name: "publisherAdd",
+// 	path: "/i/publishers/add",
+// 	hidden: true,
+// };
+//
+// const PUBLISHER_CHECK = {
+// 	component: PublisherCheck,
+//
+// 	name: "publisherCheck",
+// 	path: "/i/publishers/:id",
+// 	props: true,
+// 	hidden: true,
+// };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -337,9 +335,6 @@ const BASE_I = {
 		BOOK_INFO,
 		BOOK_INFO_CHECK,
 		BOOK_INFO_ADD,
-		PUBLISHER,
-		PUBLISHER_CHECK,
-		PUBLISHER_ADD,
 		USER,
 		USER_CHECK,
 		LOG,
@@ -375,19 +370,16 @@ export {
 	I_USER_INFO,
 	DEBIT,
 	DEBIT_CHECK,
-	USER,
-	USER_CHECK,
 	BOOK,
 	BOOK_CHECK,
 	BOOK_ADD,
 	BOOK_INFO,
 	BOOK_INFO_CHECK,
 	BOOK_INFO_ADD,
-	PUBLISHER,
+	USER,
+	USER_CHECK,
 	LOG,
 	LOG_CHECK,
-	PUBLISHER_CHECK,
-	PUBLISHER_ADD,
 	I_MY,
 
 	// j

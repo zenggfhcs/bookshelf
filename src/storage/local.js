@@ -2,15 +2,21 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+
 //#endregion
 
 function put(key, value) {
 	localStorage.setItem(key, JSON.stringify(value));
 }
 
+// todo 可能存在未知的格式解析问题
 function get(key) {
 	const _v = localStorage.getItem(key);
-	return _v && _v !== "undefined" ? JSON.parse(_v) : "";
+	try {
+		return JSON.parse(_v);
+	} catch (e) {
+		return null;
+	}
 }
 
 function remove(key) {

@@ -10,7 +10,7 @@ const props = defineProps(["switchTheme"]);
 <template>
 	<n-layout :native-scrollbar="false" class="z--2" position="absolute">
 		<n-flex justify="center">
-			<n-card class="w-30em m-t-10em">
+			<n-card class="w-30em m-t-7em">
 				<n-grid class="w-100%" cols="7">
 					<n-gi />
 					<n-gi>

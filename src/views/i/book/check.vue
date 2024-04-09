@@ -1,8 +1,20 @@
 <script setup>
 // todo start
-const props = defineProps(["id", "updateMenuItem"]);
+import { B_BOOK_CHECK } from "@/constant/breadcrumb.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
+import { onBeforeMount, onMounted } from "vue";
 
-props.updateMenuItem("i-book");
+const props = defineProps(["id", "updateMenuItem", "updateBreadcrumbArray"]);
+
+onBeforeMount(() => {
+	checkLoginState();
+});
+
+onMounted(() => {
+	props.updateMenuItem("i-book");
+	props.updateBreadcrumbArray(B_BOOK_CHECK(props.id));
+	query();
+});
 </script>
 
 <template>

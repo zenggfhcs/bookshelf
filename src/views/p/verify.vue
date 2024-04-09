@@ -2,7 +2,7 @@
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_BASE64 } from "@/constant/regular-expression.js";
-import { ResponseCode } from "@/constant/response-code.js";
+import { SC } from "@/constant/response-code.js";
 
 import { sleep } from "@/utils/sleep.js";
 import { NInput, useMessage } from "naive-ui";
@@ -32,7 +32,7 @@ const start = async () => {
 	Service.Users.verifyEmail(query.token)
 		.then((res) => {
 			const data = res.data;
-			if (data?.code !== ResponseCode.SUCCESS) {
+			if (data?.code !== SC.SUCCESS) {
 				updateMessage(
 					"error",
 					"VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)",

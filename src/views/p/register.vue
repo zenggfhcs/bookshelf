@@ -2,7 +2,6 @@
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
-import { ResponseCode } from "@/constant/response-code.js";
 import { goto } from "@/router/goto.js";
 import { LOGIN } from "@/router/RouterValue.js";
 import { debounce } from "@/utils/debounce.js";
@@ -30,7 +29,7 @@ const reenteredRef = ref(null);
 
 const loading = ref(false);
 
-function validatePasswordStartWith(rule, value) {
+function validatePasswordStartWith(_, value) {
 	return (
 		!!model.value.authenticationString &&
 		model.value.authenticationString.startsWith(value) &&
@@ -38,7 +37,7 @@ function validatePasswordStartWith(rule, value) {
 	);
 }
 
-function validatePasswordSame(rule, value) {
+function validatePasswordSame(_, value) {
 	return value === model.value.authenticationString;
 }
 
@@ -53,7 +52,7 @@ const rules = {
 		{
 			required: true, // 字段必填
 			trigger: ["input", "blur"],
-			validator(rule, value) {
+			validator(_, value) {
 				// 自定义检查
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入邮箱");
@@ -67,7 +66,7 @@ const rules = {
 		{
 			required: true,
 			trigger: ["input", "blur"],
-			validator(rule, value) {
+			validator(_, value) {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
 				} else if (value.length < 7 || value.length > 17) {
@@ -104,12 +103,7 @@ const register = debounce((e) => {
 	formValidator(formRef, message, () => {
 		loading.value = true;
 		Service.Users.register(model.value)
-			.then((res) => {
-				const data = res.data;
-				if (data?.code !== ResponseCode.SUCCESS) {
-					message.error(data.message, messageOptions);
-					return;
-				}
+			.then((_) => {
 				message.success(
 					"注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...",
 					messageOptions,
@@ -119,10 +113,7 @@ const register = debounce((e) => {
 				}, 3000);
 			})
 			.catch((err) => {
-				message.error(err.message, {
-					duration: 10000,
-					closable: true,
-				});
+				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
 				loading.value = false;
