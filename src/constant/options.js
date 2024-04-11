@@ -1,6 +1,6 @@
 const messageOptions = {
 	duration: 5000,
-	closable: true,
+	closable: true
 };
 
 export { messageOptions };

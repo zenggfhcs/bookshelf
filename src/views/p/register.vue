@@ -6,15 +6,7 @@ import { goto } from "@/router/goto.js";
 import { LOGIN } from "@/router/RouterValue.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator } from "@/utils/validator.js";
-import {
-	NButton,
-	NDivider,
-	NFlex,
-	NForm,
-	NFormItem,
-	NInput,
-	useMessage,
-} from "naive-ui";
+import { NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage } from "naive-ui";
 import { ref } from "vue";
 
 const formRef = ref(null);
@@ -22,7 +14,7 @@ const message = useMessage();
 const model = ref({
 	email: null,
 	authenticationString: null,
-	reenteredAuthenticationString: null,
+	reenteredAuthenticationString: null
 });
 
 const reenteredRef = ref(null);
@@ -59,8 +51,8 @@ const rules = {
 				} else if (!REG_EMAIL.test(value.trim())) {
 					return new Error("邮箱格式错误");
 				}
-			},
-		},
+			}
+		}
 	],
 	authenticationString: [
 		{
@@ -72,26 +64,26 @@ const rules = {
 				} else if (value.length < 7 || value.length > 17) {
 					return new Error("password 长度应为 7-17");
 				}
-			},
-		},
+			}
+		}
 	],
 	reenteredAuthenticationString: [
 		{
 			required: true,
 			message: "请再次输入密码",
-			trigger: ["input", "blur"],
+			trigger: ["input", "blur"]
 		},
 		{
 			validator: validatePasswordStartWith,
 			message: "两次密码输入不一致",
-			trigger: "input",
+			trigger: "input"
 		},
 		{
 			validator: validatePasswordSame,
 			message: "两次密码输入不一致",
-			trigger: ["blur", "authenticationString-input"],
-		},
-	],
+			trigger: ["blur", "authenticationString-input"]
+		}
+	]
 };
 
 /**
@@ -106,7 +98,7 @@ const register = debounce((e) => {
 			.then((_) => {
 				message.success(
 					"注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...",
-					messageOptions,
+					messageOptions
 				);
 				setTimeout(() => {
 					goto(LOGIN);

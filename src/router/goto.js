@@ -10,9 +10,8 @@ function goto(component, params = undefined) {
 	router
 		.push({
 			name: component.name,
-			params: params,
-		})
-		.then();
+			params: params
+		}).then();
 }
 
 export { goto };

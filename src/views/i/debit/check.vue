@@ -3,28 +3,21 @@ import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_DEBIT_CHECK } from "@/constant/breadcrumb.js";
 import IBack from "@/icons/i-back.vue";
+import IReturn from "@/icons/i-return.vue";
 import Send from "@/icons/send.vue";
-import { DEBIT } from "@/router/RouterValue.js";
+import { BOOK_INFO_CHECK, DEBIT } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { timeFormat } from "@/utils/convert.js";
+import { transMouth } from "@/utils/index.js";
 import { queryInfo } from "@/utils/query.js";
-import {
-	NButton,
-	NFlex,
-	NIcon,
-	NLayout,
-	NLayoutHeader,
-	NTable,
-	NTag,
-	useMessage,
-} from "naive-ui";
+import { NButton, NFlex, NGi, NGrid, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
 import { onBeforeMount, onMounted, reactive } from "vue";
 
 const props = defineProps([
 	"id",
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 {
@@ -38,41 +31,40 @@ const info = reactive({
 	id: null,
 	book: {
 		id: null,
+		bookInfo: {}
 	},
 	returnDeadline: null,
 	returnDate: null,
-	createdBy: null,
+	createdBy: {
+		id: null,
+		displayName: null,
+		name: null,
+		surname: null,
+		email: null,
+		phoneNumber: null
+	},
 	creationTime: null,
-	updatedBy: null,
+	updatedBy: {
+		id: null,
+		displayName: null,
+		name: null,
+		surname: null,
+		email: null,
+		phoneNumber: null
+	},
 	lastUpdatedTime: null,
 	revision: null,
-	remark: null,
+	remark: null
 });
 
-const creator = reactive({
-	id: null,
-	displayName: null,
-	name: null,
-	surname: null,
-	email: null,
-	phoneNumber: null,
-});
-
-const updater = reactive({
-	id: null,
-	displayName: null,
-	name: null,
-	surname: null,
-	email: null,
-	phoneNumber: null,
-});
 
 function query(id) {
-	queryInfo(message, Service.Debits.get(id), info, creator, updater);
+	queryInfo(message, Service.Debits.get(id), info);
 }
 
 function showRepayConfirmModal() {
-	props.showModal("error", "催还二次确认", "是否要进行催还？", () => {});
+	props.showModal("error", "催还二次确认", "是否要进行催还？", () => {
+	});
 }
 
 onBeforeMount(() => {
@@ -104,6 +96,12 @@ onMounted(() => {
 				催还
 				<!-- todo 催还 -->
 			</n-button>
+			<n-button type="warning">
+				<template #icon>
+					<n-icon :component="IReturn" />
+				</template>
+				标为已还
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -111,153 +109,226 @@ onMounted(() => {
 		class="absolute top-3em bottom-0 left-0 right-0"
 		content-style="padding: .3em 1em"
 	>
-		<n-table :single-line="false" class="w-100%">
-			<tbody class="trc">
-				<tr>
-					<td class="w-43%">id</td>
-					<td>
-						<n-tag :bordered="false" type="info">
-							{{ info.id }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>归还期限</td>
-					<td>
-						<!--					todo date -->
-						{{ info.returnDeadline }}
-					</td>
-				</tr>
-				<tr>
-					<td>归还日期</td>
-					<td>
-						{{ info.returnDate }}
-					</td>
-				</tr>
+		<n-grid cols="6" x-gap="12">
+			<n-gi />
+			<n-gi span="2">
+				<n-table :single-line="false" class="w-100%">
+					<tbody class="trc">
+					<tr>
+						<td class="w-12%">ISBN</td>
+						<td class="w-38%">
+							<n-tag :bordered="false" type="error">
+								{{ info.book.bookInfo.isbn }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td class="w-12%">CIP&nbsp;核准号</td>
+						<td class="w-38%">
+							<n-tag :bordered="false" type="error">
+								{{ info.book.bookInfo.cip }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td>书名</td>
+						<td>
+							<n-tag :bordered="false" type="success">
+								<router-link :to="{name: BOOK_INFO_CHECK.name, params: {id: info.book.bookInfo.id}}">
+									{{ info.book.bookInfo.bookName }}
+								</router-link>
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td>作者</td>
+						<td>
+							<n-tag v-if="info.book.bookInfo.author" :bordered="false">{{ info.book.bookInfo.author }}</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td>中图法分类号</td>
+						<td>
+							<n-tag :bordered="false" type="default">
+								{{ info.book.bookInfo.bookType }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td>主题词</td>
+						<td colspan="3">
+							<n-tag
+								v-for="(item, index) in info.book.bookInfo.keyword
+								?.toString()
+								?.split('－')"
+								:key="index"
+								:bordered="false"
+								class="m-r-3"
+								type="info"
+							>
+								{{ item }}
+							</n-tag>
+							<!--					<n-dynamic-tags v-model:value="keywords" :render-tag="renderTag"/>-->
+						</td>
+					</tr>
+					<tr>
+						<td>正文语种</td>
+						<td colspan="3">
+							<n-tag :bordered="false" type="default">
+								{{ info.book.bookInfo.lang }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td>价格</td>
+						<td colspan="3">
+							<n-tag :bordered="false" type="default">
+								{{ info.book.bookInfo.price }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">&nbsp;</td>
+					</tr>
+					<tr>
+						<td>出版社</td>
+						<td>
+							<n-tag v-if="info.book.bookInfo.publisher" :bordered="false" type="default">
+								{{ info.book.bookInfo.publisher }}
+							</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td class="w-30">出版日期</td>
+						<td colspan="3">
+							<n-tag
+								v-if="info.book.bookInfo.publishedDate"
+								:bordered="false"
+								type="default"
+							>
+								<!--								 todo yyyy-MM	-->
+								{{ transMouth(info.book.bookInfo.publishedDate) }}
+							</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td>版次</td>
+						<td>
+							<n-tag v-if="info.book.bookInfo.edition" :bordered="false" type="default">
+								{{ info.book.bookInfo.edition }}
+							</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td>印次</td>
+						<td>
+							<n-tag v-if="info.book.bookInfo.printing" :bordered="false" type="default">
+								{{ info.book.bookInfo.printing }}
+							</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					</tbody>
+				</n-table>
+			</n-gi>
+			<n-gi span="2">
+				<n-table :single-line="false" class="w-100%">
+					<tbody class="trc">
+					<tr>
+						<td>借期</td>
+						<td>
+							<n-tag :bordered="false" type="primary">
+								{{ timeFormat(info.creationTime) }}
+							</n-tag>
+						</td>
+					</tr>
+					<tr>
+						<td>借阅者</td>
+						<td :style="info.createdBy ? 'padding: 0;' : ''">
+							<n-table
+								v-if="info.createdBy"
+								:bordered="false"
+								:single-line="false"
+							>
+								<tbody>
+								<tr>
+									<td>用户名</td>
+									<td>
+										<n-tag :bordered="false" type="primary">
+											{{ info.createdBy.surname }}
+										</n-tag>
+										<n-tag
+											:bordered="false"
+											class="m-l-1"
+											type="primary"
+										>
+											{{ info.createdBy.name }}
+										</n-tag>
+									</td>
+								</tr>
+								<tr>
+									<td>邮箱</td>
+									<td>
+										<n-tag :bordered="false" type="error">
+											{{ info.createdBy.email }}
+										</n-tag>
+									</td>
+								</tr>
+								<tr>
+									<td>电话</td>
+									<td>
+										<n-tag :bordered="false" type="error">
+											{{ info.createdBy.phoneNumber }}
+										</n-tag>
+									</td>
+								</tr>
+								</tbody>
+							</n-table>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td>应还日期</td>
+						<td>
+							<n-tag v-if="info.returnDeadline" :bordered="false" type="primary">
+								{{ info.returnDeadline }}
+							</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td>归还日期</td>
+						<td>
+							<n-tag v-if="info.returnDate" :bordered="false" type="primary">
+								{{ info.returnDate }}
+							</n-tag>
+							<NoData v-else />
+						</td>
+					</tr>
+					<tr>
+						<td>归还状态</td>
+						<td>
+							<n-tag v-if="info.returnDate" :bordered="false" type="success">已归还</n-tag>
+							<n-tag v-else-if="info.returnDeadline >= (new Date().toDateString)" :bordered="false"
+							       type="warning">
+								未归还
+							</n-tag>
+							<n-tag v-else :bordered="false" type="error">已超期</n-tag>
+						</td>
+					</tr>
 
-				<tr>
-					<td>书籍信息</td>
-					<td>
-						{{ JSON.stringify(info.book) }}
-					</td>
-				</tr>
-				<tr>
-					<td>借阅时间</td>
-					<td>
-						<n-tag :bordered="false" type="primary">
-							{{ info.creationTime?.toString().replace("T", " ") }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>创建者</td>
-					<td :style="info.createdBy ? 'padding: 0;' : ''">
-						<n-table
-							v-if="info.createdBy"
-							:bordered="false"
-							:single-line="false"
-						>
-							<tbody>
-								<tr>
-									<td>用户名</td>
-									<td>
-										<n-tag :bordered="false" type="primary">
-											{{ creator.surname }}
-										</n-tag>
-										<n-tag
-											:bordered="false"
-											class="m-l-1"
-											type="primary"
-										>
-											{{ creator.name }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>邮箱</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ creator.email }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>电话</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ creator.phoneNumber }}
-										</n-tag>
-									</td>
-								</tr>
-							</tbody>
-						</n-table>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>最后更新时间</td>
-					<td>
-						<n-tag
-							v-if="info.lastUpdatedTime"
-							:bordered="false"
-							type="primary"
-						>
-							{{ timeFormat(info.lastUpdatedTime) }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>更新者</td>
-					<td :style="info.updatedBy ? 'padding: 0;' : ''">
-						<n-table
-							v-if="info.updatedBy"
-							:bordered="false"
-							:single-line="false"
-						>
-							<tbody class="trc">
-								<tr>
-									<td>用户名</td>
-									<td>
-										<n-tag :bordered="false" type="primary">
-											{{ updater.surname }}
-										</n-tag>
-										<n-tag
-											:bordered="false"
-											class="m-l-1"
-											type="primary"
-										>
-											{{ updater.name }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>邮箱</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ updater.email }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>电话</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ updater.phoneNumber }}
-										</n-tag>
-									</td>
-								</tr>
-							</tbody>
-						</n-table>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>备注</td>
-					<td></td>
-				</tr>
-			</tbody>
-		</n-table>
+					<tr>
+						<td>备注</td>
+						<td></td>
+					</tr>
+					</tbody>
+				</n-table>
+			</n-gi>
+		</n-grid>
 	</n-layout>
 </template>
 
@@ -271,7 +342,11 @@ onMounted(() => {
 	color: inherit;
 }
 
-.trc tr > td:first-child {
+.trc tr > td:nth-child(2n - 1) {
 	text-align: right;
+}
+
+.b-r {
+	border-right: 0 solid var(--n-merged-border-color);
 }
 </style>

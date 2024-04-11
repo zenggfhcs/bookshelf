@@ -11,6 +11,6 @@ export const ParameterType = {
 	STRING,
 	BOOLEAN,
 	FUNCTION,
-	OBJECT,
+	OBJECT
 };
 /* ============================ parameter type ============================ */

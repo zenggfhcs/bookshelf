@@ -8,11 +8,10 @@ import {
 	NDialogProvider,
 	NMessageProvider,
 	NModalProvider,
-	NLayout,
 	NWatermark,
-	zhCN,
+	zhCN
 } from "naive-ui";
-import { onBeforeMount, ref } from "vue";
+import { ref } from "vue";
 
 // 是暗色主题
 const isDark = ref(false);
@@ -35,14 +34,6 @@ function switchTheme(v = !isDark.value) {
 	// todo 可能有性能影响，替代方案是在 onBeforeUnmount 中执行，但是刷新页面时没有执行，达不到预期
 	local.put(ThEME, isDark.value?.toString());
 }
-
-//#region 生命周期
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-onBeforeMount(() => {
-	document.documentElement.style.fontSize = "16px";
-});
-/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
-//#endregion
 </script>
 
 <template>

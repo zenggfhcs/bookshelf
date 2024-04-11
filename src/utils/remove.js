@@ -11,7 +11,8 @@ function removeItem(message, promise, toComponent) {
 		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
-		.finally(() => {});
+		.finally(() => {
+		});
 }
 
 export { removeItem };

@@ -7,16 +7,7 @@ import { LOG } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { getTagType } from "@/utils/convert.js";
 import { queryInfo } from "@/utils/query.js";
-import {
-	NButton,
-	NFlex,
-	NIcon,
-	NLayout,
-	NLayoutHeader,
-	NTable,
-	NTag,
-	useMessage,
-} from "naive-ui";
+import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
 import { onBeforeMount, onMounted, reactive } from "vue";
 import JsonViewer from "vue-json-viewer";
 
@@ -24,7 +15,7 @@ const props = defineProps([
 	"id",
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 props.updateMenuItem("i-log");
@@ -37,22 +28,21 @@ const info = reactive({
 	serviceName: null,
 	input: null,
 	output: null,
-	createdBy: null,
+	createdBy: {
+		id: null,
+		displayName: null,
+		name: null,
+		surname: null,
+		email: null,
+		phoneNumber: null
+	},
 	creationTime: null,
-	elapsedTime: null,
+	elapsedTime: null
 });
 
-const creator = reactive({
-	id: null,
-	displayName: null,
-	name: null,
-	surname: null,
-	email: null,
-	phoneNumber: null,
-});
 
 async function query(id) {
-	await queryInfo(message, Service.Logs.get(id), info, creator, null);
+	await queryInfo(message, Service.Logs.get(id), info);
 }
 
 onBeforeMount(() => {
@@ -79,8 +69,8 @@ onMounted(() => {
 			</router-link>
 			<n-button
 				v-if="info.type !== LOG_SELECT.value"
-				type="error"
 				title="操作回退会根据日志的内容，将影响到的数据回退到该日志生成前一刻；这个操作会生成新的日志"
+				type="error"
 			>
 				操作回退
 			</n-button>
@@ -93,130 +83,130 @@ onMounted(() => {
 	>
 		<n-table :single-line="false" class="w-100%">
 			<tbody class="trc">
-				<tr>
-					<td class="w-43%">id</td>
-					<td>
-						<n-tag :bordered="false" type="info">
-							{{ info.id }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>操作类型</td>
-					<td>
-						<n-tag
-							:bordered="false"
-							:type="getTagType.byLogType(info.type)"
-						>
-							{{ LOG_TYPE_MAP.getByValue(info.type) }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>操作对象</td>
-					<td>
-						<n-tag :bordered="false" type="warning">
-							{{ SERVICE_NAME_MAP.getByValue(info.serviceName) }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>操作持续时间-毫秒</td>
-					<td>
-						<n-tag
-							:bordered="false"
-							:type="getTagType.byElapsedTime(info.elapsedTime)"
-						>
-							{{ info.elapsedTime }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>输入</td>
-					<td style="--td-color: v-bind(); --td-text-color: v-bind()">
-						<JsonViewer
-							:value="JSON.parse(info.input ? info.input : '{}')"
-							class="p-0"
-							style="
+			<tr>
+				<td class="w-43%">id</td>
+				<td>
+					<n-tag :bordered="false" type="info">
+						{{ info.id }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>操作类型</td>
+				<td>
+					<n-tag
+						:bordered="false"
+						:type="getTagType.byLogType(info.type)"
+					>
+						{{ LOG_TYPE_MAP.getByValue(info.type) }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>操作对象</td>
+				<td>
+					<n-tag :bordered="false" type="warning">
+						{{ SERVICE_NAME_MAP.getByValue(info.serviceName) }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>操作持续时间-毫秒</td>
+				<td>
+					<n-tag
+						:bordered="false"
+						:type="getTagType.byElapsedTime(info.elapsedTime)"
+					>
+						{{ info.elapsedTime }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>输入</td>
+				<td style="--td-color: v-bind(); --td-text-color: v-bind()">
+					<JsonViewer
+						:value="JSON.parse(info.input ? info.input : '{}')"
+						class="p-0"
+						style="
 								color: var(--td-text-color);
 								background-color: var(--td-color);
 							"
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>输出</td>
-					<td style="--td-color: v-bind(); --td-text-color: v-bind()">
-						<JsonViewer
-							:value="JSON.parse(info.output ? info.output : '{}')"
-							class="p-0"
-							style="
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td>输出</td>
+				<td style="--td-color: v-bind(); --td-text-color: v-bind()">
+					<JsonViewer
+						:value="JSON.parse(info.output ? info.output : '{}')"
+						class="p-0"
+						style="
 								color: var(--td-text-color);
 								background-color: var(--td-color);
 							"
-						/>
-					</td>
-				</tr>
-				<tr>
-					<td>操作者</td>
-					<td style="--td-padding: 0">
-						<n-table :bordered="false">
-							<tbody>
-								<tr>
-									<td class="w-30">id</td>
-									<td>
-										<n-tag :bordered="false" type="info">
-											{{ creator.id }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>用户昵称</td>
-									<td>{{ creator.displayName }}</td>
-								</tr>
-								<tr>
-									<td>用户名</td>
-									<td>
-										<n-tag :bordered="false" type="primary">
-											{{ creator.surname }}
-										</n-tag>
-										<n-tag
-											:bordered="false"
-											class="m-l-1"
-											type="primary"
-										>
-											{{ creator.name }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>邮箱</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ creator.email }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>电话</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ creator.phoneNumber }}
-										</n-tag>
-									</td>
-								</tr>
-							</tbody>
-						</n-table>
-					</td>
-				</tr>
-				<tr>
-					<td>记录时间</td>
-					<td>
-						<n-tag :bordered="false" type="primary">
-							{{ info.creationTime?.toString().replace("T", " ") }}
-						</n-tag>
-					</td>
-				</tr>
+					/>
+				</td>
+			</tr>
+			<tr>
+				<td>操作者</td>
+				<td style="--td-padding: 0">
+					<n-table :bordered="false">
+						<tbody>
+						<tr>
+							<td class="w-30">id</td>
+							<td>
+								<n-tag :bordered="false" type="info">
+									{{ info.createdBy.id }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>用户昵称</td>
+							<td>{{ info.createdBy.displayName }}</td>
+						</tr>
+						<tr>
+							<td>用户名</td>
+							<td>
+								<n-tag :bordered="false" type="primary">
+									{{ info.createdBy.surname }}
+								</n-tag>
+								<n-tag
+									:bordered="false"
+									class="m-l-1"
+									type="primary"
+								>
+									{{ info.createdBy.name }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>邮箱</td>
+							<td>
+								<n-tag :bordered="false" type="error">
+									{{ info.createdBy.email }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>电话</td>
+							<td>
+								<n-tag :bordered="false" type="error">
+									{{ info.createdBy.phoneNumber }}
+								</n-tag>
+							</td>
+						</tr>
+						</tbody>
+					</n-table>
+				</td>
+			</tr>
+			<tr>
+				<td>记录时间</td>
+				<td>
+					<n-tag :bordered="false" type="primary">
+						{{ info.creationTime?.toString().replace("T", " ") }}
+					</n-tag>
+				</td>
+			</tr>
 			</tbody>
 		</n-table>
 	</n-layout>

@@ -12,7 +12,7 @@ function g(l, v, map = undefined) {
 	}
 	return {
 		label: l,
-		value: v,
+		value: v
 	};
 }
 
@@ -106,10 +106,23 @@ const LANG_TYPE_PRE_DEFINED = [
 	fi,
 	tr,
 	pl,
-	hu,
+	hu
 ];
 
 export { LANG_TYPE_MAP, LANG_TYPE_PRE_DEFINED };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region 性别
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const GENDER_MAP = new BiMap();
+
+const male = g("男", 1, GENDER_MAP);
+const female = g("女", 0, GENDER_MAP);
+
+const GENDER_PRE_DEFINED = [male, female];
+
+export { GENDER_MAP, GENDER_PRE_DEFINED };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -133,7 +146,7 @@ const data = [
 	g("网络错误", 502),
 	g("服务不可用", 503),
 	g("网络超时", 504),
-	g("http版本不支持该请求", 505),
+	g("http版本不支持该请求", 505)
 ];
 
 /* ============================ code massage map ============================ */

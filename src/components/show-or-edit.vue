@@ -32,8 +32,8 @@ function handleUpdateValue(v) {
 		v-if="isEdit"
 		ref="inputRef"
 		:value="inputValue"
-		@change="handleChange"
 		@blur="handleChange"
+		@change="handleChange"
 		@update:value="handleUpdateValue"
 	/>
 	<div v-else @click="handleOnClick">

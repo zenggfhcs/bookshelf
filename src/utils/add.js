@@ -9,7 +9,8 @@ function addItem(message, promise) {
 		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
-		.finally(() => {});
+		.finally(() => {
+		});
 }
 
 export { addItem };

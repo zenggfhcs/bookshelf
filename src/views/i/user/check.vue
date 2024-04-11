@@ -26,7 +26,7 @@ import {
 	NTable,
 	NTag,
 	NTbody,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { onBeforeMount, onMounted, reactive, ref } from "vue";
 
@@ -34,7 +34,7 @@ const props = defineProps([
 	"id",
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 const message = useMessage();
@@ -56,7 +56,7 @@ const info = reactive({
 	emailNormal: "",
 	role: {
 		id: null,
-		name: "",
+		name: ""
 	},
 	surname: "",
 	name: "",
@@ -64,30 +64,26 @@ const info = reactive({
 	gender: "",
 	birthday: "",
 	lastLoginTime: "",
-	createdBy: null,
+	createdBy: {
+		id: null,
+		displayName: null,
+		name: null,
+		surname: null,
+		email: null,
+		phoneNumber: null
+	},
 	creationTime: null,
-	updatedBy: null,
+	updatedBy: {
+		id: null,
+		displayName: null,
+		name: null,
+		surname: null,
+		email: null,
+		phoneNumber: null
+	},
 	lastUpdatedTime: null,
 	remark: null,
-	revision: null,
-});
-
-const creator = reactive({
-	id: null,
-	displayName: null,
-	name: null,
-	surname: null,
-	email: null,
-	phoneNumber: null,
-});
-
-const updater = reactive({
-	id: null,
-	displayName: null,
-	name: null,
-	surname: null,
-	email: null,
-	phoneNumber: null,
+	revision: null
 });
 
 const showUpdateModal = debounce(() => {
@@ -100,7 +96,7 @@ async function query(id) {
 	if (!id) {
 		return;
 	}
-	await queryInfo(message, Service.Users.get(id), info, null, updater);
+	await queryInfo(message, Service.Users.get(id), info);
 	newRoleRef.value = info.role.name;
 }
 
@@ -137,13 +133,13 @@ const updateRule = {
 	name: {
 		trigger: ["input", "blur"],
 		required: true,
-		message: "不能为空",
+		message: "不能为空"
 	},
 	place: {
 		trigger: ["input", "blur"],
 		required: true,
-		message: "不能为空",
-	},
+		message: "不能为空"
+	}
 };
 
 function showUpdateAfterModified() {
@@ -163,12 +159,13 @@ function isModified() {
 	return !(info.name === source.name && info.remark === source.remark);
 }
 
-const update = debounce(() => {});
+const update = debounce(() => {
+});
 
 const updateRoleHandler = debounce(() => {
 	if (info.role.name === newRoleRef.value) {
 		message.warning("目标角色与原有角色相同，无需更新", messageOptions);
-		return;
+
 	}
 	// todo 更新
 });
@@ -234,246 +231,247 @@ onMounted(() => {
 	>
 		<n-table :single-line="false" class="w-100%">
 			<tbody class="trc">
-				<tr>
-					<td class="w-43%">id</td>
-					<td>
-						<n-tag :bordered="false" type="info">
-							{{ info.id }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>昵称</td>
-					<td>
-						<n-tag
-							v-if="info.displayName"
-							:bordered="false"
-							type="default"
-						>
-							{{ info.displayName }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>姓名</td>
-					<td>
-						<n-tag
-							v-if="info.surname || info.name"
-							:bordered="false"
-							type="default"
-						>
-							{{ info.surname }}
-							{{ info.name }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>角色</td>
-					<td>
-						<n-tag
-							:bordered="false"
-							:type="getTagType.byUserRole(info.role.name)"
-						>
-							{{ ROLE_MAP.getByValue(info.role.name) }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>电话号码</td>
-					<td>
-						<n-tag v-if="info.phoneNumber" :bordered="false" type="error">
-							{{ info.phoneNumber }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>邮箱</td>
-					<td>
-						<n-tag v-if="info.email" :bordered="false" type="error">
-							{{ info.email }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
+			<tr>
+				<td class="w-43%">id</td>
+				<td>
+					<n-tag :bordered="false" type="info">
+						{{ info.id }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>昵称</td>
+				<td>
+					<n-tag
+						v-if="info.displayName"
+						:bordered="false"
+						type="default"
+					>
+						{{ info.displayName }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
+				<td>姓名</td>
+				<td>
+					<n-tag
+						v-if="info.surname || info.name"
+						:bordered="false"
+						type="default"
+					>
+						{{ info.surname }}
+						{{ info.name }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
+				<td>角色</td>
+				<td>
+					<n-tag
+						:bordered="false"
+						:type="getTagType.byUserRole(info.role.name)"
+					>
+						{{ ROLE_MAP.getByValue(info.role.name) }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>电话号码</td>
+				<td>
+					<n-tag v-if="info.phoneNumber" :bordered="false" type="error">
+						{{ info.phoneNumber }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
+				<td>邮箱</td>
+				<td>
+					<n-tag v-if="info.email" :bordered="false" type="error">
+						{{ info.email }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
 
-				<tr>
-					<td>年龄</td>
-					<td>
-						<n-tag
-							v-if="info.age"
-							:bordered="false"
-							:type="getTagType.byAge(info.age)"
-						>
-							{{ info.age }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>性别</td>
-					<td>
-						<n-tag
-							v-if="info.gender !== null && info.gender !== undefined"
-							:bordered="false"
-							:type="getTagType.byGender(info.gender)"
-						>
-							{{ convertGender(info.gender) }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
+			<tr>
+				<td>年龄</td>
+				<td>
+					<n-tag
+						v-if="info.age"
+						:bordered="false"
+						:type="getTagType.byAge(info.age)"
+					>
+						{{ info.age }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
+				<td>性别</td>
+				<td>
+					<n-tag
+						v-if="info.gender !== null && info.gender !== undefined"
+						:bordered="false"
+						:type="getTagType.byGender(info.gender)"
+					>
+						{{ convertGender(info.gender) }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
 
-				<tr>
-					<td>备注</td>
-					<td>
-						<n-tag v-if="info.remark">
-							{{ info.remark }}
-						</n-tag>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>最后登录时间</td>
-					<td>
-						<n-tag :bordered="false" type="primary">
-							{{ formatTime(info.lastUpdatedTime) }}
-						</n-tag>
-					</td>
-				</tr>
+			<tr>
+				<td>最后登录时间</td>
+				<td>
+					<n-tag :bordered="false" type="primary">
+						{{ formatTime(info.lastUpdatedTime) }}
+					</n-tag>
+				</td>
+			</tr>
 
-				<tr>
-					<td>创建者</td>
-					<td :style="info.createdBy ? '--td-padding: 0;' : ''">
-						<n-table
-							v-if="info.createdBy"
-							:bordered="false"
-							:single-line="false"
-						>
-							<tbody>
-								<tr>
-									<td class="w-30">id</td>
-									<td>
-										<n-tag :bordered="false" type="info">
-											{{ creator.id }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>用户昵称</td>
-									<td>{{ creator.displayName }}</td>
-								</tr>
-								<tr>
-									<td>用户名</td>
-									<td>
-										<n-tag :bordered="false" type="primary">
-											{{ creator.surname }}
-										</n-tag>
-										<n-tag
-											:bordered="false"
-											class="m-l-1"
-											type="primary"
-										>
-											{{ creator.name }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>邮箱</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ creator.email }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>电话</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ creator.phoneNumber }}
-										</n-tag>
-									</td>
-								</tr>
-							</tbody>
-						</n-table>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>创建时间</td>
-					<td>
-						<n-tag :bordered="false" type="primary">
-							{{ formatTime(info.creationTime) }}
-						</n-tag>
-					</td>
-				</tr>
-				<tr>
-					<td>更新者</td>
-					<td :style="info.updatedBy ? '--td-padding: 0;' : ''">
-						<n-table
-							v-if="info.updatedBy"
-							:bordered="false"
-							:single-line="false"
-						>
-							<tbody class="trc">
-								<tr>
-									<td class="w-30">id</td>
-									<td>
-										<n-tag :bordered="false" type="info">
-											{{ updater.id }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>用户昵称</td>
-									<td>{{ updater.displayName }}</td>
-								</tr>
-								<tr>
-									<td>用户名</td>
-									<td>
-										<n-tag :bordered="false" type="primary">
-											{{ updater.surname }}
-										</n-tag>
-										<n-tag
-											:bordered="false"
-											class="m-l-1"
-											type="primary"
-										>
-											{{ updater.name }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>邮箱</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ updater.email }}
-										</n-tag>
-									</td>
-								</tr>
-								<tr>
-									<td>电话</td>
-									<td>
-										<n-tag :bordered="false" type="error">
-											{{ updater.phoneNumber }}
-										</n-tag>
-									</td>
-								</tr>
-							</tbody>
-						</n-table>
-						<NoData v-else />
-					</td>
-				</tr>
-				<tr>
-					<td>最后更新时间</td>
-					<td>
-						<n-tag :bordered="false" type="warning">
-							{{ formatTime(info.lastUpdatedTime) }}
-						</n-tag>
-					</td>
-				</tr>
+
+			<tr>
+				<td>创建者</td>
+				<td :style="info.createdBy?.id ? '--n-td-padding: 0;' : ''">
+					<n-table
+						v-if="info.createdBy"
+						:bordered="false"
+						:single-line="false"
+					>
+						<tbody>
+						<tr>
+							<td class="w-30">id</td>
+							<td>
+								<n-tag :bordered="false" type="info">
+									{{ info.createdBy.id }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>用户昵称</td>
+							<td>{{ info.createdBy.displayName }}</td>
+						</tr>
+						<tr>
+							<td>用户名</td>
+							<td>
+								<n-tag :bordered="false" type="primary">
+									{{ info.createdBy.surname }}
+								</n-tag>
+								<n-tag
+									:bordered="false"
+									class="m-l-1"
+									type="primary"
+								>
+									{{ info.createdBy.name }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>邮箱</td>
+							<td>
+								<n-tag :bordered="false" type="error">
+									{{ info.createdBy.email }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>电话</td>
+							<td>
+								<n-tag :bordered="false" type="error">
+									{{ info.createdBy.phoneNumber }}
+								</n-tag>
+							</td>
+						</tr>
+						</tbody>
+					</n-table>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
+				<td>创建时间</td>
+				<td>
+					<n-tag :bordered="false" type="primary">
+						{{ formatTime(info.creationTime) }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>更新者</td>
+				<td :style="info.updatedBy?.id ? '--n-td-padding: 0;' : ''">
+					<n-table
+						v-if="info.updatedBy"
+						:bordered="false"
+						:single-line="false"
+					>
+						<tbody class="trc">
+						<tr>
+							<td class="w-30">id</td>
+							<td>
+								<n-tag :bordered="false" type="info">
+									{{ info.updatedBy.id }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>用户昵称</td>
+							<td>{{ info.updatedBy.displayName }}</td>
+						</tr>
+						<tr>
+							<td>用户名</td>
+							<td>
+								<n-tag :bordered="false" type="primary">
+									{{ info.updatedBy.surname }}
+								</n-tag>
+								<n-tag
+									:bordered="false"
+									class="m-l-1"
+									type="primary"
+								>
+									{{ info.updatedBy.name }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>邮箱</td>
+							<td>
+								<n-tag :bordered="false" type="error">
+									{{ info.updatedBy.email }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>电话</td>
+							<td>
+								<n-tag :bordered="false" type="error">
+									{{ info.updatedBy.phoneNumber }}
+								</n-tag>
+							</td>
+						</tr>
+						</tbody>
+					</n-table>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
+				<td>最后更新时间</td>
+				<td>
+					<n-tag :bordered="false" type="warning">
+						{{ formatTime(info.lastUpdatedTime) }}
+					</n-tag>
+				</td>
+			</tr>
+			<tr>
+				<td>备注</td>
+				<td>
+					<n-tag v-if="info.remark">
+						{{ info.remark }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
 			</tbody>
 		</n-table>
 	</n-layout>
@@ -555,7 +553,7 @@ onMounted(() => {
 				</n-table>
 				<n-flex justify="right">
 					<n-button type="warning" @click.prevent="updateRoleHandler"
-						>确定
+					>确定
 					</n-button>
 				</n-flex>
 			</n-space>

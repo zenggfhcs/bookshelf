@@ -20,7 +20,7 @@ const request = {
 	},
 	delete: (url) => {
 		return instance.delete(url);
-	},
+	}
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -33,7 +33,7 @@ const ServiceName = {
 	PUBLISHER: "publishers",
 	USER: "users",
 	DEBIT: "debits",
-	LOG: "logs",
+	LOG: "logs"
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -78,8 +78,8 @@ BookInfos.getTypeByKeyword = (keyword) => {
 	return request.get(`/bookInfos/bookType/${keyword}`);
 };
 
-BookInfos.getPublisherByKeyword = (keyword) => {
-	return request.get(`/bookInfos/publisher/${keyword}`);
+BookInfos.getFirstLevelType = () => {
+	return request.get(`/bookInfos/bookType/firstLevel`);
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -101,14 +101,14 @@ Users.login = (entity) => {
 Users.register = (entity) => {
 	const _encryptedEntity = {
 		email: encodeByRSA(entity.email),
-		authenticationString: encodeByRSA(entity.authenticationString),
+		authenticationString: encodeByRSA(entity.authenticationString)
 	};
 	return request.post("/users:register", _encryptedEntity);
 };
 
 Users.verifyEmail = (token) => {
 	const _entity = {
-		token: token,
+		token: token
 	};
 	return request.post("/users/email:verify", _entity); // todo test this fuc
 };
@@ -116,13 +116,17 @@ Users.verifyEmail = (token) => {
 Users.resetPassword = (entity) => {
 	const _payload = {
 		email: encodeByRSA(entity.email),
-		authenticationString: encodeByRSA(entity.authenticationString),
+		authenticationString: encodeByRSA(entity.authenticationString)
 	};
 	return request.post("/users/password:reset", _payload);
 };
 
 Users.sendMailForResetPassword = (entity) => {
-	return request.post("/password:reset/email:sendCode", entity);
+	return request.post("/users/password:reset/email:sendCode", entity);
+};
+
+Users.tokenUser = () => {
+	return request.get("/users/tokenUser");
 };
 
 Users.borrowing = null;
@@ -146,7 +150,7 @@ const Logs = new BaseService(ServiceName.LOG);
 //#region token
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Token = {
-	refresh: () => request.post("/token:refresh", {}),
+	refresh: () => request.post("/token:refresh", {})
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -158,7 +162,7 @@ const Service = {
 	BookInfos,
 	Books,
 	Logs,
-	Token,
+	Token
 };
 
 export { Service };

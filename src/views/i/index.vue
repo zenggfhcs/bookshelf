@@ -3,15 +3,7 @@ import { B_I } from "@/constant/breadcrumb.js";
 import router from "@/router/index.js";
 import { DEBIT_CHECK } from "@/router/RouterValue.js";
 import { renderCell } from "@/utils/render.js";
-import {
-	NCard,
-	NDataTable,
-	NGi,
-	NGrid,
-	NLayout,
-	NNumberAnimation,
-	NTag,
-} from "naive-ui";
+import { NCard, NDataTable, NGi, NGrid, NLayout, NNumberAnimation, NTag } from "naive-ui";
 import { h, onMounted, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
@@ -24,7 +16,7 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		width: 100,
 		minWidth: 50,
@@ -33,13 +25,13 @@ const cols = [
 				NTag,
 				{
 					type: "info",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.id,
-				},
-			),
-	},
+					default: () => row?.id
+				}
+			)
+	}
 ];
 
 const tableData = ref([]);
@@ -47,12 +39,12 @@ const tableData = ref([]);
 async function init() {
 	const _array = Array.from({ length: 100 }).map((_, index) => {
 		return {
-			id: index,
+			id: index
 		};
 	});
 	return new Promise((resolve) => {
 		resolve({
-			list: _array,
+			list: _array
 		});
 	});
 }
@@ -64,12 +56,13 @@ function rowProps(row) {
 			router.push({
 				name: DEBIT_CHECK.name,
 				params: {
-					id: row?.id,
-				},
+					id: row?.id
+				}
 			});
-		},
+		}
 	};
 }
+
 onMounted(async () => {
 	init().then((res) => {
 		tableData.value = res.list;

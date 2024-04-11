@@ -1,12 +1,7 @@
 <script setup>
 import { Service } from "@/api/index.js";
 import { B_LOG_INDEX } from "@/constant/breadcrumb.js";
-import {
-	LOG_PRE_DEFINED_SERVICE_NAME,
-	LOG_PRE_DEFINED_TYPE,
-	LOG_TYPE_MAP,
-	SERVICE_NAME_MAP,
-} from "@/constant/map.js";
+import { LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP, SERVICE_NAME_MAP } from "@/constant/map.js";
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
@@ -38,14 +33,14 @@ import {
 	NPagination,
 	NSelect,
 	NTag,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { computed, h, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 const message = useMessage();
@@ -56,7 +51,7 @@ const cols = [
 		key: "dataId",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			const _dataId = JSON.parse(row.input)?.id;
@@ -65,40 +60,40 @@ const cols = [
 				NTag,
 				{
 					type: "info",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => _dataId,
-				},
+					default: () => _dataId
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "操作类型",
 		key: "type",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return h(
 				NTag,
 				{
 					type: getTagType.byLogType(row?.type),
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => LOG_TYPE_MAP.getByValue(row?.type),
-				},
+					default: () => LOG_TYPE_MAP.getByValue(row?.type)
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "数据类型",
 		key: "serviceName",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return h(
@@ -107,73 +102,73 @@ const cols = [
 					type: "warning",
 					style: {
 						width: "5em",
-						justifyContent: "center",
+						justifyContent: "center"
 					},
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => SERVICE_NAME_MAP.getByValue(row?.serviceName),
-				},
+					default: () => SERVICE_NAME_MAP.getByValue(row?.serviceName)
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "运行时间-毫秒",
 		key: "elapsedTime",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: getTagType.byElapsedTime(row?.elapsedTime),
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.elapsedTime,
-				},
-			),
+					default: () => row?.elapsedTime
+				}
+			)
 	},
 	{
 		title: "记录时刻",
 		key: "creationTime",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: "primary",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.creationTime.replace("T", " "),
-				},
-			),
+					default: () => row?.creationTime.replace("T", " ")
+				}
+			)
 	},
 	{
 		title: "操作者 id",
-		key: "createdBy",
+		key: "createdBy.id",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: "info",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.createdBy,
-				},
-			),
-	},
+					default: () => row?.createdBy.id
+				}
+			)
+	}
 ];
 
 let tableData = ref([]);
@@ -193,15 +188,15 @@ function rowProps(row) {
 			router.push({
 				name: LOG_CHECK.name,
 				params: {
-					id: row?.id,
-				},
+					id: row?.id
+				}
 			});
-		},
+		}
 	};
 }
 
 const timestamp = reactive({
-	creationTime: null,
+	creationTime: null
 });
 
 const filterReactive = reactive({
@@ -209,12 +204,12 @@ const filterReactive = reactive({
 		createdBy: null,
 		dataId: null,
 		type: null,
-		serviceName: null,
+		serviceName: null
 	},
 	filter: {
 		page: {
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
-			end: computed(() => pagination.pageSize),
+			end: computed(() => pagination.pageSize)
 		},
 		creationTime: {
 			start: computed(() => {
@@ -222,13 +217,13 @@ const filterReactive = reactive({
 			}),
 			end: computed(() => {
 				return timestampToDateTimeString(timestamp.creationTime?.[1]);
-			}),
+			})
 		},
 		elapsedTime: {
 			start: null,
-			end: null,
-		},
-	},
+			end: null
+		}
+	}
 });
 
 const filterResetHandler = debounce(() => {
@@ -245,7 +240,7 @@ async function query() {
 		message,
 		Service.Logs.filteredList(filterReactive),
 		itemCount,
-		tableData,
+		tableData
 	);
 	loadingRefresh.value = false;
 }
@@ -262,7 +257,7 @@ const pagination = reactive({
 		{ label: "10 每页", value: 10 },
 		{ label: "20 每页", value: 20 },
 		{ label: "30 每页", value: 30 },
-		{ label: "50 每页", value: 50 },
+		{ label: "50 每页", value: 50 }
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -275,7 +270,7 @@ const pagination = reactive({
 			loadingRefresh.value = true;
 		}
 		query();
-	},
+	}
 });
 
 function specificFilter(item, filterModel) {
@@ -322,9 +317,9 @@ onMounted(() => {
 	<n-layout-header bordered class="h-3em" position="absolute">
 		<n-flex class="h-3em items-center" justify="center">
 			<n-button
-				type="info"
-				secondary
 				class="h-2.4em"
+				secondary
+				type="info"
 				@click.prevent="showFilterModal = true"
 			>
 				<template #icon>
@@ -335,10 +330,10 @@ onMounted(() => {
 				筛选
 			</n-button>
 			<n-button
+				:loading="loadingRefresh"
 				class="h-2.4em"
 				type="info"
 				@click.prevent="clickQuery"
-				:loading="loadingRefresh"
 			>
 				<template #icon>
 					<n-icon :component="IReload" />
@@ -356,13 +351,13 @@ onMounted(() => {
 	>
 		<!--   数据表   -->
 		<n-data-table
-			remote
 			:columns="cols"
 			:data="tableData"
 			:loading="loadingRefresh"
 			:render-cell="renderCell"
 			:row-props="rowProps"
 			:single-line="false"
+			remote
 			striped
 		/>
 		<!--   返回顶部   -->

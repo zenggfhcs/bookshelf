@@ -7,24 +7,17 @@ import { REGISTER, RESET_PASSWORD } from "@/router/RouterValue.js";
 import { debounce } from "@/utils/debounce.js";
 import { resetToken } from "@/utils/storage-operation.js";
 import { formValidator } from "@/utils/validator.js";
-import {
-	NButton,
-	NDivider,
-	NFlex,
-	NForm,
-	NFormItem,
-	NInput,
-	useMessage,
-} from "naive-ui";
+import { NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage } from "naive-ui";
 import { onMounted, reactive, ref } from "vue";
 
-onMounted(() => {});
+onMounted(() => {
+});
 
 const formRef = ref(null);
 const message = useMessage();
 const model = reactive({
 	email: null,
-	authenticationString: null,
+	authenticationString: null
 });
 const loading = ref(false);
 
@@ -40,8 +33,8 @@ const rules = {
 				} else if (!REG_EMAIL.test(value.trim())) {
 					return new Error("邮箱格式错误");
 				}
-			},
-		},
+			}
+		}
 	],
 	authenticationString: [
 		{
@@ -53,9 +46,9 @@ const rules = {
 				} else if (value.length < 7 || value.length > 17) {
 					return new Error("password 长度应为 7-17");
 				}
-			},
-		},
-	],
+			}
+		}
+	]
 };
 
 /**
@@ -93,7 +86,7 @@ const login = debounce((e) => {
 			<router-link
 				:to="REGISTER"
 				class="p-0 m-0 font-size-1rem font-800 color-emerald"
-				>在此注册
+			>在此注册
 			</router-link>
 		</div>
 		<n-divider>OR</n-divider>
@@ -123,7 +116,7 @@ const login = debounce((e) => {
 				<router-link
 					:to="RESET_PASSWORD"
 					class="absolute bottom--1.7em right-0 h-2em line-height-2em color-#8c98a4"
-					>忘记密码?
+				>忘记密码?
 				</router-link>
 			</div>
 		</n-form-item>

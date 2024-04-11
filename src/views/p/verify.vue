@@ -9,7 +9,7 @@ import { NInput, useMessage } from "naive-ui";
 import { onMounted } from "vue";
 
 const query = defineProps({
-	token: String,
+	token: String
 });
 
 const message = useMessage();
@@ -35,7 +35,7 @@ const start = async () => {
 			if (data?.code !== SC.SUCCESS) {
 				updateMessage(
 					"error",
-					"VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)",
+					"VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)"
 				);
 			} else {
 				updateMessage("success", "验证通过");
@@ -44,7 +44,8 @@ const start = async () => {
 		.catch((err) => {
 			updateMessage("error", err.message);
 		})
-		.finally(() => {});
+		.finally(() => {
+		});
 };
 
 onMounted(() => {

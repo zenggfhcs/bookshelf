@@ -26,5 +26,5 @@ function remove(key) {
 export const local = {
 	put,
 	get,
-	remove,
+	remove
 };

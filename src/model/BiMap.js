@@ -33,11 +33,11 @@ class BiMap {
 		this.#valueMap.remove(v);
 	}
 
-	getByValue(v, defaultValue = undefined) {
+	getByValue(v, defaultValue = v) {
 		return this.#valueMap.getOrDefault(v, defaultValue);
 	}
 
-	getByKey(k, defaultValue = undefined) {
+	getByKey(k, defaultValue = k) {
 		return this.#keyMap.getOrDefault(k, defaultValue);
 	}
 }

@@ -74,7 +74,7 @@ export function transDateString(dateString) {
 		_execArray?.[12],
 		_execArray?.[13],
 		_execArray?.[15],
-		_execArray?.[16],
+		_execArray?.[16]
 	];
 }
 

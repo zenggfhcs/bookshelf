@@ -5,6 +5,10 @@ import Page404 from "@/views/error/404.vue";
 import BookInfoAdd from "@/views/i/book-info/add.vue";
 import BookInfoCheck from "@/views/i/book-info/check.vue";
 import BookInfoManager from "@/views/i/book-info/index.vue";
+import BookAdd from "@/views/i/book/add.vue";
+import BookCheck from "@/views/i/book/check.vue";
+
+import BookManager from "@/views/i/book/index.vue";
 import DebitCheck from "@/views/i/debit/check.vue";
 import DebitManager from "@/views/i/debit/index.vue";
 import I from "@/views/i/index.vue";
@@ -13,18 +17,17 @@ import LogManager from "@/views/i/log/index.vue";
 import My from "@/views/i/my/index.vue";
 import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
-import Check from "@/views/j/query/index.vue";
 import J from "@/views/j/index.vue";
-import Statistics from "@/views/j/statistics.vue";
+import JMy from "@/views/j/my/index.vue";
+import AdvancedQuery from "@/views/j/query/advanced-query.vue";
+import QuickQuery from "@/views/j/query/quick-query.vue";
+import ReadGuide from "@/views/j/query/read-guide.vue";
+import TypeQuery from "@/views/j/query/type-query.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
 import UserInfo from "@/views/p/user-info.vue";
 import Verify from "@/views/p/verify.vue";
-
-import BookManager from "@/views/i/book/index.vue";
-import BookCheck from "@/views/i/book/check.vue";
-import BookAdd from "@/views/i/book/add.vue";
 
 //#region route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -36,7 +39,7 @@ const LOGIN = {
 	name: "login",
 	path: "/login",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const REGISTER = {
@@ -44,7 +47,7 @@ const REGISTER = {
 	name: "register",
 	path: "/register",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const RESET_PASSWORD = {
@@ -52,7 +55,7 @@ const RESET_PASSWORD = {
 	name: "resetPassword",
 	path: "/reset-password",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const VERIFY = {
@@ -60,7 +63,7 @@ const VERIFY = {
 	name: "verify",
 	path: "/verify",
 	props: (route) => ({ token: route.query.token }),
-	hidden: true,
+	hidden: true
 };
 
 const PUBLIC = {
@@ -70,7 +73,7 @@ const PUBLIC = {
 	props: true,
 	children: [LOGIN, REGISTER, RESET_PASSWORD, VERIFY],
 	redirect: LOGIN,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -81,7 +84,7 @@ const _404 = {
 	component: Page404,
 	name: "404",
 	path: "/error/404",
-	hidden: true,
+	hidden: true
 };
 
 const ERROR = {
@@ -91,7 +94,7 @@ const ERROR = {
 	props: true,
 	children: [_404],
 	redirect: _404,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -103,7 +106,7 @@ const J_HOME = {
 	name: "jIndex",
 	path: "/j/index",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const J_USER_INFO = {
@@ -111,23 +114,47 @@ const J_USER_INFO = {
 	name: "jUserInfo",
 	path: "/j/my-info",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
-const J_CHECK = {
-	component: Check,
-	name: "jCheck",
-	path: "/j/check",
+const J_QUERY_QUICK = {
+	component: QuickQuery,
+	name: "jQueryQuick",
+	path: "/j/query/quick",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
-const J_STATISTICS = {
-	component: Statistics,
-	name: "jStatistics",
-	path: "/j/statistics",
+const J_QUERY_ADVANCED = {
+	component: AdvancedQuery,
+	name: "jQueryAdvanced",
+	path: "/j/query/advanced",
 	props: true,
-	hidden: true,
+	hidden: true
+};
+
+const J_QUERY_TYPE = {
+	component: TypeQuery,
+	name: "jQueryType",
+	path: "/j/query/type",
+	props: true,
+	hidden: true
+};
+
+const J_READ_GUIDE = {
+	component: ReadGuide,
+	name: "jReadGuide",
+	path: "/j/query/read-guide",
+	props: true,
+	hidden: true
+};
+
+const J_MY = {
+	component: JMy,
+	name: "jMyInfo",
+	path: "/j/my",
+	props: true,
+	hidden: true
 };
 
 const BASE_J = {
@@ -135,9 +162,9 @@ const BASE_J = {
 	name: "j",
 	path: "/",
 	props: true,
-	children: [J_HOME, J_CHECK, J_USER_INFO, J_STATISTICS],
+	children: [J_HOME, J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE, J_USER_INFO, J_MY],
 	redirect: J_HOME,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -153,7 +180,7 @@ const BOOK = {
 	name: "bookManager",
 	path: "/i/books",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const BOOK_ADD = {
@@ -162,7 +189,7 @@ const BOOK_ADD = {
 	name: "bookAdd",
 	path: "/i/books/add",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const BOOK_CHECK = {
@@ -171,7 +198,7 @@ const BOOK_CHECK = {
 	name: "bookCheck",
 	path: "/i/books/:id",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -184,7 +211,7 @@ const BOOK_INFO = {
 	name: "bookInfoManager",
 	path: "/i/bookInfos",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const BOOK_INFO_ADD = {
@@ -193,7 +220,7 @@ const BOOK_INFO_ADD = {
 	name: "bookInfoAdd",
 	path: "/i/bookInfos/add",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const BOOK_INFO_CHECK = {
@@ -202,7 +229,7 @@ const BOOK_INFO_CHECK = {
 	name: "bookInfoCheck",
 	path: "/i/bookInfos/:id",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -214,7 +241,7 @@ const DEBIT = {
 	name: "debitManager",
 	path: "/i/debits",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const DEBIT_CHECK = {
@@ -222,7 +249,7 @@ const DEBIT_CHECK = {
 	name: "debitCheck",
 	path: "/i/debits/:id",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -235,7 +262,7 @@ const LOG = {
 	name: "logManager",
 	path: "/i/logs",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const LOG_CHECK = {
@@ -244,7 +271,7 @@ const LOG_CHECK = {
 	name: "logCheck",
 	path: "/i/logs/:id",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -284,7 +311,7 @@ const USER = {
 	component: UserManager,
 	name: "userManager",
 	path: "/i/users",
-	hidden: true,
+	hidden: true
 };
 
 const USER_CHECK = {
@@ -292,7 +319,7 @@ const USER_CHECK = {
 	name: "userCheck",
 	path: "/i/users/:id",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -304,7 +331,7 @@ const I_MY = {
 	name: "myInfo",
 	path: "/i/myInfo",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -312,7 +339,7 @@ const I_MY = {
 const I_HOME = {
 	component: I,
 	name: "iIndex",
-	path: "/i/index",
+	path: "/i/index"
 };
 
 const I_USER_INFO = {
@@ -320,7 +347,7 @@ const I_USER_INFO = {
 	name: "iUserInfo",
 	path: "/i/my-info",
 	props: true,
-	hidden: true,
+	hidden: true
 };
 
 const BASE_I = {
@@ -339,7 +366,7 @@ const BASE_I = {
 		USER_CHECK,
 		LOG,
 		LOG_CHECK,
-		I_MY,
+		I_MY
 	],
 	redirect: I_HOME,
 	component: BaseI,
@@ -347,7 +374,7 @@ const BASE_I = {
 	path: "/i",
 
 	props: true,
-	hidden: true,
+	hidden: true
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -384,9 +411,9 @@ export {
 
 	// j
 	J_HOME,
-	J_CHECK,
+	J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE,
 	J_USER_INFO,
-	J_STATISTICS,
+	J_MY
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

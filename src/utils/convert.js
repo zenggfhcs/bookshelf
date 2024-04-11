@@ -5,12 +5,8 @@
 //#endregion
 
 import { elapsedTimeLevel, LOG_TYPE_MAP } from "@/constant/log-info.js";
-import {
-	ageLevel,
-	GENDER_MAP,
-	GENDER_TAG_TYPE_MAP,
-	USER_TAG_TYPE_MAP,
-} from "@/constant/user-info.js";
+import { GENDER_MAP } from "@/constant/map.js";
+import { ageLevel, GENDER_TAG_TYPE_MAP, USER_TAG_TYPE_MAP } from "@/constant/user-info.js";
 
 function timestampToDateTimeString(timestamp) {
 	if (!timestamp) {
@@ -66,13 +62,13 @@ const getTagType = {
 		}
 		return "default";
 	},
-	byGender: (g) => GENDER_TAG_TYPE_MAP[g],
+	byGender: (g) => GENDER_TAG_TYPE_MAP[g]
 };
 
 export { getTagType };
 
 function convertGender(g) {
-	return GENDER_MAP[g];
+	return GENDER_MAP.getByValue(g);
 }
 
 export { convertGender };
@@ -97,7 +93,7 @@ function convertToChineseNum(num) {
 		"六",
 		"七",
 		"八",
-		"九",
+		"九"
 	];
 
 	if (num > 0 && num < 10) {

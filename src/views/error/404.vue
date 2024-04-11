@@ -21,8 +21,8 @@ import { NLayout, NResult } from "naive-ui";
 					>
 						:
 						<span class="color-yellow">{{
-							$route.redirectedFrom?.fullPath
-						}}</span>
+								$route.redirectedFrom?.fullPath
+							}}</span>
 					</span>
 				</div>
 			</n-result>

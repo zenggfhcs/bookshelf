@@ -8,5 +8,5 @@ const UNAUTHORIZED = 606;
 export const SC = {
 	SUCCESS,
 	UNAUTHORIZED,
-	TOKEN_R,
+	TOKEN_R
 };

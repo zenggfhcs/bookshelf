@@ -1,55 +1,41 @@
-import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { copyMatchingProperties } from "@/utils/index.js";
 
-/**
- * 通过 id查找用户，将查找到的用户信息复制给 target，如果查找过程中出现异常，通过 message显示
- * @param id
- * @param message
- * @param target
- */
-function queryUser(id, message, target) {
-	if (!id) {
-		return;
-	}
-	return Service.Users.get(id)
-		.then((res) => {
-			copyMatchingProperties(res, target);
-			return new Promise((resolve) => resolve());
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {});
-}
-
-export { queryUser };
+// /**
+//  * 通过 id查找用户，将查找到的用户信息复制给 target，如果查找过程中出现异常，通过 message显示
+//  * @param id
+//  * @param message
+//  * @param target
+//  */
+// function queryUser(id, message, target) {
+// 	if (!id) {
+// 		return;
+// 	}
+// 	return Service.Users.get(id)
+// 		.then((res) => {
+// 			copyMatchingProperties(res, target);
+// 			return new Promise((resolve) => resolve());
+// 		})
+// 		.catch((err) => {
+// 			message.error(err.message, messageOptions);
+// 		})
+// 		.finally(() => {
+// 		});
+// }
+//
+// export { queryUser };
 
 function queryInfo(message, promise, info, creator, updater) {
 	return promise
 		.then(async (res) => {
 			copyMatchingProperties(res, info);
-
-			if (updater && creator && info.createdBy === info.updatedBy) {
-				await queryUser(info.createdBy, message, creator);
-				copyMatchingProperties(creator, updater);
-				return new Promise((resolve) => resolve());
-			}
-
-			if (creator) {
-				queryUser(info.createdBy, message, creator);
-			}
-
-			if (updater) {
-				queryUser(info.updatedBy, message, updater);
-			}
-
 			return new Promise((resolve) => resolve());
 		})
 		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
-		.finally(() => {});
+		.finally(() => {
+		});
 }
 
 export { queryInfo };
@@ -89,7 +75,8 @@ function queryList(message, promise, itemCount, tableData) {
 		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
-		.finally(() => {});
+		.finally(() => {
+		});
 }
 
 export { queryList };

@@ -1,7 +1,6 @@
 <script setup>
 import { Service } from "@/api/index.js";
 import { B_DEBIT } from "@/constant/breadcrumb.js";
-import { messageOptions } from "@/constant/options.js";
 import IReload from "@/icons/i-reload.vue";
 import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
@@ -10,6 +9,7 @@ import { DEBIT_CHECK } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
+import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import {
 	NBackTop,
@@ -25,15 +25,18 @@ import {
 	NLayoutHeader,
 	NModal,
 	NPagination,
+	NRadio,
+	NRadioGroup,
+	NSpace,
 	NTag,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 {
@@ -41,33 +44,25 @@ const props = defineProps([
 	props.updateBreadcrumbArray(B_DEBIT);
 }
 
-const entity = reactive({
-	id: "",
-	name: "",
-	place: "",
-});
-
 const message = useMessage();
 
 const tableData = ref([]);
 
-const currentPageTableData = ref([]);
-
 const cols = [
 	{
 		title: "借阅人 id",
-		key: "createdBy",
+		key: "createdBy.id",
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "书籍",
-		key: "bookInfo.bookName",
+		key: "book.bookInfo.bookName",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 		//render: (row) => h()
 	},
 	{
@@ -75,45 +70,45 @@ const cols = [
 		key: "creationTime",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: "primary",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => timeFormat(row?.creationTime),
-				},
-			),
+					default: () => timeFormat(row?.creationTime)
+				}
+			)
 	},
 	{
 		title: "应还日期",
 		key: "returnDeadline",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: "primary",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.returnDeadline,
-				},
-			),
+					default: () => row?.returnDeadline
+				}
+			)
 	},
 	{
 		title: "归还时间",
 		key: "lastUpdatedTime",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			if (!row?.lastUpdatedTime || !row?.returnDate) {
@@ -123,33 +118,33 @@ const cols = [
 				NTag,
 				{
 					type: "primary",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => timeFormat(row?.lastUpdatedTime),
-				},
+					default: () => timeFormat(row?.lastUpdatedTime)
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "状态",
 		key: "state",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: row?.returnDate ? "success" : "error",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => (row?.returnDate ? "已归还" : "未归还"),
-				},
-			),
-	},
+					default: () => (row?.returnDate ? "已归还" : "未归还")
+				}
+			)
+	}
 ];
 
 const loadingQuery = ref(false);
@@ -161,64 +156,63 @@ function rowProps(row) {
 			router.push({
 				name: DEBIT_CHECK.name,
 				params: {
-					id: row?.id,
-				},
+					id: row?.id
+				}
 			});
-		},
+		}
 	};
 }
 
 const timestamp = reactive({
 	creationTime: null,
-	lastUpdatedTime: null,
+	lastUpdatedTime: null
 });
 
 const showFilterModal = ref(false);
 
-const filterReactive = reactive({});
+const filterReactive = reactive({
+	entity: {},
+	filter: {
+		page: {
+			start: 0,
+			end: 10
+		},
+		age: {
+			start: 0,
+			end: 255
+		},
+		creationTime: {
+			start: null,
+			end: null
+		},
+		lastUpdatedTime: {
+			start: null,
+			end: null
+		}
+	}
+});
 
-function filterResetHandler() {}
+function filterResetHandler() {
+}
 
 function filterHandler() {
 	showFilterModal.value = false;
 }
 
-const filter = reactive({
-	page: {
-		start: 0,
-		end: 10,
-	},
-	age: {
-		start: 0,
-		end: 255,
-	},
-	creationTime: {
-		start: null,
-		end: null,
-	},
-	lastUpdatedTime: {
-		start: null,
-		end: null,
-	},
-});
-
-function query() {
+async function query() {
 	loadingQuery.value = true;
 
-	Service.Debits.list(entity, filter)
-		.then((res) => {
-			itemCount.value = res?.length;
-			tableData.value = res;
+	await queryList(
+		message,
+		Service.Debits.filteredList(filterReactive),
+		itemCount,
+		tableData
+	);
 
-			pagination.onUpdatePage();
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			loadingQuery.value = false;
-		});
+	loadingQuery.value = false;
 }
+
+const radioRef = ref();
 
 const clickQuery = debounce(query);
 
@@ -232,7 +226,7 @@ const pagination = reactive({
 		{ label: "10 每页", value: 10 },
 		{ label: "15 每页", value: 15 },
 		{ label: "20 每页", value: 20 },
-		{ label: "30 每页", value: 30 },
+		{ label: "30 每页", value: 30 }
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -244,26 +238,13 @@ const pagination = reactive({
 		if (!loadingQuery.value) {
 			loadingQuery.value = true;
 		}
-		updateCurrentPageData(page, pagination.pageSize).then((res) => {
-			currentPageTableData.value = res?.data;
-			loadingQuery.value = false;
-		});
-	},
+		query();
+	}
 });
 
-function updateCurrentPageData(page, pageSize) {
-	return new Promise((resolve) => {
-		const start = (page - 1) * pageSize;
-		const end = start + pageSize;
-		const data = tableData.value.slice(start, end);
-		resolve({
-			data: data,
-		});
-	});
-}
-
 function showRepayConfirmModal() {
-	props.showModal("error", "催还二次确认", "是否要进行一键催还？", () => {});
+	props.showModal("error", "催还二次确认", "是否要进行一键催还？", () => {
+	});
 }
 
 onBeforeMount(() => {
@@ -288,9 +269,9 @@ onMounted(() => {
 				<!-- todo 催还 -->
 			</n-button>
 			<n-button
-				type="info"
-				secondary
 				class="h-2.4em"
+				secondary
+				type="info"
 				@click="showFilterModal = true"
 			>
 				<template #icon>
@@ -301,10 +282,10 @@ onMounted(() => {
 				筛选
 			</n-button>
 			<n-button
-				type="info"
-				class="h-2.4em"
-				@click.prevent="clickQuery"
 				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="clickQuery"
 			>
 				<template #icon>
 					<n-icon :component="IReload" />
@@ -324,7 +305,7 @@ onMounted(() => {
 
 		<n-data-table
 			:columns="cols"
-			:data="currentPageTableData"
+			:data="tableData"
 			:loading="loadingQuery"
 			:row-props="rowProps"
 			:single-line="false"
@@ -343,6 +324,14 @@ onMounted(() => {
 			transform-origin="center"
 		>
 			<n-form :model="filterReactive">
+				<n-form-item>
+					<n-radio-group v-model:value="radioRef">
+						<n-space>
+							<n-radio :key="'-1'" :value="'-1'">逾期未还</n-radio>
+							<n-radio :key="'1'" :value="'1'">还期将近</n-radio>
+						</n-space>
+					</n-radio-group>
+				</n-form-item>
 				<n-form-item label="借阅时间">
 					<n-date-picker
 						v-model:value="timestamp.creationTime"

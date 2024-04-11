@@ -1,30 +1,17 @@
 <script setup>
 import BookBrain from "@/icons/book-brain.vue";
 import WorkBenchIcon from "@/icons/home.vue";
-import IStatisticsIcon from "@/icons/i-statistics.vue";
+import BookInfoManagerIcon from "@/icons/i-book-info.vue";
+import BookManagerIcon from "@/icons/i-book.vue";
 import LogIcon from "@/icons/log.vue";
 import SelfIcon from "@/icons/self.vue";
 import sun from "@/icons/sun.vue";
-import {
-	BASE_I,
-	BOOK,
-	BOOK_INFO,
-	DEBIT,
-	I_HOME,
-	I_MY,
-	LOG,
-	USER,
-} from "@/router/RouterValue.js";
+import { BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, I_MY, LOG, USER } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
-import BookManagerIcon from "@/icons/i-book.vue";
-import {
-	BookOpen as BookInfoManagerIcon,
-	BookReader as DebitManagerIcon,
-	UsersCog as UserManagerIcon,
-} from "@vicons/fa";
+import { BookReader as DebitManagerIcon, UsersCog as UserManagerIcon } from "@vicons/fa";
 import {
 	NBreadcrumb,
 	NBreadcrumbItem,
@@ -41,7 +28,7 @@ import {
 	NPopover,
 	NScrollbar,
 	NSpace,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { h, onMounted, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
@@ -88,58 +75,52 @@ const menuOptions = [
 		label: () =>
 			h(RouterLink, gProps(I_HOME.name), { default: () => "工作台" }),
 		key: "i-index",
-		icon: renderIcon(WorkBenchIcon),
+		icon: renderIcon(WorkBenchIcon)
 	},
 	{
 		label: () =>
 			h(RouterLink, gProps(DEBIT.name), { default: () => "借阅管理" }),
 		key: "i-debit",
-		icon: renderIcon(DebitManagerIcon),
+		icon: renderIcon(DebitManagerIcon)
 	},
 	{
 		label: () =>
 			h(RouterLink, gProps(BOOK.name), { default: () => "书籍管理" }),
 		key: "i-book",
-		icon: renderIcon(BookManagerIcon),
+		icon: renderIcon(BookManagerIcon)
 	},
 	{
 		label: () =>
 			h(RouterLink, gProps(BOOK_INFO.name), {
-				default: () => "书籍信息管理",
+				default: () => "书籍信息管理"
 			}),
 		key: "i-book-info",
-		icon: renderIcon(BookInfoManagerIcon),
+		icon: renderIcon(BookInfoManagerIcon)
 	},
-	// {
-	// 	label: () =>
-	// 		h(RouterLink, gProps(PUBLISHER.name), { default: () => "出版社管理" }),
-	// 	key: "i-publisher",
-	// 	icon: renderIcon(PublisherIcon),
-	// },
 	{
 		label: () =>
 			h(RouterLink, gProps(USER.name), { default: () => "用户管理" }),
 		key: "i-user",
-		icon: renderIcon(UserManagerIcon),
+		icon: renderIcon(UserManagerIcon)
 	},
-	{
-		label: () =>
-			h(RouterLink, gProps(USER.name), { default: () => "统计报表" }),
-		key: "i-statistics",
-		icon: renderIcon(IStatisticsIcon),
-	},
+	// {
+	// 	label: () =>
+	// 		h(RouterLink, gProps(USER.name), { default: () => "统计报表" }),
+	// 	key: "i-statistics",
+	// 	icon: renderIcon(IStatisticsIcon)
+	// },
 	{
 		label: () =>
 			h(RouterLink, gProps(LOG.name), { default: () => "系统日志" }),
 		key: "i-log",
-		icon: renderIcon(LogIcon),
+		icon: renderIcon(LogIcon)
 	},
 	{
 		label: () =>
 			h(RouterLink, gProps(I_MY.name), { default: () => "我的信息" }),
 		key: "i-my",
-		icon: renderIcon(SelfIcon),
-	},
+		icon: renderIcon(SelfIcon)
+	}
 ];
 
 const modal = reactive({
@@ -147,7 +128,8 @@ const modal = reactive({
 	type: "default",
 	title: "",
 	content: "",
-	action: () => {},
+	action: () => {
+	}
 });
 
 function showModal(type, title, content, action) {
@@ -207,7 +189,6 @@ onMounted(() => {
 						:collapsed-width="64"
 						:expand-icon="expandIcon"
 						:options="menuOptions"
-						class="font-size-1.2rem font-800"
 					/>
 				</n-scrollbar>
 			</n-layout>
@@ -233,11 +214,11 @@ onMounted(() => {
 		</n-layout-sider>
 		<n-layout>
 			<n-layout-header bordered class="h-3em">
-				<n-flex :wrap="false" class="m-r-4 items-center m-l-4">
+				<n-flex :wrap="false" class="h-3em m-r-4 items-center m-l-4">
 					<n-breadcrumb>
 						<n-breadcrumb-item v-for="item in breadcrumbArray">
 							<router-link :to="item?.path"
-								>{{ item?.label }}
+							>{{ item?.label }}
 							</router-link>
 						</n-breadcrumb-item>
 					</n-breadcrumb>
@@ -250,14 +231,9 @@ onMounted(() => {
 					>
 						<template #trigger>
 							<n-button
-								class="m-l-a m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer"
-								@click.prevent="switchShowUserPopover()"
-							>
-								<span
-									class="font-800 font-size-1em"
-									style="font-family: inter, sans-serif"
-									>ME</span
-								>
+								class="m-l-a m-.2em h-2.4em w-2.4em b-rd-50% p-0 b-0 cursor-pointer"
+								@click.prevent="switchShowUserPopover()">
+								<span class="font-800" style="font-family: inter, sans-serif">ME</span>
 							</n-button>
 						</template>
 						<n-form label-placement="left">
@@ -310,14 +286,13 @@ onMounted(() => {
 		</n-layout>
 
 		<n-modal
-			id="delete-checked-confirmed-modal"
+			id="checked-confirmed-modal"
 			v-model:show="modal.show"
 			:mask-closable="false"
-			class="w-25em"
-			style="--n-font-size: 16px"
-			preset="dialog"
-			:type="modal.type"
 			:title="modal.title"
+			:type="modal.type"
+			class="w-25em"
+			preset="dialog"
 			transform-origin="center"
 		>
 			<n-space vertical>

@@ -6,7 +6,8 @@ function checkLoginState() {
 	if (token === null || token === undefined || token === "") {
 		return router.push("/login");
 	}
-	return new Promise((resolve) => {});
+	return new Promise((resolve) => {
+	});
 	// todo 最后的最后，检查一遍
 }
 

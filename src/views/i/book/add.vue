@@ -2,7 +2,8 @@
 import { Service } from "@/api/index.js";
 import { B_BOOK_ADD } from "@/constant/breadcrumb.js";
 import { messageOptions } from "@/constant/options.js";
-import { goto } from "@/router/goto.js";
+import IAdd from "@/icons/i-add.vue";
+import IBack from "@/icons/i-back.vue";
 import { BOOK } from "@/router/RouterValue.js";
 import { addItem } from "@/utils/add.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
@@ -14,22 +15,18 @@ import {
 	NFlex,
 	NForm,
 	NFormItem,
+	NIcon,
 	NInput,
 	NLayout,
 	NLayoutHeader,
 	NSelect,
 	NTable,
 	NTag,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { computed, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
-
-{
-	props.updateMenuItem("i-book");
-	props.updateBreadcrumbArray(B_BOOK_ADD);
-}
 
 const message = useMessage();
 
@@ -43,7 +40,7 @@ const info = reactive({
 	remark: "",
 	bookInfo: computed(() => {
 		return bookInfoRef.value ? JSON.parse(bookInfoRef.value) : undefined;
-	}),
+	})
 });
 
 const damageLevelOptionsRef = ref([]);
@@ -62,14 +59,15 @@ const handleQueryBookInfo = debounce((queryKeyword) => {
 			bookInfoOptionsRef.value = res?.map((item) => {
 				return {
 					label: `${item.bookName}`,
-					value: JSON.stringify(item),
+					value: JSON.stringify(item)
 				};
 			});
 		})
 		.catch((err) => {
 			message.error(err.message, messageOptions);
 		})
-		.finally(() => {});
+		.finally(() => {
+		});
 }, 100);
 
 const loadingAdd = ref(false);
@@ -78,7 +76,7 @@ const rules = {
 	damageLevel: {
 		trigger: ["blur"],
 		required: true,
-		message: "请选择",
+		message: "请选择"
 	},
 	bookInfo: {
 		trigger: ["blur"],
@@ -87,8 +85,8 @@ const rules = {
 			if (!value) {
 				return new Error("请选择");
 			}
-		},
-	},
+		}
+	}
 };
 
 // todo add
@@ -103,11 +101,14 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
+	props.updateMenuItem("i-book");
+	props.updateBreadcrumbArray(B_BOOK_ADD);
+
 	Service.Books.getDamageLevels().then((res) => {
 		damageLevelOptionsRef.value = res?.map((item) => {
 			return {
 				label: `${item.value}`,
-				value: `${item.key}`,
+				value: `${item.key}`
 			};
 		});
 	});
@@ -116,10 +117,20 @@ onMounted(() => {
 
 <template>
 	<n-layout-header>
-		<n-flex class="items-center m-l-1em m-r-1em">
-			<h1 class="m-r-a">新增书籍</h1>
+		<n-flex class="items-center h-3em" justify="center">
+			<router-link :to="BOOK">
+				<n-button type="tertiary">
+					<template #icon>
+						<n-icon :component="IBack" />
+					</template>
+					后退
+				</n-button>
+			</router-link>
 			<n-button :loading="loadingAdd" type="success" @click.prevent="add">
-				确定
+				<template #icon>
+					<n-icon :component="IAdd" />
+				</template>
+				新增
 			</n-button>
 		</n-flex>
 	</n-layout-header>
@@ -133,9 +144,9 @@ onMounted(() => {
 				<n-form ref="addFormRef" :model="info" :rules="rules">
 					<n-form-item label="书籍破损程度" path="damageLevel">
 						<n-select
-							clearable
 							v-model:value="info.damageLevel"
 							:options="damageLevelOptionsRef"
+							clearable
 							placeholder="破损程度"
 						/>
 					</n-form-item>
@@ -153,30 +164,30 @@ onMounted(() => {
 					</n-form-item>
 					<n-table v-show="info.bookInfo" class="m-b-1.5em">
 						<tbody>
-							<tr>
-								<td class="w-43%">名称</td>
-								<td>
-									<n-tag :bordered="false" type="info">
-										{{ info.bookInfo?.bookName }}
-									</n-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>ISBN</td>
-								<td>
-									<n-tag :bordered="false" type="default">
-										{{ info.bookInfo?.isbn }}
-									</n-tag>
-								</td>
-							</tr>
-							<tr>
-								<td>CIP</td>
-								<td>
-									<n-tag :bordered="false" type="default">
-										{{ info.bookInfo?.cip }}
-									</n-tag>
-								</td>
-							</tr>
+						<tr>
+							<td class="w-43%">名称</td>
+							<td>
+								<n-tag :bordered="false" type="info">
+									{{ info.bookInfo?.bookName }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>ISBN</td>
+							<td>
+								<n-tag :bordered="false" type="default">
+									{{ info.bookInfo?.isbn }}
+								</n-tag>
+							</td>
+						</tr>
+						<tr>
+							<td>CIP</td>
+							<td>
+								<n-tag :bordered="false" type="default">
+									{{ info.bookInfo?.cip }}
+								</n-tag>
+							</td>
+						</tr>
 						</tbody>
 					</n-table>
 					<n-form-item label="备注" path="remark">

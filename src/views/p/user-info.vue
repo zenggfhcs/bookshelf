@@ -1,16 +1,6 @@
 <script setup>
 import ShowOrEdit from "@/components/show-or-edit.vue";
-import {
-	NButton,
-	NCard,
-	NDivider,
-	NFlex,
-	NSpace,
-	NTabPane,
-	NTabs,
-	NText,
-	useMessage,
-} from "naive-ui";
+import { NButton, NCard, NDivider, NFlex, NSpace, NTabPane, NTabs, NText, useMessage } from "naive-ui";
 import { ref } from "vue";
 
 const message = useMessage();
@@ -25,7 +15,7 @@ const info = {
 	birthday: "1111-11-11",
 	remark: "这是个人描述",
 	email: "1008611@abc.efg",
-	phoneNumber: "12345678910",
+	phoneNumber: "12345678910"
 };
 
 const inputRef = ref("1");
@@ -81,13 +71,13 @@ const inputRef = ref("1");
 					<n-flex class="h-2em items-center">
 						<n-text class="w-10em">用户名</n-text>
 						<n-text>汪汪睡滨滨</n-text>
-						<n-text class="m-l-a">用户名以用于帐户安全设置 </n-text>
+						<n-text class="m-l-a">用户名以用于帐户安全设置</n-text>
 					</n-flex>
 					<n-divider style="margin: 0.5em 0" />
 					<n-flex class="h-2em items-center">
 						<n-text class="w-10em">出生日期</n-text>
 						<n-text>1111-11-11</n-text>
-						<n-text class="m-l-a">出生日期以用于帐户安全设置 </n-text>
+						<n-text class="m-l-a">出生日期以用于帐户安全设置</n-text>
 					</n-flex>
 					<n-divider style="margin: 0.5em 0" />
 					<n-flex class="h-2em items-center">
@@ -99,7 +89,7 @@ const inputRef = ref("1");
 					<n-flex class="h-2em items-center">
 						<n-text class="w-10em">用户名</n-text>
 						<n-text>汪汪睡滨滨</n-text>
-						<n-text class="m-l-a">用户名以用于帐户安全设置 </n-text>
+						<n-text class="m-l-a">用户名以用于帐户安全设置</n-text>
 					</n-flex>
 				</n-card>
 
@@ -119,27 +109,27 @@ const inputRef = ref("1");
 						<n-text class="w-10em">电子邮箱</n-text>
 						<n-text>汪汪睡滨滨</n-text>
 						<n-text class="m-l-a"
-							>用于登录 BookShelf 帐户的电子邮件地址
+						>用于登录 BookShelf 帐户的电子邮件地址
 						</n-text>
 					</n-flex>
 					<n-divider style="margin: 0.5em 0" />
 					<n-flex class="h-2em items-center">
 						<n-text class="w-10em">电话号码</n-text>
 						<n-text>汪汪睡滨滨</n-text>
-						<n-text class="m-l-a">电话号码以用于帐户安全设置 </n-text>
+						<n-text class="m-l-a">电话号码以用于帐户安全设置</n-text>
 					</n-flex>
 				</n-card>
 			</n-space>
 		</n-tab-pane>
-		<n-tab-pane name="reset-password" tab="修改密码"> 修改密码 </n-tab-pane>
+		<n-tab-pane name="reset-password" tab="修改密码"> 修改密码</n-tab-pane>
 		<n-tab-pane name="feedback" tab="意见反馈">
 			<ShowOrEdit
-				:value="inputRef"
 				:on-update-value="
 					(v) => {
 						inputRef = v;
 					}
 				"
+				:value="inputRef"
 			/>
 		</n-tab-pane>
 	</n-tabs>

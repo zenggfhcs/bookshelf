@@ -9,8 +9,8 @@ import { randomInt } from "@/utils/random.js";
 function gProps(name) {
 	return {
 		to: {
-			name: `${name}`,
-		},
+			name: `${name}`
+		}
 	};
 }
 

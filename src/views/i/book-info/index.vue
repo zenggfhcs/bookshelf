@@ -11,7 +11,6 @@ import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
-import { renderCell } from "@/utils/render.js";
 import {
 	NBackTop,
 	NButton,
@@ -28,14 +27,14 @@ import {
 	NModal,
 	NPagination,
 	NTag,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 {
@@ -58,16 +57,16 @@ function rowProps(row) {
 			router.push({
 				name: BOOK_INFO_CHECK.name,
 				params: {
-					id: row?.id,
-				},
+					id: row?.id
+				}
 			});
-		},
+		}
 	};
 }
 
 const timestamp = reactive({
 	creationTime: null,
-	lastUpdatedTime: null,
+	lastUpdatedTime: null
 });
 
 async function query() {
@@ -76,7 +75,7 @@ async function query() {
 		message,
 		Service.BookInfos.filteredList(filterReactive),
 		itemCount,
-		tableData,
+		tableData
 	);
 	loadingQuery.value = false;
 }
@@ -87,7 +86,7 @@ const queryHandler = debounce(() => {
 
 const cols = [
 	{
-		type: "selection",
+		type: "selection"
 	},
 	{
 		title: "ISBN",
@@ -95,72 +94,72 @@ const cols = [
 		width: 172,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return h(
 				NTag,
 				{ type: "error", bordered: false },
-				{ default: () => row?.isbn },
+				{ default: () => row?.isbn }
 			);
-		},
+		}
 	},
 	{
 		title: "CIP",
 		key: "cip",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return h(
 				NTag,
 				{ type: "error", bordered: false },
-				{ default: () => row?.cip },
+				{ default: () => row?.cip }
 			);
-		},
+		}
 	},
 	{
 		title: "名称",
 		key: "bookName",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "作者",
 		key: "author",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "类型",
 		key: "bookType",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "正文语种",
 		key: "lang",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return LANG_TYPE_MAP.getByValue(row?.lang);
-		},
+		}
 	},
 	{
 		title: "关键字",
 		key: "keyword",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return row?.keyword
@@ -173,69 +172,40 @@ const cols = [
 							type: "info",
 							bordered: false,
 							style: {
-								marginRight: "3px",
-							},
+								marginRight: "3px"
+							}
 						},
 						{
-							default: () => item,
-						},
+							default: () => item
+						}
 					);
 				});
-		},
+		}
 	},
 	{
 		title: "出版社",
 		key: "publisher",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "版次",
 		key: "edition",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "印次",
 		key: "printing",
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
-	},
-	{
-		title: "库存",
-		key: "stock",
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		render: (row) => {
-			if (!row?.stock) {
-				return renderCell();
-			}
-			return row?.stock;
-		},
-	},
-	{
-		// todo 没有借出这个数据
-		title: "借出",
-		key: "stock",
-		// 溢出省略
-		ellipsis: {
-			tooltip: true,
-		},
-		render: (row) => {
-			if (!row?.stock) {
-				return renderCell();
-			}
-			return row?.stock;
-		},
-	},
+			tooltip: true
+		}
+	}
 ];
 
 const itemCount = ref(0);
@@ -248,7 +218,7 @@ const pagination = reactive({
 		{ label: "10 每页", value: 10 },
 		{ label: "15 每页", value: 15 },
 		{ label: "30 每页", value: 30 },
-		{ label: "50 每页", value: 50 },
+		{ label: "50 每页", value: 50 }
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -262,23 +232,24 @@ const pagination = reactive({
 		}
 
 		query();
-	},
+	}
 });
 
 const filterReactive = reactive({
 	entity: {
 		isbn: "",
-		cip: "",
+		cip: ""
 	},
 	filter: {
 		page: {
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
-			end: computed(() => pagination.pageSize),
-		},
-	},
+			end: computed(() => pagination.pageSize)
+		}
+	}
 });
 
-function filterResetHandler() {}
+function filterResetHandler() {
+}
 
 function filterHandler() {
 	showFilterModal.value = false;
@@ -328,9 +299,9 @@ onMounted(() => {
 				</n-button>
 			</router-link>
 			<n-button
-				type="info"
-				secondary
 				class="h-2.4em"
+				secondary
+				type="info"
 				@click.prevent="showFilterModal = true"
 			>
 				<template #icon>
@@ -339,10 +310,10 @@ onMounted(() => {
 				筛选
 			</n-button>
 			<n-button
-				type="info"
-				class="h-2.4em"
-				@click.prevent="queryHandler"
 				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="queryHandler"
 			>
 				<template #icon>
 					<n-icon :component="IReload" />

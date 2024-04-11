@@ -1,18 +1,21 @@
 <script setup>
 import { Header } from "@/constant/Header.js";
 import Home from "@/icons/home.vue";
-import Statistics from "@/icons/i-statistics.vue";
+import IUser from "@/icons/i-user.vue";
 import Msg from "@/icons/msg.vue";
 import Search from "@/icons/search.vue";
 import sun from "@/icons/sun.vue";
 import {
 	BASE_I,
-	J_CHECK,
 	J_HOME,
-	J_STATISTICS,
+	J_MY,
+	J_QUERY_ADVANCED,
+	J_QUERY_QUICK,
+	J_QUERY_TYPE,
+	J_READ_GUIDE,
 	J_USER_INFO,
 	LOGIN,
-	REGISTER,
+	REGISTER
 } from "@/router/RouterValue.js";
 import { local } from "@/storage/local.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
@@ -31,7 +34,7 @@ import {
 	NModal,
 	NPopover,
 	NSpace,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { computed, h, onBeforeMount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
@@ -83,28 +86,50 @@ const menuOptions = [
 		label: () =>
 			h(RouterLink, gProps(J_HOME.name), { default: () => "首页" }),
 		key: "j-index",
-		icon: renderIcon(Home),
+		icon: renderIcon(Home)
 	},
 	{
 		label: () =>
-			h(RouterLink, gProps(J_CHECK.name), { default: () => "查阅" }),
-		key: "j-check",
-		icon: renderIcon(Search),
+			h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "检索" }),
+		children: [
+			{
+				label: () =>
+					h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "快速检索" }),
+				key: "j-quick-query"
+			},
+			{
+				label: () =>
+					h(RouterLink, gProps(J_QUERY_ADVANCED.name), { default: () => "高级检索" }),
+				key: "j-advanced-query"
+			},
+			{
+				label: () =>
+					h(RouterLink, gProps(J_QUERY_TYPE.name), { default: () => "分类检索" }),
+				key: "j-type-query"
+			},
+			{
+				label: () =>
+					h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+				key: "j-read-guide"
+			}
+		],
+		key: "j-query",
+		icon: renderIcon(Search)
 	},
+	// {
+	// 	label: () =>
+	// 		h(RouterLink, gProps(J_MY.name), { default: () => "统计" }),
+	// 	key: "j-statistics",
+	// 	icon: renderIcon(Statistics)
+	// },
 	{
 		label: () =>
-			h(RouterLink, gProps(J_STATISTICS.name), { default: () => "统计" }),
-		key: "j-statistics",
-		icon: renderIcon(Statistics),
-	},
-	{
-		label: () =>
-			h(RouterLink, gProps(J_STATISTICS.name), {
-				default: () => "借阅记录",
+			h(RouterLink, gProps(J_MY.name), {
+				default: () => "我的图书馆"
 			}),
-		key: "j-debit-info",
-		icon: renderIcon(Statistics),
-	},
+		key: "j-my-info",
+		icon: renderIcon(IUser)
+	}
 ];
 
 const themeIcon = computed(() => {
@@ -129,15 +154,14 @@ onBeforeMount(() => {
 						:expand-icon="expandIcon"
 						:options="menuOptions"
 						:root-indent="0"
-						class="font-size-5"
 						mode="horizontal"
+						@update:value="(v) => console.log(v)"
 					/>
 					<n-badge :value="15" class="m-l-a" dot>
 						<Msg class="w-2em h-2em" />
 					</n-badge>
 					<n-button
 						circle
-						size="large"
 						strong
 						@click="props.switchTheme()"
 					>
@@ -156,14 +180,9 @@ onBeforeMount(() => {
 						>
 							<template #trigger>
 								<n-button
-									class="m-.2em h-3em w-3em b-rd-50% p-0 b-0 cursor-pointer"
-									@click.prevent="switchShowUserPopover()"
-								>
-									<span
-										class="font-800 font-size-1em"
-										style="font-family: inter, sans-serif"
-										>ME</span
-									>
+									class="h-2.4em w-2.4em b-rd-50% p-0 b-0 cursor-pointer"
+									@click.prevent="switchShowUserPopover()">
+									<span style="font-family: inter, sans-serif">ME</span>
 								</n-button>
 							</template>
 							<n-form label-placement="left">
@@ -213,9 +232,9 @@ onBeforeMount(() => {
 			</n-flex>
 		</n-layout-header>
 		<n-layout
-			class="absolute top-3em bottom-0 left-0 right-0"
-			content-style="padding: 0 1em;"
 			:native-scrollbar="false"
+			class="absolute top-3em bottom-0 left-0 right-0"
+			content-style="padding: 1em;"
 		>
 			<router-view v-slot="{ Component }">
 				<component :is="Component" :updateMenuItem="updateMenuItem" />

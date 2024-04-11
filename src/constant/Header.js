@@ -1,7 +1,7 @@
 import { TOKEN } from "@/storage/key.js";
 
 const Header = {
-	TOKEN,
+	TOKEN
 };
 
 export { Header };

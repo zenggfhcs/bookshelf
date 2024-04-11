@@ -8,17 +8,7 @@ import { debounce } from "@/utils/debounce.js";
 import { gCode } from "@/utils/generate.js";
 import { formValidator } from "@/utils/validator.js";
 import { ChevronBackOutline } from "@vicons/ionicons5";
-import {
-	NButton,
-	NCountdown,
-	NFlex,
-	NForm,
-	NFormItem,
-	NGi,
-	NGrid,
-	NInput,
-	useMessage,
-} from "naive-ui";
+import { NButton, NCountdown, NFlex, NForm, NFormItem, NGi, NGrid, NInput, useMessage } from "naive-ui";
 import { reactive, ref } from "vue";
 
 /**
@@ -40,7 +30,7 @@ const model = reactive({
 	email: null,
 	code: null,
 	authenticationString: null,
-	reenteredAuthenticationString: null,
+	reenteredAuthenticationString: null
 });
 
 /**
@@ -151,14 +141,14 @@ const rules = {
 				}
 				emailValidated.value = true;
 				return true;
-			},
-		},
+			}
+		}
 	],
 	code: [
 		{
 			required: true,
 			trigger: ["input", "blur"], // todo diy 触发方式，在表单验证时触发
-			message: "请输入验证码",
+			message: "请输入验证码"
 		},
 		{
 			trigger: ["validate-code"],
@@ -167,8 +157,8 @@ const rules = {
 					return new Error("验证码错误");
 				}
 				return true;
-			},
-		},
+			}
+		}
 	],
 	authenticationString: [
 		{
@@ -181,26 +171,26 @@ const rules = {
 					return new Error("password 长度应为 7-17");
 				}
 				return true;
-			},
-		},
+			}
+		}
 	],
 	reenteredAuthenticationString: [
 		{
 			required: true,
 			message: "请再次输入密码",
-			trigger: ["input", "blur"],
+			trigger: ["input", "blur"]
 		},
 		{
 			validator: validatePasswordStartWith,
 			message: "两次密码输入不一致",
-			trigger: "input",
+			trigger: "input"
 		},
 		{
 			validator: validatePasswordSame,
 			message: "两次密码输入不一致",
-			trigger: ["blur", "authenticationString-input"],
-		},
-	],
+			trigger: ["blur", "authenticationString-input"]
+		}
+	]
 };
 
 /**
@@ -211,7 +201,7 @@ const sendCode = debounce(() => {
 
 	const _entity = {
 		email: model.email,
-		authenticationString: code.value?.toString(),
+		authenticationString: code.value?.toString()
 	};
 	sendCodeLoading.value = true;
 	Service.Users.sendMailForResetPassword(_entity)
@@ -241,7 +231,7 @@ const resetPassword = debounce(() => {
 			.then((_) => {
 				message.success(
 					"修改成功，3秒后自动跳转到登录界面...",
-					messageOptions,
+					messageOptions
 				);
 				setTimeout(() => {
 					goto(LOGIN);

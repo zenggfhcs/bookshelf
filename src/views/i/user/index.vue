@@ -31,18 +31,19 @@ import {
 	NPagination,
 	NSelect,
 	NTag,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 const message = useMessage();
 
-function filterResetHandler() {}
+function filterResetHandler() {
+}
 
 function filterHandler() {
 	query();
@@ -54,7 +55,7 @@ const tableData = ref([]);
 
 const cols = [
 	{
-		type: "selection",
+		type: "selection"
 	},
 	{
 		title: "用户昵称",
@@ -63,12 +64,12 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			if (!row?.displayName) return renderCell();
 			return row?.displayName;
-		},
+		}
 	},
 	{
 		title: "用户名",
@@ -77,20 +78,20 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			if (!(row?.surname || row?.name)) return renderCell();
 			return h(
 				NTag,
 				{
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => `${row?.surname} ${row?.name}`,
-				},
+					default: () => `${row?.surname} ${row?.name}`
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "邮箱",
@@ -99,19 +100,19 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					bordered: false,
-					type: "error",
+					type: "error"
 				},
 				{
-					default: () => row?.email,
-				},
-			),
+					default: () => row?.email
+				}
+			)
 	},
 	{
 		title: "电话",
@@ -120,7 +121,7 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			if (!row?.phoneNumber || row?.phoneNumber === "") return renderCell();
@@ -128,13 +129,13 @@ const cols = [
 				NTag,
 				{
 					bordered: false,
-					type: "error",
+					type: "error"
 				},
 				{
-					default: () => row?.phoneNumber,
-				},
+					default: () => row?.phoneNumber
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "角色",
@@ -143,20 +144,20 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			return h(
 				NTag,
 				{
 					type: getTagType.byUserRole(row?.role?.name),
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => ROLE_MAP.getByValue(row?.role?.name),
-				},
+					default: () => ROLE_MAP.getByValue(row?.role?.name)
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "年龄",
@@ -165,7 +166,7 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			if (typeof row?.age !== "number" || row?.age <= 0) return renderCell();
@@ -173,13 +174,13 @@ const cols = [
 				NTag,
 				{
 					type: getTagType.byAge(row?.age),
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.age,
-				},
+					default: () => row?.age
+				}
 			);
-		},
+		}
 	},
 	{
 		title: "性别",
@@ -188,7 +189,7 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) => {
 			if (!convertGender(row?.gender)) return renderCell();
@@ -196,14 +197,14 @@ const cols = [
 				NTag,
 				{
 					bordered: false,
-					type: getTagType.byGender(row?.gender),
+					type: getTagType.byGender(row?.gender)
 				},
 				{
-					default: () => convertGender(row?.gender),
-				},
+					default: () => convertGender(row?.gender)
+				}
 			);
-		},
-	},
+		}
+	}
 ];
 
 const checkedRowKeysRef = ref([]);
@@ -223,10 +224,10 @@ function rowProps(row) {
 			router.push({
 				name: USER_CHECK.name,
 				params: {
-					id: row?.id,
-				},
+					id: row?.id
+				}
 			});
-		},
+		}
 	};
 }
 
@@ -238,15 +239,15 @@ const filterReactive = reactive({
 		phoneNumber: "",
 		role: {
 			id: "",
-			name: "",
-		},
+			name: ""
+		}
 	},
 	filter: {
 		page: {
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
-			end: computed(() => pagination.pageSize),
-		},
-	},
+			end: computed(() => pagination.pageSize)
+		}
+	}
 });
 
 const roleOptions = ROLE_PRE_DEFINED;
@@ -257,7 +258,7 @@ async function query() {
 		message,
 		Service.Users.filteredList(filterReactive),
 		itemCount,
-		tableData,
+		tableData
 	);
 	loadingQuery.value = false;
 }
@@ -274,7 +275,7 @@ const pagination = reactive({
 		{ label: "10 每页", value: 10 },
 		{ label: "15 每页", value: 15 },
 		{ label: "20 每页", value: 20 },
-		{ label: "30 每页", value: 30 },
+		{ label: "30 每页", value: 30 }
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -287,7 +288,7 @@ const pagination = reactive({
 			loadingQuery.value = true;
 		}
 		query();
-	},
+	}
 });
 
 onBeforeMount(() => {
@@ -322,9 +323,9 @@ onMounted(() => {
 				删除所选
 			</n-button>
 			<n-button
-				type="info"
-				secondary
 				class="h-2.4em"
+				secondary
+				type="info"
 				@click.prevent="showFilterModal = true"
 			>
 				<template #icon>
@@ -335,10 +336,10 @@ onMounted(() => {
 				筛选
 			</n-button>
 			<n-button
-				type="info"
-				class="h-2.4em"
-				@click.prevent="clickQuery"
 				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="clickQuery"
 			>
 				<template #icon>
 					<n-icon :component="IReload" />
@@ -401,9 +402,9 @@ onMounted(() => {
 			<n-form-item label="用户名" path="id">
 				<n-input-group>
 					<n-input
-						:style="{ width: '30%' }"
 						v-model:value="filterReactive.entity.surname"
 						:allow-input="inputValidator.noSideSpace"
+						:style="{ width: '30%' }"
 						placeholder="姓"
 					/>
 					<n-input-group-label>&nbsp;</n-input-group-label>

@@ -8,7 +8,7 @@
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const I_HOME = {
 	path: "/i",
-	label: "工作台",
+	label: "工作台"
 };
 const B_I = [I_HOME];
 export { B_I };
@@ -19,26 +19,28 @@ export { B_I };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const DEBIT = {
 	path: "/i/debits",
-	label: "借阅记录",
+	label: "借阅记录"
 };
 
 const DEBIT_ADD = {
 	path: "/i/debits/add",
-	label: "新增",
+	label: "新增"
 };
 
 function DEBIT_CHECK(id) {
 	return {
 		path: `/i/debits/${id}`,
-		label: "详情",
+		label: "详情"
 	};
 }
 
 const B_DEBIT = [I_HOME, DEBIT];
 const B_DEBIT_ADD = [I_HOME, DEBIT, DEBIT_ADD];
+
 function B_DEBIT_CHECK(id) {
 	return [I_HOME, DEBIT, DEBIT_CHECK(id)];
 }
+
 export { B_DEBIT, B_DEBIT_ADD, B_DEBIT_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -47,18 +49,18 @@ export { B_DEBIT, B_DEBIT_ADD, B_DEBIT_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BOOK = {
 	path: "/i/books",
-	label: "书籍",
+	label: "书籍"
 };
 
 const BOOK_ADD = {
 	path: "/i/books/add",
-	label: "新增",
+	label: "新增"
 };
 
 function BOOK_CHECK(id) {
 	return {
 		path: `/i/books/${id}`,
-		label: "详情",
+		label: "详情"
 	};
 }
 
@@ -78,23 +80,24 @@ export { B_BOOK, B_BOOK_ADD, B_BOOK_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BOOK_INFO = {
 	path: "/i/bookInfos",
-	label: "书籍信息",
+	label: "书籍信息"
 };
 
 const BOOK_INFO_ADD = {
 	path: "/i/bookInfos/add",
-	label: "新增",
+	label: "新增"
 };
 
 function BOOK_INFO_CHECK(id) {
 	return {
 		path: `/i/bookInfos/${id}`,
-		label: "详情",
+		label: "详情"
 	};
 }
 
 const B_BOOK_INFO = [I_HOME, BOOK_INFO];
 const B_BOOK_INFO_ADD = [I_HOME, BOOK_INFO, BOOK_INFO_ADD];
+
 function B_BOOK_INFO_CHECK(id) {
 	return [I_HOME, BOOK_INFO, BOOK_INFO_CHECK(id)];
 }
@@ -107,19 +110,19 @@ export { B_BOOK_INFO, B_BOOK_INFO_ADD, B_BOOK_INFO_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const PUBLISHER_INDEX = {
 	path: "/i/publishers",
-	label: "出版社",
+	label: "出版社"
 };
 
 function PUBLISHER_CHECK(id) {
 	return {
 		path: `/i/publishers/${id}`,
-		label: "详情",
+		label: "详情"
 	};
 }
 
 const PUBLISHER_ADD = {
 	path: "/i/publishers/add",
-	label: "新增",
+	label: "新增"
 };
 
 const B_PUBLISHER_INDEX = [I_HOME, PUBLISHER_INDEX];
@@ -138,18 +141,18 @@ export { B_PUBLISHER_INDEX, B_PUBLISHER_CHECK, B_PUBLISHER_ADD };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const USER_INDEX = {
 	path: "/i/users",
-	label: "用户",
+	label: "用户"
 };
 
 const USER_ADD = {
 	path: "/i/users/add",
-	label: "新增",
+	label: "新增"
 };
 
 function USER_CHECK(id) {
 	return {
 		path: `/i/users/${id}`,
-		label: "详情",
+		label: "详情"
 	};
 }
 
@@ -169,13 +172,13 @@ export { B_USER_INDEX, B_USER_ADD, B_USER_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const LOG_INDEX = {
 	path: "/i/logs",
-	label: "日志",
+	label: "日志"
 };
 
 function LOG_CHECK(id) {
 	return {
 		path: `/i/logs/${id}`,
-		label: "详情",
+		label: "详情"
 	};
 }
 
@@ -193,7 +196,7 @@ export { B_LOG_INDEX, B_LOG_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const MY = {
 	path: "/i/my",
-	label: "我的",
+	label: "我的"
 };
 
 const B_MY = [I_HOME, MY];

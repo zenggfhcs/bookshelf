@@ -9,7 +9,6 @@ import { BOOK_ADD, BOOK_CHECK } from "@/router/RouterValue.js";
 import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
-import { renderCell } from "@/utils/render.js";
 import {
 	NBackTop,
 	NButton,
@@ -21,14 +20,14 @@ import {
 	NLayoutHeader,
 	NPagination,
 	NTag,
-	useMessage,
+	useMessage
 } from "naive-ui";
 import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
 	"updateMenuItem",
-	"updateBreadcrumbArray",
+	"updateBreadcrumbArray"
 ]);
 
 props.updateMenuItem("i-book");
@@ -43,7 +42,7 @@ props.updateBreadcrumbArray(B_BOOK);
 const entity = reactive({
 	id: "",
 	name: "",
-	place: "",
+	place: ""
 });
 
 const message = useMessage();
@@ -52,14 +51,14 @@ const tableData = ref([]);
 
 const cols = [
 	{
-		title: "书籍名称",
+		title: "书名",
 		key: "bookInfo.bookName",
 		// 可拖动
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 		//render: (row) => h()
 	},
 	{
@@ -69,8 +68,8 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "类型",
@@ -79,49 +78,49 @@ const cols = [
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
-		},
+			tooltip: true
+		}
 	},
 	{
 		title: "破损程度",
 		key: "damageLevel",
 		resizable: true,
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: "info",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => row?.damageLevel,
-				},
-			),
+					default: () => row?.damageLevel
+				}
+			)
 	},
 	{
-		title: "可借的",
+		title: "状态",
 		key: "borrowable",
 		// 可拖动
 		resizable: true,
 		// 溢出省略
 		ellipsis: {
-			tooltip: true,
+			tooltip: true
 		},
 		render: (row) =>
 			h(
 				NTag,
 				{
 					type: "primary",
-					bordered: false,
+					bordered: false
 				},
 				{
-					default: () => (row?.borrowable ? "yes" : "no"),
-				},
-			),
-	},
+					default: () => (row?.borrowable ? "yes" : "no")
+				}
+			)
+	}
 ];
 
 const loadingQuery = ref(false);
@@ -133,31 +132,31 @@ function rowProps(row) {
 			router.push({
 				name: BOOK_CHECK.name,
 				params: {
-					id: row?.id,
-				},
+					id: row?.id
+				}
 			});
-		},
+		}
 	};
 }
 
 const timestamp = reactive({
 	creationTime: null,
-	lastUpdatedTime: null,
+	lastUpdatedTime: null
 });
 
 const filter = reactive({
 	age: {
 		start: 0,
-		end: 255,
+		end: 255
 	},
 	creationTime: {
 		start: null,
-		end: null,
+		end: null
 	},
 	lastUpdatedTime: {
 		start: null,
-		end: null,
-	},
+		end: null
+	}
 });
 
 const filterReactive = reactive({
@@ -165,9 +164,9 @@ const filterReactive = reactive({
 	filter: {
 		page: {
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
-			end: computed(() => pagination.pageSize),
-		},
-	},
+			end: computed(() => pagination.pageSize)
+		}
+	}
 });
 
 async function query() {
@@ -176,7 +175,7 @@ async function query() {
 		message,
 		Service.Books.filteredList(filterReactive),
 		itemCount,
-		tableData,
+		tableData
 	);
 	loadingQuery.value = false;
 }
@@ -193,7 +192,7 @@ const pagination = reactive({
 		{ label: "10 每页", value: 10 },
 		{ label: "15 每页", value: 15 },
 		{ label: "20 每页", value: 20 },
-		{ label: "30 每页", value: 30 },
+		{ label: "30 每页", value: 30 }
 	],
 	showQuickJumper: true,
 	onUpdatePageSize: (pageSize) => {
@@ -206,7 +205,7 @@ const pagination = reactive({
 			loadingQuery.value = true;
 		}
 		query();
-	},
+	}
 });
 
 onBeforeMount(() => {
@@ -229,7 +228,7 @@ onMounted(() => {
 					新增
 				</n-button>
 			</router-link>
-			<n-button type="info" secondary class="h-2.4em">
+			<n-button class="h-2.4em" secondary type="info">
 				<template #icon>
 					<n-icon>
 						<write />
@@ -238,10 +237,10 @@ onMounted(() => {
 				筛选
 			</n-button>
 			<n-button
-				type="info"
-				class="h-2.4em"
-				@click.prevent="clickQuery"
 				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="clickQuery"
 			>
 				<template #icon>
 					<n-icon :component="IReload" />

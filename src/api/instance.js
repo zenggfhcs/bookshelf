@@ -19,7 +19,7 @@ const instance = axios.create({
 		(data, _) => {
 			// 对发送的 data 进行任意转换处理
 			return JSON.stringify(data);
-		},
+		}
 	],
 	// `transformResponse` 在传递给 then/catch 前，允许修改响应数据
 	transformResponse: [
@@ -27,12 +27,12 @@ const instance = axios.create({
 			const _jsonData = JSON.parse(data);
 			console.log(_jsonData);
 			return _jsonData;
-		},
+		}
 	],
 
 	// 自定义请求头
 	headers: {
-		"Content-Type": "application/json",
+		"Content-Type": "application/json"
 	},
 
 	// `timeout` 指定请求超时的毫秒数。
@@ -81,7 +81,7 @@ const instance = axios.create({
 	// 则promise 将会 resolved，否则是 rejected。
 	validateStatus: (status) => {
 		return status >= 200 && status < 300; // 默认值
-	},
+	}
 });
 
 function requestAgain(config) {
@@ -146,7 +146,7 @@ instance.interceptors.request.use(
 	(error) => {
 		// 对请求错误做些什么
 		return Promise.reject(error);
-	},
+	}
 );
 
 // todo 出现的错误，通过 Promise.reject 返回；要避免在错误中产生错误
@@ -170,7 +170,7 @@ instance.interceptors.response.use(
 		const response = error.response;
 
 		return canRefresh(response) ? refresh(response) : Promise.reject(error);
-	},
+	}
 );
 
 export { instance };
