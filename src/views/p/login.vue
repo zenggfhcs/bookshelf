@@ -19,14 +19,14 @@ const model = reactive({
 	email: null,
 	authenticationString: null
 });
-const loading = ref(false);
+const loadingRef = ref(false);
 
 const rules = {
 	email: [
 		{
 			required: true, // 字段必填
 			trigger: ["input", "blur"],
-			validator(rule, value) {
+			validator(_, value) {
 				// 自定义检查
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入邮箱");
@@ -40,7 +40,7 @@ const rules = {
 		{
 			required: true,
 			trigger: ["input", "blur"],
-			validator(rule, value) {
+			validator(_, value) {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
 				} else if (value.length < 7 || value.length > 17) {
@@ -58,7 +58,7 @@ const rules = {
 const login = debounce((e) => {
 	e.preventDefault(); // 父默认方法
 	formValidator(formRef, message, () => {
-		loading.value = true;
+		loadingRef.value = true;
 		console.log(model);
 		Service.Users.login(model)
 			.then((res) => {
@@ -70,7 +70,7 @@ const login = debounce((e) => {
 				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
-				loading.value = false;
+				loadingRef.value = false;
 			});
 	});
 });
@@ -122,7 +122,7 @@ const login = debounce((e) => {
 		</n-form-item>
 		<n-form-item>
 			<n-button
-				:loading="loading"
+				:loadingRef="loadingRef"
 				class="w-100%"
 				size="large"
 				type="success"

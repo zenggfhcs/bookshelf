@@ -1,5 +1,6 @@
 <script setup>
 import PaneCurrentDebit from "@/views/j/my/pane-current-debit.vue";
+import PaneFeedback from "@/views/j/my/pane-feedback.vue";
 import PaneLogout from "@/views/j/my/pane-logout.vue";
 import PaneMyInfo from "@/views/j/my/pane-my-info.vue";
 import PaneRepayInfo from "@/views/j/my/pane-repay-info.vue";
@@ -55,6 +56,7 @@ onMounted(() => {
 		</n-tab-pane>
 		<n-tab-pane name="" tab="" />
 		<n-tab-pane name="feedback" tab="意见反馈">
+			<PaneFeedback />
 		</n-tab-pane>
 		<n-tab-pane name="logout" tab="退出登录">
 			<PaneLogout />

@@ -170,7 +170,7 @@ const timestamp = reactive({
 
 const showFilterModal = ref(false);
 
-const filterReactive = reactive({
+const payloadReactive = reactive({
 	entity: {},
 	filter: {
 		page: {
@@ -204,7 +204,7 @@ async function query() {
 
 	await queryList(
 		message,
-		Service.Debits.filteredList(filterReactive),
+		Service.Debits.filteredList(payloadReactive),
 		itemCount,
 		tableData
 	);
@@ -323,7 +323,7 @@ onMounted(() => {
 			title="筛选"
 			transform-origin="center"
 		>
-			<n-form :model="filterReactive">
+			<n-form :model="payloadReactive">
 				<n-form-item>
 					<n-radio-group v-model:value="radioRef">
 						<n-space>

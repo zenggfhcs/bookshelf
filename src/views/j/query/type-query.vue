@@ -1,5 +1,7 @@
 <script setup>
 import { Service } from "@/api/index.js";
+import { checkLoginState } from "@/utils/check-login-state.js";
+import { queryList } from "@/utils/query.js";
 import {
 	NBackTop,
 	NButton,
@@ -14,7 +16,7 @@ import {
 	NTree,
 	useMessage
 } from "naive-ui";
-import { onMounted, ref } from "vue";
+import { computed, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const message = useMessage();
 
@@ -27,9 +29,13 @@ const defaultExpandedKeys = ref([]);
 
 const treeDataRef = ref([]);
 
+const itemCountRef = ref(0);
+
 const tableDataRef = ref([]);
 
-const loading = ref(false);
+const loadingQuery = ref(false);
+
+const isQueriedRef = ref(false);
 
 const cols = [
 	{
@@ -77,10 +83,28 @@ const pageSizeOptions = [
 	}
 ];
 
-const pageSizeRef = ref(10);
+const pageSizeRef = ref(20);
+
+const pagination = reactive({
+	page: 1,
+	pageSize: 20,
+})
+
+const payloadReactive = reactive({
+	entity: {
+		bookType: "",
+	},
+	filter: {
+		page: {
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize),
+		}
+	}
+})
 
 function setItemLabel(item) {
 	item.label = `${item.key}  ${item.value}`;
+	item.value = `${item.key}`;
 	if (!item.children || !item.children.length) {
 		// 清除叶子节点的展开按键
 		item.children = null;
@@ -88,6 +112,33 @@ function setItemLabel(item) {
 	}
 	item?.children?.forEach(setItemLabel);
 }
+
+function nodeProps({ option }) {
+	return {
+		onClick() {
+			// todo 查询对应分类书籍
+			payloadReactive.entity.bookType = option.value;
+			query();
+		}
+	};
+}
+
+async function query() {
+	loadingQuery.value = true;
+	if (!isQueriedRef.value)
+		isQueriedRef.value = true;
+	await queryList(
+		message,
+		Service.BookInfos.filteredList(payloadReactive),
+		itemCountRef,
+		tableDataRef
+	);
+	loadingQuery.value = false;
+}
+
+onBeforeMount(() => {
+	checkLoginState();
+})
 
 onMounted(() => {
 	Service.BookInfos.getFirstLevelType()
@@ -101,15 +152,6 @@ onMounted(() => {
 			console.log(err);
 		});
 });
-
-function nodeProps({ option }) {
-	return {
-		onClick() {
-			// todo 查询对应分类书籍
-			message.info("[Click] " + option.label);
-		}
-	};
-}
 </script>
 
 <template>
@@ -130,25 +172,26 @@ function nodeProps({ option }) {
 			<n-card>
 				<n-space v-if="tableDataRef.length" vertical>
 					<n-space>
-						<n-pagination v-model:page="tableDataRef.length" :page-count="100" simple />
-						<n-select v-model:value="pageSizeRef" :options="pageSizeOptions" class="w-7em" size="small" />
+						<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
+						<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
 						<n-button class="ml-2" size="small" type="primary">排序</n-button>
 					</n-space>
 					<n-layout-content>
 						<n-data-table
 							:columns="cols"
 							:data="tableDataRef"
-							:loading="loading"
+							:loading="loadingQuery"
 							:show-header="false"
 							:single-line="false"
 							bordered
 							remote />
 					</n-layout-content>
 					<n-space reverse>
-						<n-pagination v-model:page="tableDataRef.length" :page-count="100" simple />
-						<n-select v-model:value="pageSizeRef" :options="pageSizeOptions" class="w-7em" size="small" />
+						<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
+						<n-select  v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
 					</n-space>
 				</n-space>
+				<n-card v-else-if="isQueriedRef" >没有你想要的东西哦</n-card>
 			</n-card>
 		</n-layout>
 	</n-card>

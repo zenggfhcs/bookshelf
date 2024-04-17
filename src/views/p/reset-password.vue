@@ -13,7 +13,6 @@ import { reactive, ref } from "vue";
 
 /**
  * form ref 定位
- * @type {Ref<UnwrapRef<null>>}
  */
 const formRef = ref(null);
 
@@ -46,7 +45,7 @@ const codeRef = ref(null);
  * 加载中为 true，否则 false
  * @Default false
  */
-const loading = ref(false);
+const loadingRef = ref(false);
 
 const sendCodeLoading = ref(false);
 
@@ -74,7 +73,6 @@ function renderCountdown({ minutes, seconds }) {
 
 /**
  * 计时器标识ref，用于重置计时器
- * @type {Ref<any>}
  */
 const countdownRef = ref();
 
@@ -100,7 +98,7 @@ function countdownFinish() {
 	code.value = "";
 }
 
-function validatePasswordStartWith(rule, value) {
+function validatePasswordStartWith(_, value) {
 	return (
 		!!model.authenticationString &&
 		model.authenticationString?.toString().startsWith(value) &&
@@ -108,7 +106,7 @@ function validatePasswordStartWith(rule, value) {
 	);
 }
 
-function validatePasswordSame(rule, value) {
+function validatePasswordSame(_, value) {
 	return value === model.authenticationString;
 }
 
@@ -131,7 +129,7 @@ const rules = {
 		{
 			required: true, // 字段必填
 			trigger: ["input", "blur"],
-			validator(rule, value) {
+			validator(_, value) {
 				// 自定义检查
 				emailValidated.value = false;
 				if (value === undefined || value === null || value.length === 0) {
@@ -152,7 +150,7 @@ const rules = {
 		},
 		{
 			trigger: ["validate-code"],
-			validator(rule, value) {
+			validator(_, value) {
 				if (value.trim() !== code.value) {
 					return new Error("验证码错误");
 				}
@@ -164,7 +162,7 @@ const rules = {
 		{
 			required: true,
 			trigger: ["input", "blur"],
-			validator(rule, value) {
+			validator(_, value) {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
 				} else if (value.length < 7 || value.length > 17) {
@@ -226,7 +224,7 @@ const resetPassword = debounce(() => {
 		if (handleCodeAfterConfirmed()) {
 			// todo
 		}
-		loading.value = true;
+		loadingRef.value = true;
 		Service.Users.resetPassword(model)
 			.then((_) => {
 				message.success(
@@ -241,7 +239,7 @@ const resetPassword = debounce(() => {
 				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
-				loading.value = false;
+				loadingRef.value = false;
 			});
 	});
 });
@@ -278,7 +276,7 @@ const resetPassword = debounce(() => {
 				/>
 				<n-button
 					:disabled="ObtainedCode || !emailValidated"
-					:loading="sendCodeLoading"
+					:loadingRef="sendCodeLoading"
 					class="b-rd-0"
 					style="border-radius: 0 0.1em 0.1em 0"
 					type="info"
@@ -346,7 +344,7 @@ const resetPassword = debounce(() => {
 			</n-gi>
 			<n-gi :span="3">
 				<n-button
-					:loading="loading"
+					:loadingRef="loadingRef"
 					class="w-100%"
 					size="large"
 					type="success"

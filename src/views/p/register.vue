@@ -19,7 +19,7 @@ const model = ref({
 
 const reenteredRef = ref(null);
 
-const loading = ref(false);
+const loadingRef = ref(false);
 
 function validatePasswordStartWith(_, value) {
 	return (
@@ -93,7 +93,7 @@ const rules = {
 const register = debounce((e) => {
 	e.preventDefault(); // 父默认方法
 	formValidator(formRef, message, () => {
-		loading.value = true;
+		loadingRef.value = true;
 		Service.Users.register(model.value)
 			.then((_) => {
 				message.success(
@@ -108,7 +108,7 @@ const register = debounce((e) => {
 				message.error(err.message, messageOptions);
 			})
 			.finally(() => {
-				loading.value = false;
+				loadingRef.value = false;
 			});
 	});
 });
@@ -171,7 +171,7 @@ const register = debounce((e) => {
 		</n-form-item>
 		<n-form-item>
 			<n-button
-				:loading="loading"
+				:loadingRef="loadingRef"
 				class="w-100%"
 				size="large"
 				type="success"

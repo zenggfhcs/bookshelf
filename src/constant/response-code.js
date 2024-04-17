@@ -1,12 +1,8 @@
-// todo 删除它
-const TOKEN_R = 199;
+const OK = 200;
 
-const SUCCESS = 200;
-
-const UNAUTHORIZED = 606;
+const UNAUTHORIZED = 401;
 
 export const SC = {
-	SUCCESS,
-	UNAUTHORIZED,
-	TOKEN_R
+	OK,
+	UNAUTHORIZED
 };

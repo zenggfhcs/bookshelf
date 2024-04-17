@@ -159,7 +159,7 @@ const filter = reactive({
 	}
 });
 
-const filterReactive = reactive({
+const payloadReactive = reactive({
 	entity: {},
 	filter: {
 		page: {
@@ -173,7 +173,7 @@ async function query() {
 	loadingQuery.value = true;
 	await queryList(
 		message,
-		Service.Books.filteredList(filterReactive),
+		Service.Books.filteredList(payloadReactive),
 		itemCount,
 		tableData
 	);

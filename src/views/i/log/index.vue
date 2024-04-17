@@ -199,7 +199,7 @@ const timestamp = reactive({
 	creationTime: null
 });
 
-const filterReactive = reactive({
+const payloadReactive = reactive({
 	entity: {
 		createdBy: null,
 		dataId: null,
@@ -238,7 +238,7 @@ async function query() {
 	loadingRefresh.value = true;
 	await queryList(
 		message,
-		Service.Logs.filteredList(filterReactive),
+		Service.Logs.filteredList(payloadReactive),
 		itemCount,
 		tableData
 	);
@@ -376,10 +376,10 @@ onMounted(() => {
 			title="筛选"
 			transform-origin="center"
 		>
-			<n-form :model="filterReactive">
+			<n-form :model="payloadReactive">
 				<n-form-item label="操作者 id" path="createdBy">
 					<n-input
-						v-model:value="filterReactive.entity.createdBy"
+						v-model:value="payloadReactive.entity.createdBy"
 						:allow-input="inputValidator.onlyAllowNumber"
 						clearable
 						placeholder="操作者 id"
@@ -387,7 +387,7 @@ onMounted(() => {
 				</n-form-item>
 				<n-form-item label="数据 id" path="dataId">
 					<n-input
-						v-model:value="filterReactive.entity.dataId"
+						v-model:value="payloadReactive.entity.dataId"
 						:allow-input="inputValidator.onlyAllowNumber"
 						clearable
 						placeholder="数据 id"
@@ -395,7 +395,7 @@ onMounted(() => {
 				</n-form-item>
 				<n-form-item label="操作类型" path="type">
 					<n-select
-						v-model:value="filterReactive.entity.type"
+						v-model:value="payloadReactive.entity.type"
 						:options="typeOptions"
 						clearable
 						multiple
@@ -404,7 +404,7 @@ onMounted(() => {
 				</n-form-item>
 				<n-form-item label="数据类型" path="serviceName">
 					<n-select
-						v-model:value="filterReactive.entity.serviceName"
+						v-model:value="payloadReactive.entity.serviceName"
 						:options="serviceNameOptions"
 						clearable
 						placeholder="选择数据类型"
@@ -421,16 +421,16 @@ onMounted(() => {
 				<n-form-item label="运行时间-毫秒">
 					<n-input-group>
 						<n-input-number
-							v-model:value="filterReactive.filter.elapsedTime.start"
-							:max="filterReactive.filter.elapsedTime.end"
+							v-model:value="payloadReactive.filter.elapsedTime.start"
+							:max="payloadReactive.filter.elapsedTime.end"
 							:min="0"
 							:style="{ width: '50%' }"
 							clearable
 						/>
 						<n-input-number
-							v-model:value="filterReactive.filter.elapsedTime.end"
+							v-model:value="payloadReactive.filter.elapsedTime.end"
 							:max="100000"
-							:min="filterReactive.filter.elapsedTime.start"
+							:min="payloadReactive.filter.elapsedTime.start"
 							:style="{ width: '50%' }"
 							clearable
 						/>

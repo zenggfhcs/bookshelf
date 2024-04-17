@@ -73,7 +73,7 @@ async function query() {
 	loadingQuery.value = true;
 	await queryList(
 		message,
-		Service.BookInfos.filteredList(filterReactive),
+		Service.BookInfos.filteredList(payloadReactive),
 		itemCount,
 		tableData
 	);
@@ -235,7 +235,7 @@ const pagination = reactive({
 	}
 });
 
-const filterReactive = reactive({
+const payloadReactive = reactive({
 	entity: {
 		isbn: "",
 		cip: ""
@@ -351,12 +351,12 @@ onMounted(() => {
 			title="筛选"
 			transform-origin="center"
 		>
-			<n-form :model="filterReactive">
+			<n-form :model="payloadReactive">
 				<n-form-item label="ISBN">
-					<n-input v-model:value="filterReactive.entity.isbn" clearable />
+					<n-input v-model:value="payloadReactive.entity.isbn" clearable />
 				</n-form-item>
 				<n-form-item label="CIP">
-					<n-input v-model:value="filterReactive.entity.cip" clearable />
+					<n-input v-model:value="payloadReactive.entity.cip" clearable />
 				</n-form-item>
 				<n-form-item label="借阅时间">
 					<n-date-picker

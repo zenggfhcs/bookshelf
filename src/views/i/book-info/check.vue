@@ -149,8 +149,8 @@ async function query(id) {
 }
 
 const queryHandler = debounce(() => {
-	if (info.id) {
-		query(info.id);
+	if (props.id) {
+		query(props.id);
 	}
 });
 

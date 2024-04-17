@@ -33,7 +33,7 @@ const itemCountRef = ref(0);
 
 const loadingQuery = ref(false);
 
-const filterReactive = reactive({
+const payloadReactive = reactive({
 	entity: {},
 	filter: {
 		page: {
@@ -46,7 +46,7 @@ const filterReactive = reactive({
 onMounted(async () => {
 	await queryList(
 		message,
-		Service.Debits.filteredList(filterReactive),
+		Service.Debits.filteredList(payloadReactive),
 		itemCountRef,
 		tableDataRef
 	);

@@ -231,7 +231,7 @@ function rowProps(row) {
 	};
 }
 
-const filterReactive = reactive({
+const payloadReactive = reactive({
 	entity: {
 		surname: "",
 		name: "",
@@ -256,7 +256,7 @@ async function query() {
 	loadingQuery.value = true;
 	await queryList(
 		message,
-		Service.Users.filteredList(filterReactive),
+		Service.Users.filteredList(payloadReactive),
 		itemCount,
 		tableData
 	);
@@ -398,18 +398,18 @@ onMounted(() => {
 		title="筛选"
 		transform-origin="center"
 	>
-		<n-form :model="filterReactive">
+		<n-form :model="payloadReactive">
 			<n-form-item label="用户名" path="id">
 				<n-input-group>
 					<n-input
-						v-model:value="filterReactive.entity.surname"
+						v-model:value="payloadReactive.entity.surname"
 						:allow-input="inputValidator.noSideSpace"
 						:style="{ width: '30%' }"
 						placeholder="姓"
 					/>
 					<n-input-group-label>&nbsp;</n-input-group-label>
 					<n-input
-						v-model:value="filterReactive.entity.name"
+						v-model:value="payloadReactive.entity.name"
 						:allow-input="inputValidator.noSideSpace"
 						placeholder="名"
 					/>
@@ -417,7 +417,7 @@ onMounted(() => {
 			</n-form-item>
 			<n-form-item label="邮箱" path="email">
 				<n-input
-					v-model:value="filterReactive.entity.email"
+					v-model:value="payloadReactive.entity.email"
 					:allow-input="inputValidator.noSideSpace"
 					clearable
 					placeholder="输入邮箱"
@@ -425,7 +425,7 @@ onMounted(() => {
 			</n-form-item>
 			<n-form-item label="电话" path="phone">
 				<n-input
-					v-model:value="filterReactive.entity.phoneNumber"
+					v-model:value="payloadReactive.entity.phoneNumber"
 					:allow-input="inputValidator.onlyAllowNumber"
 					clearable
 					maxlength="11"
@@ -434,7 +434,7 @@ onMounted(() => {
 			</n-form-item>
 			<n-form-item label="角色" path="role">
 				<n-select
-					v-model:value="filterReactive.entity.role.name"
+					v-model:value="payloadReactive.entity.role.name"
 					:options="roleOptions"
 					clearable
 				/>

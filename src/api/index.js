@@ -81,6 +81,9 @@ BookInfos.getTypeByKeyword = (keyword) => {
 BookInfos.getFirstLevelType = () => {
 	return request.get(`/bookInfos/bookType/firstLevel`);
 };
+
+BookInfos.quickQuery = (filterPayload) =>
+	request.post(`/bookInfos/list:quick-query`, filterPayload);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -122,7 +125,7 @@ Users.resetPassword = (entity) => {
 };
 
 Users.sendMailForResetPassword = (entity) => {
-	return request.post("/users/password:reset/email:sendCode", entity);
+	return request.post("/users/password:reset/email:sendResetLink", entity);
 };
 
 Users.tokenUser = () => {

@@ -32,7 +32,7 @@ const start = async () => {
 	Service.Users.verifyEmail(query.token)
 		.then((res) => {
 			const data = res.data;
-			if (data?.code !== SC.SUCCESS) {
+			if (data?.code !== SC.OK) {
 				updateMessage(
 					"error",
 					"VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)"

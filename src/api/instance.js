@@ -95,36 +95,34 @@ function canRefresh(response) {
 	);
 }
 
-const refreshToken = async () =>
-	await Service.Token.refresh()
+async function refreshToken() {
+	return Service.Token.refresh()
 		.then((res) => {
-			const _data = res?.data;
-			if (_data?.code === SC.SUCCESS) {
-				const _tokenInfo = JSON.parse(res?.data?.data?.token);
-				resetToken(_tokenInfo);
-			}
-			return res;
+			const _tokenInfo = JSON.parse(res?.token);
+			resetToken(_tokenInfo);
+			return Promise.resolve(res);
 		})
-		.catch((err) => err);
+		.catch((err) => Promise.reject(err));
+}
 
-const refresh = async (response) => {
+async function refresh(response) {
 	const { config } = response;
-	const _refreshRes = await refreshToken();
+	return refreshToken()
+		.then((_) => {
+			// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
+			const _dataString = config?.data;
+			if (_dataString) {
+				config.data = JSON.parse(_dataString);
+			}
+			// 重请求
+			return requestAgain(config);
+		})
+		.catch(_ => {
+			return Promise.reject(response?.data)
+		});
 
-	if (_refreshRes?.data?.code === SC.SUCCESS) {
-		// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
-		const _dataString = config?.data;
-		if (_dataString) {
-			config.data = JSON.parse(_dataString);
-		}
-		// 重请求
-		console.log("refresh success");
-		return requestAgain(config);
-	}
 
-	console.log("refresh failed");
-	return Promise.reject(response?.data);
-};
+}
 
 // 添加请求拦截器
 instance.interceptors.request.use(
@@ -158,7 +156,7 @@ instance.interceptors.response.use(
 		 */
 
 		// 预设错误
-		if (response?.data?.code !== SC.SUCCESS) {
+		if (response?.data?.code !== SC.OK) {
 			return Promise.reject(response?.data);
 		}
 

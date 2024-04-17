@@ -1,18 +1,34 @@
 <script setup>
 
+import { Service } from "@/api/index.js";
 import Search from "@/icons/search.vue";
 import keywordStore from "@/store/keywordStore.js";
-import QueryResult from "@/views/j/query/query-result.vue";
-import { NButton, NFlex, NInput, NInputGroup, NSelect } from "naive-ui";
-import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { queryList } from "@/utils/query.js";
+import {
+	NButton,
+	NCard,
+	NCollapse,
+	NCollapseItem,
+	NDataTable,
+	NFlex,
+	NInput,
+	NInputGroup,
+	NLayoutContent,
+	NPagination,
+	NSelect,
+	NSpace,
+	NTree,
+	useMessage
+} from "naive-ui";
+import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 
 const props = defineProps(["updateMenuItem"]);
+
+const message = useMessage();
 
 const queryKeywordStore = keywordStore();
 
 const queryKeyword = ref(queryKeywordStore.key);
-
-const _entity = reactive({});
 
 const queryContentTypeOptions = [
 	{
@@ -28,7 +44,7 @@ const queryContentTypeOptions = [
 		value: "cip"
 	},
 	{
-		label: "书名（前缀）",
+		label: "题名（前缀）",
 		value: "bookName"
 	}
 
@@ -36,10 +52,122 @@ const queryContentTypeOptions = [
 
 const queryContentTypeRef = ref("");
 
+const tableDataRef = ref([]);
+
+const itemCountRef = ref(0);
+
+const loadingQuery = ref(false);
+
+const cols = [
+	{
+		type: "selection"
+	},
+	{
+		title: "序号",
+		key: "id"
+	},
+	{
+		title: "题名",
+		key: "bookName"
+	},
+	{
+		title: "著者",
+		key: "author"
+	},
+	{
+		title: "出版社",
+		key: "publisher"
+	},
+	{
+		title: "出版日期",
+		key: "publishedDate" // todo yyyy-MM
+	},
+	{
+		title: "索引号",
+		key: "callNumber"
+	}
+];
+
+const pagination = reactive({
+	page: 1,
+	pageSize: 10,
+	pageSizes: [
+		{ label: "10 每页", value: 10 },
+		{ label: "15 每页", value: 15 },
+		{ label: "20 每页", value: 20 },
+		{ label: "30 每页", value: 30 }
+	],
+	onUpdatePageSize: (pageSize) => {
+		pagination.pageSize = pageSize;
+		pagination.onUpdatePage(1);
+	},
+	onUpdatePage: (page = pagination.page) => {
+		pagination.page = page;
+		query();
+	}
+});
+
+
+const data = [ // todo type data
+	{
+		label: "label1",
+		value: "value1"
+	},
+	{
+		label: "label2",
+		value: "value2"
+	},
+	{
+		label: "label3",
+		value: "value3"
+	}
+];
+
+function gByName(name){
+	return computed(
+		() =>
+			(!queryContentTypeRef.value
+				|| queryContentTypeRef.value === name)
+				? queryKeyword.value
+				: ""
+	);
+}
+
+const payloadReactive = reactive({
+	entity: {
+		bookName: gByName("bookName"),
+		publisher:  gByName("publisher"),
+		author:  gByName("author"),
+		bookType:  gByName("bookType"),
+		keyword:  gByName("keyword"),
+		isbn:  gByName("isbn"),
+		callNumber: gByName("callNumber"),
+		cip:  gByName("cip"),
+	},
+	filter: {
+		page: {
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize)
+		}
+	}
+});
+
+async function query() {
+	loadingQuery.value = true;
+
+	await queryList(
+		message,
+		Service.BookInfos.quickQuery(payloadReactive),
+		itemCountRef,
+		tableDataRef
+	);
+
+	loadingQuery.value = false;
+}
+
 
 onMounted(() => {
 	props.updateMenuItem("j-quick-query");
-	console.log(queryKeyword);
 });
 
 onUnmounted(() => {
@@ -63,7 +191,60 @@ onUnmounted(() => {
 					</template>
 				</n-button>
 			</n-input-group>
-			<QueryResult />
+			<n-flex style="flex-wrap: nowrap">
+				<n-space class="flex-auto" vertical>
+					<n-space>
+						<n-pagination
+							v-model:page="pagination.page"
+							:item-count="itemCountRef"
+							@update-page="pagination.onUpdatePage"
+							@update-pageSize="pagination.onUpdatePageSize"
+							simple
+						/>
+						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+						          size="small" @update:value="pagination.onUpdatePageSize" />
+						<n-button class="ml-2" size="small" type="primary">排序</n-button>
+					</n-space>
+					<n-layout-content>
+						<n-data-table
+							:bordered="false"
+							:columns="cols"
+							:data="tableDataRef"
+							:loading="loadingQuery"
+							:show-header="false"
+							:single-line="false"
+							remote />
+					</n-layout-content>
+					<n-space reverse>
+						<n-pagination
+							v-model:page="pagination.page"
+							:item-count="itemCountRef"
+							@update-page="pagination.onUpdatePage"
+							@update-pageSize="pagination.onUpdatePageSize"
+							simple
+						/>
+						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+						          size="small" @update:value="pagination.onUpdatePageSize" />
+					</n-space>
+				</n-space>
+				<n-card class="w-16em" size="small">
+
+					<n-collapse>
+						<n-collapse-item name="1" title="分类">
+							<n-tree
+								:data="data"
+								block-node
+								checkable
+								checkbox-placement="right"
+								@update:checked-keys="(v) => {console.log(v)}"
+							/>
+						</n-collapse-item>
+						<n-collapse-item name="2" title="出版日期">
+							<n-tree />
+						</n-collapse-item>
+					</n-collapse>
+				</n-card>
+			</n-flex>
 		</n-flex>
 	</n-flex>
 </template>

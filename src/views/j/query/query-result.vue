@@ -1,6 +1,7 @@
 <script setup>
 
 import { Service } from "@/api/index.js";
+import { optional } from "@/utils/convert.js";
 import { queryList } from "@/utils/query.js";
 import {
 	NButton,
@@ -24,7 +25,9 @@ const tableDataRef = ref([]);
 
 const itemCountRef = ref(0);
 
-const loading = ref(false);
+const loadingQuery = ref(false);
+
+const props = defineProps(["entity"]);
 
 const cols = [
 	{
@@ -75,8 +78,8 @@ const pagination = reactive({
 	}
 });
 
-const filterReactive = reactive({
-	entity: {},
+const payloadReactive = reactive({
+	entity: optional(props.entity, {}),
 	filter: {
 		page: {
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
@@ -105,7 +108,7 @@ async function query() {
 
 	await queryList(
 		message,
-		Service.BookInfos.filteredList(filterReactive),
+		Service.BookInfos.filteredList(payloadReactive),
 		itemCountRef,
 		tableDataRef
 	);
@@ -119,7 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<n-flex style="flex-wrap: nowrap">
+	<n-flex v-if="tableDataRef.length" style="flex-wrap: nowrap">
 		<n-space class="flex-auto" vertical>
 			<n-space>
 				<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
