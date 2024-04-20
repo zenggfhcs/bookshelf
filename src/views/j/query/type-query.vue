@@ -1,6 +1,5 @@
 <script setup>
 import { Service } from "@/api/index.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
 import { queryList } from "@/utils/query.js";
 import {
 	NBackTop,
@@ -87,20 +86,20 @@ const pageSizeRef = ref(20);
 
 const pagination = reactive({
 	page: 1,
-	pageSize: 20,
-})
+	pageSize: 20
+});
 
 const payloadReactive = reactive({
 	entity: {
-		bookType: "",
+		bookType: ""
 	},
 	filter: {
 		page: {
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
-			end: computed(() => pagination.pageSize),
+			end: computed(() => pagination.pageSize)
 		}
 	}
-})
+});
 
 function setItemLabel(item) {
 	item.label = `${item.key}  ${item.value}`;
@@ -137,8 +136,8 @@ async function query() {
 }
 
 onBeforeMount(() => {
-	checkLoginState();
-})
+
+});
 
 onMounted(() => {
 	Service.BookInfos.getFirstLevelType()
@@ -188,10 +187,10 @@ onMounted(() => {
 					</n-layout-content>
 					<n-space reverse>
 						<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
-						<n-select  v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
+						<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
 					</n-space>
 				</n-space>
-				<n-card v-else-if="isQueriedRef" >没有你想要的东西哦</n-card>
+				<n-card v-else-if="isQueriedRef">没有你想要的东西哦</n-card>
 			</n-card>
 		</n-layout>
 	</n-card>

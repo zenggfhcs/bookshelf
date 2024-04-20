@@ -5,10 +5,9 @@ import { LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP, SERVI
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { LOG_CHECK } from "@/router/RouterValue.js";
+import { LOG_CHECK } from "@/router/router-value.js";
 import { PAGE, PAGE_SIZE } from "@/storage/key.js";
 import { session } from "@/storage/session.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
 import { getTagType, timestampToDateTimeString } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
@@ -301,7 +300,7 @@ function specificFilter(item, filterModel) {
 }
 
 onBeforeUnmount(() => {
-	checkLoginState();
+
 });
 
 onMounted(() => {

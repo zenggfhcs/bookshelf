@@ -4,7 +4,7 @@ function addItem(message, promise) {
 	return promise
 		.then((_) => {
 			message.success("新增成功", messageOptions);
-			return new Promise((resolve) => resolve());
+			return Promise.resolve();
 		})
 		.catch((err) => {
 			message.error(err.message, messageOptions);

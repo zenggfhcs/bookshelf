@@ -3,15 +3,16 @@ import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_DEBIT_CHECK } from "@/constant/breadcrumb.js";
 import IBack from "@/icons/i-back.vue";
+import IReload from "@/icons/i-reload.vue";
 import IReturn from "@/icons/i-return.vue";
 import Send from "@/icons/send.vue";
-import { BOOK_INFO_CHECK, DEBIT } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { BOOK_INFO_CHECK, DEBIT } from "@/router/router-value.js";
 import { timeFormat } from "@/utils/convert.js";
+import { debounce } from "@/utils/debounce.js";
 import { transMouth } from "@/utils/index.js";
-import { queryInfo } from "@/utils/query.js";
-import { NButton, NFlex, NGi, NGrid, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
-import { onBeforeMount, onMounted, reactive } from "vue";
+import { queryItem } from "@/utils/query.js";
+import { NButton, NFlex, NGi, NGrid, NIcon, NLayout, NLayoutHeader, NSpace, NTable, NTag, useMessage } from "naive-ui";
+import { computed, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"id",
@@ -44,22 +45,17 @@ const info = reactive({
 		phoneNumber: null
 	},
 	creationTime: null,
-	updatedBy: {
-		id: null,
-		displayName: null,
-		name: null,
-		surname: null,
-		email: null,
-		phoneNumber: null
-	},
-	lastUpdatedTime: null,
 	revision: null,
 	remark: null
 });
 
+const keywordsRef = computed(() => {
+	return info.book.bookInfo.keyword?.toString()?.split("－");
+});
 
-function query(id) {
-	queryInfo(message, Service.Debits.get(id), info);
+
+async function query(id) {
+	await queryItem(message, Service.Debits.get(id), info);
 }
 
 function showRepayConfirmModal() {
@@ -67,8 +63,12 @@ function showRepayConfirmModal() {
 	});
 }
 
-onBeforeMount(() => {
-	checkLoginState();
+const loadingQuery = ref(false);
+
+const queryHandler = debounce(async () => {
+	loadingQuery.value = true;
+	await query(props.id);
+	loadingQuery.value = false;
 });
 
 onMounted(() => {
@@ -87,6 +87,16 @@ onMounted(() => {
 					后退
 				</n-button>
 			</router-link>
+			<n-button
+				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="queryHandler">
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
+			</n-button>
 			<n-button type="error" @click.prevent="showRepayConfirmModal">
 				<template #icon>
 					<n-icon>
@@ -158,17 +168,16 @@ onMounted(() => {
 					<tr>
 						<td>主题词</td>
 						<td colspan="3">
-							<n-tag
-								v-for="(item, index) in info.book.bookInfo.keyword
-								?.toString()
-								?.split('－')"
-								:key="index"
-								:bordered="false"
-								class="m-r-3"
-								type="info"
-							>
-								{{ item }}
-							</n-tag>
+							<n-space>
+								<n-tag
+									v-for="(item, index) in keywordsRef"
+									:key="index"
+									:bordered="false"
+									type="info"
+								>
+									{{ item }}
+								</n-tag>
+							</n-space>
 							<!--					<n-dynamic-tags v-model:value="keywords" :render-tag="renderTag"/>-->
 						</td>
 					</tr>

@@ -3,13 +3,16 @@ import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
 import { goto } from "@/router/goto.js";
-import { LOGIN } from "@/router/RouterValue.js";
+import { LOGIN } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { gCode } from "@/utils/generate.js";
+import { copyMatchingProperties } from "@/utils/index.js";
 import { formValidator } from "@/utils/validator.js";
 import { ChevronBackOutline } from "@vicons/ionicons5";
-import { NButton, NCountdown, NFlex, NForm, NFormItem, NGi, NGrid, NInput, useMessage } from "naive-ui";
-import { reactive, ref } from "vue";
+import { NButton, NFlex, NForm, NFormItem, NGi, NGrid, NInput, NText, useMessage } from "naive-ui";
+import { onBeforeMount, reactive, ref } from "vue";
+
+
+const props = defineProps(["token"]);
 
 /**
  * form ref 定位
@@ -18,18 +21,20 @@ const formRef = ref(null);
 
 /**
  * 页面信息通知对象
- * @type {MessageApiInjection}
  */
 const message = useMessage();
 
+const resetFlagRef = ref(false);
+
 /**
- * form model object
+ * form info object
  */
-const model = reactive({
+const info = reactive({
 	email: null,
-	code: null,
 	authenticationString: null,
-	reenteredAuthenticationString: null
+	reenteredAuthenticationString: null,
+	revision: 0,
+	remark: ""
 });
 
 /**
@@ -37,91 +42,29 @@ const model = reactive({
  */
 const reenteredRef = ref(null);
 
-const codeRef = ref(null);
-
 /**
  * 加载标志
  * ：
  * 加载中为 true，否则 false
- * @Default false
  */
 const loadingRef = ref(false);
 
-const sendCodeLoading = ref(false);
-
-/**
- * 验证码有效标识，获取过验证码，并且验证码有效为 true
- * 没有获取过验证码，或者验证码均已失效后，置为 false
- */
-const ObtainedCode = ref(false);
-
-/**
- * 邮箱验证结果标志
- * ：
- * 通过验证为 true，否则为 false
- */
-const emailValidated = ref(false);
-
-/**
- * 计时按钮格式返回
- * @param minutes 分钟数
- * @param seconds 秒数
- */
-function renderCountdown({ minutes, seconds }) {
-	return `(${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")})`;
-}
-
-/**
- * 计时器标识ref，用于重置计时器
- */
-const countdownRef = ref();
-
-/**
- * 验证码，保存有效的验证码，验证码过期会被重置为 ''
- */
-const code = ref("");
-
-/**
- * 计时器时长
- */
-const duration = ref(3 * 60 * 1000);
-
-/**
- * 计时器完成回调函数
- */
-function countdownFinish() {
-	// 停止计时
-	ObtainedCode.value = false;
-	// 重置计时器
-	countdownRef.value.reset();
-	// 重置验证码
-	code.value = "";
-}
-
 function validatePasswordStartWith(_, value) {
 	return (
-		!!model.authenticationString &&
-		model.authenticationString?.toString().startsWith(value) &&
-		model.authenticationString.length >= value.length
+		!!info.authenticationString &&
+		info.authenticationString?.toString().startsWith(value) &&
+		info.authenticationString.length >= value.length
 	);
 }
 
 function validatePasswordSame(_, value) {
-	return value === model.authenticationString;
+	return value === info.authenticationString;
 }
 
 function handlePasswordInput() {
-	if (model.reenteredAuthenticationString) {
+	if (info.reenteredAuthenticationString) {
 		reenteredRef.value?.validate({ trigger: "authenticationString-input" });
 	}
-}
-
-function handleCodeAfterConfirmed() {
-	if (model.code) {
-		codeRef.value?.validate({ trigger: "validate-code" });
-		return true;
-	}
-	return false;
 }
 
 const rules = {
@@ -131,28 +74,10 @@ const rules = {
 			trigger: ["input", "blur"],
 			validator(_, value) {
 				// 自定义检查
-				emailValidated.value = false;
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入邮箱");
 				} else if (!REG_EMAIL.test(value.trim())) {
 					return new Error("邮箱格式错误");
-				}
-				emailValidated.value = true;
-				return true;
-			}
-		}
-	],
-	code: [
-		{
-			required: true,
-			trigger: ["input", "blur"], // todo diy 触发方式，在表单验证时触发
-			message: "请输入验证码"
-		},
-		{
-			trigger: ["validate-code"],
-			validator(_, value) {
-				if (value.trim() !== code.value) {
-					return new Error("验证码错误");
 				}
 				return true;
 			}
@@ -192,45 +117,15 @@ const rules = {
 };
 
 /**
- * 发送验证码
- */
-const sendCode = debounce(() => {
-	code.value = gCode();
-
-	const _entity = {
-		email: model.email,
-		authenticationString: code.value?.toString()
-	};
-	sendCodeLoading.value = true;
-	Service.Users.sendMailForResetPassword(_entity)
-		.then((_) => {
-			message.success("发送成功，请查看邮箱邮件", messageOptions);
-			ObtainedCode.value = true;
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			sendCodeLoading.value = false;
-		});
-});
-
-/**
  * 注册
  * @param e event
  */
 const resetPassword = debounce(() => {
 	formValidator(formRef, message, () => {
-		if (handleCodeAfterConfirmed()) {
-			// todo
-		}
 		loadingRef.value = true;
-		Service.Users.resetPassword(model)
+		Service.Users.resetPassword(info)
 			.then((_) => {
-				message.success(
-					"修改成功，3秒后自动跳转到登录界面...",
-					messageOptions
-				);
+				message.success("修改成功，3秒后自动跳转到登录界面...", messageOptions);
 				setTimeout(() => {
 					goto(LOGIN);
 				}, 3000);
@@ -243,6 +138,43 @@ const resetPassword = debounce(() => {
 			});
 	});
 });
+
+const sendLink = debounce(() => {
+	formValidator(formRef, message, async () => {
+		loadingRef.value = true;
+		await Service.Users.sendMailForResetPassword(info)
+			.then(_ => {
+				message.success("重置邮件已发送，请检查您的邮箱收件箱", messageOptions);
+				return Promise.resolve();
+			})
+			.catch((err) => {
+				message.error(err.message, messageOptions);
+			})
+			.finally(() => {
+				loadingRef.value = false;
+			});
+		loadingRef.value = false;
+	});
+});
+
+onBeforeMount(async () => {
+	// 检查有没有 token
+	if (props.token) {
+		await Service.Token.verify(props.token)
+			.then(res => {
+				copyMatchingProperties(res, info);
+				info.remark = props.token;
+				resetFlagRef.value = true;
+				return Promise.resolve();
+			})
+			.catch((err) => {
+				message.error(err.message, messageOptions);
+			})
+			.finally(() => {
+				loadingRef.value = false;
+			});
+	}
+});
 </script>
 
 <template>
@@ -250,54 +182,60 @@ const resetPassword = debounce(() => {
 		<div class="text-center font-800 font-size-1.5em">重置密码</div>
 		<div class="text-center">
 			<span class="font-size-.9em color-#8c98a4">
-				输入您的注册邮箱，我们为您发送一封包含验证码的邮件，在此输入以重置您的密码
+				<span v-if="resetFlagRef">重置您的密码</span>
+				<span v-else>输入您的注册邮箱，我们为您发送一封包含重置链接的邮件，访问链接以重置您的密码</span>
 			</span>
 		</div>
 	</n-flex>
-	<n-form id="login-form" ref="formRef" :model="model" :rules="rules">
+
+	<n-form id="login-form" ref="formRef" :model="info" :rules="rules">
 		<n-form-item label="邮箱" path="email" size="large">
+			<n-text v-if="resetFlagRef" class="font-size-1.5em">
+				{{ info.email }}
+			</n-text>
 			<n-input
-				v-model:value="model.email"
+				v-else
+				v-model:value="info.email"
 				:maxlength="32"
 				:minlength="5"
 				placeholder="输入邮箱"
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-form-item first label="验证码" path="code" size="large">
-			<div class="flex w-100%">
-				<n-input
-					ref="codeRef"
-					v-model:value="model.code"
-					class="flex-auto"
-					placeholder="输入验证码"
-					style="border-radius: 0.1em 0 0 0.1em"
-					@keydown.enter.prevent
-				/>
-				<n-button
-					:disabled="ObtainedCode || !emailValidated"
-					:loadingRef="sendCodeLoading"
-					class="b-rd-0"
-					style="border-radius: 0 0.1em 0.1em 0"
-					type="info"
-					@click.prevent="sendCode"
-				>
-					<span v-show="!ObtainedCode">获取</span>
-					<span v-show="ObtainedCode">
-						<n-countdown
-							ref="countdownRef"
-							:active="ObtainedCode"
-							:duration="duration"
-							:on-finish="countdownFinish"
-							:render="renderCountdown"
-						/>
-					</span>
-				</n-button>
-			</div>
-		</n-form-item>
-		<n-form-item first label="密码" path="authenticationString" size="large">
+		<!--		<n-form-item first label="验证码" path="code" size="large">-->
+		<!--			<div class="flex w-100%">-->
+		<!--				<n-input-->
+		<!--					ref="codeRef"-->
+		<!--					v-info:value="info.code"-->
+		<!--					class="flex-auto"-->
+		<!--					placeholder="输入验证码"-->
+		<!--					style="border-radius: 0.1em 0 0 0.1em"-->
+		<!--					@keydown.enter.prevent-->
+		<!--				/>-->
+		<!--				<n-button-->
+		<!--					:disabled="ObtainedCode || !emailValidated"-->
+		<!--					:loadingRef="sendCodeLoading"-->
+		<!--					class="b-rd-0"-->
+		<!--					style="border-radius: 0 0.1em 0.1em 0"-->
+		<!--					type="info"-->
+		<!--					@click.prevent="sendCode"-->
+		<!--				>-->
+		<!--					<span v-show="!ObtainedCode">获取</span>-->
+		<!--					<span v-show="ObtainedCode">-->
+		<!--						<n-countdown-->
+		<!--							ref="countdownRef"-->
+		<!--							:active="ObtainedCode"-->
+		<!--							:duration="duration"-->
+		<!--							:on-finish="countdownFinish"-->
+		<!--							:render="renderCountdown"-->
+		<!--						/>-->
+		<!--					</span>-->
+		<!--				</n-button>-->
+		<!--			</div>-->
+		<!--		</n-form-item>-->
+		<n-form-item v-if="resetFlagRef" first label="密码" path="authenticationString" size="large">
 			<n-input
-				v-model:value="model.authenticationString"
+				v-model:value="info.authenticationString"
 				:maxlength="17"
 				:minlength="7"
 				placeholder="输入密码"
@@ -307,15 +245,15 @@ const resetPassword = debounce(() => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-form-item
-			first
-			label="确认密码"
-			path="reenteredAuthenticationString"
-			size="large"
+		<n-form-item v-if="resetFlagRef"
+		             first
+		             label="确认密码"
+		             path="reenteredAuthenticationString"
+		             size="large"
 		>
 			<n-input
 				ref="reenteredRef"
-				v-model:value="model.reenteredAuthenticationString"
+				v-model:value="info.reenteredAuthenticationString"
 				:maxlength="17"
 				:minlength="7"
 				placeholder="再次输入密码"
@@ -324,36 +262,49 @@ const resetPassword = debounce(() => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-grid :cols="5" x-gap="12">
-			<n-gi :span="2">
-				<router-link :to="LOGIN">
+		<n-form-item>
+			<n-grid :cols="5" x-gap="12">
+				<n-gi :span="2">
+					<router-link :to="LOGIN">
+						<n-button
+							:bordered="false"
+							class="w-100%"
+							secondary
+							size="large"
+							strong
+							type="tertiary"
+						>
+							<template #icon>
+								<ChevronBackOutline />
+							</template>
+							前去登入
+						</n-button>
+					</router-link>
+				</n-gi>
+				<n-gi :span="3">
 					<n-button
-						:bordered="false"
+						v-if="resetFlagRef"
+						:loading="loadingRef"
 						class="w-100%"
-						secondary
 						size="large"
-						strong
-						type="tertiary"
+						type="success"
+						@click.prevent="resetPassword"
 					>
-						<template #icon>
-							<ChevronBackOutline />
-						</template>
-						前去登入
+						重置密码
 					</n-button>
-				</router-link>
-			</n-gi>
-			<n-gi :span="3">
-				<n-button
-					:loadingRef="loadingRef"
-					class="w-100%"
-					size="large"
-					type="success"
-					@click.prevent="resetPassword"
-				>
-					重置密码
-				</n-button>
-			</n-gi>
-		</n-grid>
+					<n-button
+						v-else
+						:loading="loadingRef"
+						class="w-100%"
+						size="large"
+						type="success"
+						@click.prevent="sendLink"
+					>
+						请求重置
+					</n-button>
+				</n-gi>
+			</n-grid>
+		</n-form-item>
 	</n-form>
 </template>
 

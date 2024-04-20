@@ -151,6 +151,7 @@ async function query() {
 }
 
 const handleQuery = debounce(() => {
+	// todo 至少输入一个才可以查询
 	query();
 });
 
@@ -166,9 +167,9 @@ onMounted(() => {
 				<n-space vertical>
 					<div class="font-size-1.5em">馆藏书目组配检索(tips:&nbsp;检索点为前方一致)</div>
 					<n-form
+						class="w-100%"
 						label-placement="left"
 						label-width="auto"
-						class="w-100%"
 						size="small">
 						<n-grid :cols="4" x-gap="12" y-gap="0">
 							<n-gi>
@@ -225,9 +226,9 @@ onMounted(() => {
 						<n-pagination
 							v-model:page="pagination.page"
 							:item-count="itemCountRef"
+							simple
 							@update-page="pagination.onUpdatePage"
 							@update-pageSize="pagination.onUpdatePageSize"
-							simple
 						/>
 						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
 						          size="small" @update:value="pagination.onUpdatePageSize" />
@@ -247,9 +248,9 @@ onMounted(() => {
 						<n-pagination
 							v-model:page="pagination.page"
 							:item-count="itemCountRef"
+							simple
 							@update-page="pagination.onUpdatePage"
 							@update-pageSize="pagination.onUpdatePageSize"
-							simple
 						/>
 						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
 						          size="small" @update:value="pagination.onUpdatePageSize" />
@@ -272,7 +273,7 @@ onMounted(() => {
 					</n-collapse>
 				</n-card>
 			</n-flex>
-			<n-card v-else-if="isQueriedRef" >没有你想要的东西哦</n-card>
+			<n-card v-else-if="isQueriedRef">没有你想要的东西哦</n-card>
 		</n-flex>
 	</n-layout>
 

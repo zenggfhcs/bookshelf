@@ -7,10 +7,9 @@ import { messageOptions } from "@/constant/options.js";
 import IAdd from "@/icons/i-add.vue";
 import IBack from "@/icons/i-back.vue";
 import { goto } from "@/router/goto.js";
-import { BOOK_INFO } from "@/router/RouterValue.js";
+import { BOOK_INFO } from "@/router/router-value.js";
 import { local } from "@/storage/local.js";
 import { addItem } from "@/utils/add.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
 import { convertToChineseNum, optional } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { dateDisabled } from "@/utils/disabled.js";
@@ -38,18 +37,13 @@ import {
 	NUpload,
 	useMessage
 } from "naive-ui";
-import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, h, onMounted, reactive, ref } from "vue";
 
-const props = defineProps([
-	"showModal",
-	"updateMenuItem",
-	"updateBreadcrumbArray"
-]);
-
-{
-	props.updateMenuItem("i-book-info");
-	props.updateBreadcrumbArray(B_BOOK_INFO_ADD);
-}
+const props = defineProps({
+	showModal: Function,
+	updateMenuItem: Function,
+	updateBreadcrumbArray: Function
+});
 
 const message = useMessage();
 
@@ -279,7 +273,7 @@ const handleQueryType = debounce((queryKeyword) => {
 		typeOptionsRef.value = [];
 		return;
 	}
-	Service.BookInfos.getTypeByKeyword(queryKeyword)
+	Service.ClcIndexes.getByKeyword(queryKeyword)
 		.then((res) => {
 			typeOptionsRef.value = res?.map((item) => {
 				return {
@@ -288,7 +282,9 @@ const handleQueryType = debounce((queryKeyword) => {
 				};
 			});
 		})
-		.catch()
+		.catch(_ => {
+			typeOptionsRef.value = [];
+		})
 		.finally();
 }, 100);
 
@@ -329,11 +325,10 @@ function handlePreview() {
 	showPreviewModal.value = true;
 }
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 onMounted(() => {
+	props.updateMenuItem("i-book-info");
+	props.updateBreadcrumbArray(B_BOOK_INFO_ADD);
 });
 </script>
 
@@ -352,7 +347,7 @@ onMounted(() => {
 				<template #icon>
 					<n-icon :component="IAdd" />
 				</template>
-				新增
+				提交
 			</n-button>
 		</n-flex>
 	</n-layout-header>

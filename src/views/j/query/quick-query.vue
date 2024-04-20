@@ -2,7 +2,9 @@
 
 import { Service } from "@/api/index.js";
 import Search from "@/icons/search.vue";
-import keywordStore from "@/store/keywordStore.js";
+import router from "@/router/index.js";
+import { J_BOOK_DETAIL } from "@/router/router-value.js";
+import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
 import {
 	NButton,
@@ -20,15 +22,13 @@ import {
 	NTree,
 	useMessage
 } from "naive-ui";
-import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem"]);
+const props = defineProps(["keyword", "updateMenuItem"]);
 
 const message = useMessage();
 
-const queryKeywordStore = keywordStore();
-
-const queryKeyword = ref(queryKeywordStore.key);
+const queryKeyword = ref(props.keyword);
 
 const queryContentTypeOptions = [
 	{
@@ -51,6 +51,21 @@ const queryContentTypeOptions = [
 ];
 
 const queryContentTypeRef = ref("");
+
+function rowProps(row) {
+	return {
+		onDblclick: (e) => {
+			e.preventDefault();
+			const _to = router.resolve({
+				name: J_BOOK_DETAIL.name,
+				params: {
+					id: row?.id
+				}
+			});
+			window.open(_to.href, "_blank");
+		}
+	};
+}
 
 const tableDataRef = ref([]);
 
@@ -123,7 +138,7 @@ const data = [ // todo type data
 	}
 ];
 
-function gByName(name){
+function fromName(name) {
 	return computed(
 		() =>
 			(!queryContentTypeRef.value
@@ -135,14 +150,14 @@ function gByName(name){
 
 const payloadReactive = reactive({
 	entity: {
-		bookName: gByName("bookName"),
-		publisher:  gByName("publisher"),
-		author:  gByName("author"),
-		bookType:  gByName("bookType"),
-		keyword:  gByName("keyword"),
-		isbn:  gByName("isbn"),
-		callNumber: gByName("callNumber"),
-		cip:  gByName("cip"),
+		bookName: fromName("bookName"),
+		publisher: fromName("publisher"),
+		author: fromName("author"),
+		bookType: fromName("bookType"),
+		keyword: fromName("keyword"),
+		isbn: fromName("isbn"),
+		callNumber: fromName("callNumber"),
+		cip: fromName("cip")
 	},
 	filter: {
 		page: {
@@ -165,13 +180,23 @@ async function query() {
 	loadingQuery.value = false;
 }
 
+const handleQuery = debounce(() => {
+	if (queryKeyword.value) {
+		query();
+	}
+});
+
+onBeforeMount(() => {
+	props.updateMenuItem("j-quick-query");
+	if (props.keyword) {
+		query();
+	}
+});
 
 onMounted(() => {
-	props.updateMenuItem("j-quick-query");
 });
 
 onUnmounted(() => {
-	queryKeywordStore.key = "";
 });
 </script>
 
@@ -185,7 +210,7 @@ onUnmounted(() => {
 					class="w-12em"
 				/>
 				<n-input v-model:value="queryKeyword" placeholder="请输入关键字" />
-				<n-button type="primary">
+				<n-button type="primary" @click.prevent="handleQuery">
 					<template #icon>
 						<Search />
 					</template>
@@ -197,9 +222,9 @@ onUnmounted(() => {
 						<n-pagination
 							v-model:page="pagination.page"
 							:item-count="itemCountRef"
+							simple
 							@update-page="pagination.onUpdatePage"
 							@update-pageSize="pagination.onUpdatePageSize"
-							simple
 						/>
 						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
 						          size="small" @update:value="pagination.onUpdatePageSize" />
@@ -211,6 +236,7 @@ onUnmounted(() => {
 							:columns="cols"
 							:data="tableDataRef"
 							:loading="loadingQuery"
+							:row-props="rowProps"
 							:show-header="false"
 							:single-line="false"
 							remote />
@@ -219,16 +245,15 @@ onUnmounted(() => {
 						<n-pagination
 							v-model:page="pagination.page"
 							:item-count="itemCountRef"
+							simple
 							@update-page="pagination.onUpdatePage"
 							@update-pageSize="pagination.onUpdatePageSize"
-							simple
 						/>
 						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
 						          size="small" @update:value="pagination.onUpdatePageSize" />
 					</n-space>
 				</n-space>
 				<n-card class="w-16em" size="small">
-
 					<n-collapse>
 						<n-collapse-item name="1" title="分类">
 							<n-tree

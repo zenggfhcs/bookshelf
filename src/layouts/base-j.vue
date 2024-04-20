@@ -2,7 +2,6 @@
 import { Header } from "@/constant/Header.js";
 import Home from "@/icons/home.vue";
 import IUser from "@/icons/i-user.vue";
-import Msg from "@/icons/msg.vue";
 import Search from "@/icons/search.vue";
 import sun from "@/icons/sun.vue";
 import {
@@ -16,14 +15,12 @@ import {
 	J_USER_INFO,
 	LOGIN,
 	REGISTER
-} from "@/router/RouterValue.js";
+} from "@/router/router-value.js";
 import { local } from "@/storage/local.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
 import {
-	NBadge,
 	NButton,
 	NFlex,
 	NForm,
@@ -77,7 +74,7 @@ function handleClickPopoverOutSide() {
 }
 
 onMounted(() => {
-	checkLoginState();
+
 	// localStorage.clear();
 });
 
@@ -157,9 +154,9 @@ onBeforeMount(() => {
 						mode="horizontal"
 						@update:value="(v) => console.log(v)"
 					/>
-					<n-badge :value="15" class="m-l-a" dot>
-						<Msg class="w-2em h-2em" />
-					</n-badge>
+					<!--					<n-badge :value="15" class="m-l-a" dot>-->
+					<!--						<Msg class="w-2em h-2em" />-->
+					<!--					</n-badge>-->
 					<n-button
 						circle
 						strong

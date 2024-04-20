@@ -3,12 +3,11 @@ import { Service } from "@/api/index.js";
 import { B_LOG_CHECK } from "@/constant/breadcrumb.js";
 import { LOG_SELECT, LOG_TYPE_MAP, SERVICE_NAME_MAP } from "@/constant/map.js";
 import IBack from "@/icons/i-back.vue";
-import { LOG } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { LOG } from "@/router/router-value.js";
 import { getTagType } from "@/utils/convert.js";
-import { queryInfo } from "@/utils/query.js";
+import { queryItem } from "@/utils/query.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
-import { onBeforeMount, onMounted, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import JsonViewer from "vue-json-viewer";
 
 const props = defineProps([
@@ -42,12 +41,9 @@ const info = reactive({
 
 
 async function query(id) {
-	await queryInfo(message, Service.Logs.get(id), info);
+	await queryItem(message, Service.Logs.get(id), info);
 }
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 onMounted(() => {
 	props.updateMenuItem("i-log");

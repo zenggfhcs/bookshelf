@@ -1,22 +1,24 @@
 <script setup>
+import { messageOptions } from "@/constant/options.js";
 import BookShelf from "@/icons/book-shelf.vue";
 import Search from "@/icons/search.vue";
-import { goto } from "@/router/goto.js";
-import { J_MY, J_QUERY_ADVANCED, J_QUERY_QUICK, J_QUERY_TYPE, J_READ_GUIDE } from "@/router/RouterValue.js";
-import keywordStore from "@/store/keywordStore.js";
-import { NButton, NCard, NFlex, NInput, NInputGroup, NSpace } from "naive-ui";
+import { goto_ } from "@/router/goto.js";
+import { J_MY, J_QUERY_ADVANCED, J_QUERY_QUICK, J_QUERY_TYPE, J_READ_GUIDE } from "@/router/router-value.js";
+import { NButton, NCard, NFlex, NInput, NInputGroup, NSpace, useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 
 const props = defineProps(["updateMenuItem"]);
 
+const message = useMessage();
 
 const queryKeyword = ref();
 
-const queryKeywordStore = keywordStore();
-
 function query() {
-	queryKeywordStore.key = queryKeyword.value;
-	goto(J_QUERY_QUICK);
+	if (!queryKeyword.value) {
+		message.warning("检索内容不可为空", messageOptions);
+		return;
+	}
+	goto_(`/j/query/quick?keyword=${queryKeyword.value}`);
 }
 
 onMounted(() => {
@@ -36,8 +38,7 @@ onMounted(() => {
 			</div>
 			<n-input-group>
 				<n-input v-model:value="queryKeyword" placeholder="请输入关键字" size="large" />
-
-				<n-button ghost size="large" type="primary" @click.prevent="query" @keydown.enter="query">
+				<n-button ghost size="large" type="primary" @click.prevent="query">
 					<template #icon>
 						<Search />
 					</template>

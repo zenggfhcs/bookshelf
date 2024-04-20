@@ -5,8 +5,7 @@ import IAdd from "@/icons/i-add.vue";
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { BOOK_ADD, BOOK_CHECK } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { BOOK_ADD, BOOK_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
 import {
@@ -22,7 +21,7 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui";
-import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, h, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
@@ -134,6 +133,8 @@ function rowProps(row) {
 				params: {
 					id: row?.id
 				}
+			}).then(res => {
+				console.log(res);
 			});
 		}
 	};
@@ -208,9 +209,6 @@ const pagination = reactive({
 	}
 });
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 onMounted(() => {
 	query();

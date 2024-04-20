@@ -4,7 +4,6 @@ import { messageOptions } from "@/constant/options.js";
 import { REG_BASE64 } from "@/constant/regular-expression.js";
 import { SC } from "@/constant/response-code.js";
 
-import { sleep } from "@/utils/sleep.js";
 import { NInput, useMessage } from "naive-ui";
 import { onMounted } from "vue";
 
@@ -19,7 +18,6 @@ const msgReactive = message.create("", messageOptions);
 function updateMessage(type, content) {
 	msgReactive.type = type;
 	msgReactive.content = content;
-	sleep();
 }
 
 const start = async () => {
@@ -54,7 +52,6 @@ onMounted(() => {
 		updateMessage("error", "无效的token");
 		return;
 	}
-	sleep();
 	if (_qt) start();
 });
 </script>

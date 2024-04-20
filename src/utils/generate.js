@@ -1,6 +1,3 @@
-import { shuffleArray } from "@/utils/index.js";
-import { randomInt } from "@/utils/random.js";
-
 /**
  * menu 路由生成
  * @param name 对应 router 配置里面的 name
@@ -17,22 +14,6 @@ function gProps(name) {
 export { gProps };
 
 //#endregion
-
-/**
- * 生成验证码
- * @returns {string}
- */
-function gCode() {
-	let code = "";
-	const l = randomInt(randomInt(3)) + 7;
-	while (code.length < l) {
-		code += Math.ceil(Math.random() * 1000).toString(16);
-	}
-	code = shuffleArray(code.split("")).join("");
-	return code.substring(0, l);
-}
-
-export { gCode };
 
 function generateISBN() {
 	// 随机选择ISBN-10或ISBN-13

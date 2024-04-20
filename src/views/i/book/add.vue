@@ -4,9 +4,8 @@ import { B_BOOK_ADD } from "@/constant/breadcrumb.js";
 import { messageOptions } from "@/constant/options.js";
 import IAdd from "@/icons/i-add.vue";
 import IBack from "@/icons/i-back.vue";
-import { BOOK } from "@/router/RouterValue.js";
+import { BOOK } from "@/router/router-value.js";
 import { addItem } from "@/utils/add.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
@@ -24,7 +23,7 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui";
-import { computed, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
@@ -54,7 +53,7 @@ const handleQueryBookInfo = debounce((queryKeyword) => {
 		bookInfoOptionsRef.value = [];
 		return;
 	}
-	Service.Books.getBookInfoByKeyword(queryKeyword)
+	Service.BookInfos.getByKeyword(queryKeyword)
 		.then((res) => {
 			bookInfoOptionsRef.value = res?.map((item) => {
 				return {
@@ -96,9 +95,6 @@ const add = debounce(() => {
 	});
 });
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 onMounted(() => {
 	props.updateMenuItem("i-book");

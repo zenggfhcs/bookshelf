@@ -111,6 +111,7 @@ async function refresh(response) {
 		.then((_) => {
 			// 请求的 data 在 transformRequest 中已经被转换成 jsonString，需要手动转换回来
 			const _dataString = config?.data;
+			console.log(_dataString);
 			if (_dataString) {
 				config.data = JSON.parse(_dataString);
 			}
@@ -118,7 +119,7 @@ async function refresh(response) {
 			return requestAgain(config);
 		})
 		.catch(_ => {
-			return Promise.reject(response?.data)
+			return Promise.reject(response?.data);
 		});
 
 

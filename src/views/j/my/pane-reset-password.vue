@@ -2,7 +2,7 @@
 
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
-import { queryInfo } from "@/utils/query.js";
+import { queryItem } from "@/utils/query.js";
 
 import { NButton, NCard, NFlex, NForm, NFormItem, NInput, NSpace, NTag, useMessage } from "naive-ui";
 import { onMounted, reactive, ref } from "vue";
@@ -73,7 +73,7 @@ const rules = {
 };
 
 onMounted(() => {
-	queryInfo(
+	queryItem(
 		message,
 		Service.Users.tokenUser(),
 		info

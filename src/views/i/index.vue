@@ -1,9 +1,8 @@
 <script setup>
 import { B_I } from "@/constant/breadcrumb.js";
 import router from "@/router/index.js";
-import { DEBIT_CHECK } from "@/router/RouterValue.js";
-import { renderCell } from "@/utils/render.js";
-import { NCard, NDataTable, NGi, NGrid, NLayout, NNumberAnimation, NTag } from "naive-ui";
+import { DEBIT_CHECK } from "@/router/router-value.js";
+import { NCard, NGi, NGrid, NLayout, NNumberAnimation, NTag } from "naive-ui";
 import { h, onMounted, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
@@ -98,58 +97,6 @@ onMounted(async () => {
 			</n-gi>
 			<n-gi>
 				<n-card title="今日归还"> 第4个card</n-card>
-			</n-gi>
-			<n-gi :span="2">
-				<n-card title="逾期未还">
-					<n-data-table
-						:columns="cols"
-						:data="tableData"
-						:max-height="300"
-						:render-cell="renderCell"
-						:row-props="rowProps"
-						:single-line="false"
-						striped
-					/>
-				</n-card>
-			</n-gi>
-			<n-gi :span="4">
-				<n-card title="馆藏全览">
-					<n-data-table
-						:columns="cols"
-						:data="tableData"
-						:max-height="300"
-						:render-cell="renderCell"
-						:row-props="rowProps"
-						:single-line="false"
-						striped
-					/>
-				</n-card>
-			</n-gi>
-			<n-gi :span="2">
-				<n-card title="借阅数排行榜">
-					<n-data-table
-						:columns="cols"
-						:data="tableData"
-						:max-height="300"
-						:render-cell="renderCell"
-						:row-props="rowProps"
-						:single-line="false"
-						striped
-					/>
-				</n-card>
-			</n-gi>
-			<n-gi :span="2">
-				<n-card title="借阅天数排行榜">
-					<n-data-table
-						:columns="cols"
-						:data="tableData"
-						:max-height="300"
-						:render-cell="renderCell"
-						:row-props="rowProps"
-						:single-line="false"
-						striped
-					/>
-				</n-card>
 			</n-gi>
 		</n-grid>
 	</n-layout>

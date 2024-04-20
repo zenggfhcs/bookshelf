@@ -108,3 +108,9 @@ function convertToChineseNum(num) {
 }
 
 export { convertToChineseNum };
+
+function convertToNum(str) {
+
+}
+
+export { convertToNum };

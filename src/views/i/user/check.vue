@@ -6,13 +6,12 @@ import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
 import { messageOptions } from "@/constant/options.js";
 import IBack from "@/icons/i-back.vue";
 import { goto } from "@/router/goto.js";
-import { USER } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { USER } from "@/router/router-value.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { formatTime } from "@/utils/format.js";
 import { copyMatchingProperties } from "@/utils/index.js";
-import { queryInfo } from "@/utils/query.js";
+import { queryItem } from "@/utils/query.js";
 import {
 	NButton,
 	NFlex,
@@ -96,7 +95,7 @@ async function query(id) {
 	if (!id) {
 		return;
 	}
-	await queryInfo(message, Service.Users.get(id), info);
+	await queryItem(message, Service.Users.get(id), info);
 	newRoleRef.value = info.role.name;
 }
 
@@ -172,7 +171,7 @@ const updateRoleHandler = debounce(() => {
 
 onBeforeMount(() => {
 	// 加载数据
-	checkLoginState();
+
 });
 
 onMounted(() => {

@@ -7,8 +7,7 @@ import IDelete from "@/icons/i-delete.vue";
 import IReload from "@/icons/i-reload.vue";
 import write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
 import {
@@ -29,7 +28,7 @@ import {
 	NTag,
 	useMessage
 } from "naive-ui";
-import { computed, h, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, h, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
@@ -261,9 +260,6 @@ function handleCheck(rowKeys) {
 	checkedRowKeysRef.value = rowKeys;
 }
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 onMounted(() => {
 	query();
@@ -341,7 +337,7 @@ onMounted(() => {
 			@update:checked-row-keys="handleCheck"
 		/>
 
-		<!-- 筛选 modal -->
+		<!-- 筛选 modalReactive -->
 		<n-modal
 			id="filter-modal"
 			v-model:show="showFilterModal"

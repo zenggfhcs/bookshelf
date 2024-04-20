@@ -11,7 +11,13 @@ function goto(component, params = undefined) {
 		.push({
 			name: component.name,
 			params: params
-		}).then();
+		}).then(console.log);
 }
 
 export { goto };
+
+function goto_(path) {
+	router.push(path).then(console.log);
+}
+
+export { goto_ };

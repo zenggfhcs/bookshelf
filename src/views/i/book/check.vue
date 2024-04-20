@@ -5,20 +5,16 @@ import NoData from "@/components/no-data.vue";
 // todo start
 import { B_BOOK_CHECK } from "@/constant/breadcrumb.js";
 import IBack from "@/icons/i-back.vue";
-import { BOOK } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { BOOK } from "@/router/router-value.js";
 import { formatTime } from "@/utils/format.js";
-import { queryInfo } from "@/utils/query.js";
+import { queryItem } from "@/utils/query.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
-import { onBeforeMount, onMounted, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 
 const props = defineProps(["id", "showModal", "updateMenuItem", "updateBreadcrumbArray"]);
 
 const message = useMessage();
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 const info = reactive({
 	id: null,
@@ -46,7 +42,7 @@ const info = reactive({
 });
 
 function query(id) {
-	queryInfo(
+	queryItem(
 		message,
 		Service.Books.get(id),
 		info

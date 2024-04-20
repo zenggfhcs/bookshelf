@@ -1,4 +1,4 @@
-import { NIcon, NText } from "naive-ui";
+import { NIcon, NTag, NText } from "naive-ui";
 import { h } from "vue";
 
 function renderIcon(icon, props = undefined) {
@@ -18,3 +18,24 @@ function renderCell() {
 }
 
 export { renderCell };
+
+function renderTag(tagsRef) {
+	return (v, i) => {
+		return h(
+			NTag,
+			{
+				type: "info",
+				bordered: false,
+				closable: true,
+				onClose: () => {
+					tagsRef.value.splice(i, 1);
+				}
+			},
+			{
+				default: () => v
+			}
+		);
+	};
+}
+
+export { renderTag };

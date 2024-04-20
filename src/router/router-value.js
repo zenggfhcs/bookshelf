@@ -17,6 +17,10 @@ import LogManager from "@/views/i/log/index.vue";
 import My from "@/views/i/my/index.vue";
 import UserCheck from "@/views/i/user/check.vue";
 import UserManager from "@/views/i/user/index.vue";
+import PermissionManager from "@/views/i/user/permission/index.vue";
+import RoleCheck from "@/views/i/user/role/check.vue";
+import RoleManager from "@/views/i/user/role/index.vue";
+import JBookDetail from "@/views/j/book-detail.vue";
 import J from "@/views/j/index.vue";
 import JMy from "@/views/j/my/index.vue";
 import AdvancedQuery from "@/views/j/query/advanced-query.vue";
@@ -54,7 +58,7 @@ const RESET_PASSWORD = {
 	component: ResetPassword,
 	name: "resetPassword",
 	path: "/reset-password",
-	props: true,
+	props: (route) => ({ token: route.query.token }),
 	hidden: true
 };
 
@@ -121,7 +125,7 @@ const J_QUERY_QUICK = {
 	component: QuickQuery,
 	name: "jQueryQuick",
 	path: "/j/query/quick",
-	props: true,
+	props: (route) => ({ keyword: route.query.keyword }),
 	hidden: true
 };
 
@@ -157,12 +161,20 @@ const J_MY = {
 	hidden: true
 };
 
+const J_BOOK_DETAIL = {
+	component: JBookDetail,
+	name: "jBookDetail",
+	path: "/j/bookDetail:id",
+	props: true,
+	hidden: true
+};
+
 const BASE_J = {
 	component: BaseJ,
 	name: "j",
 	path: "/",
 	props: true,
-	children: [J_HOME, J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE, J_USER_INFO, J_MY],
+	children: [J_HOME, J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE, J_USER_INFO, J_MY, J_BOOK_DETAIL],
 	redirect: J_HOME,
 	hidden: true
 };
@@ -225,7 +237,6 @@ const BOOK_INFO_ADD = {
 
 const BOOK_INFO_CHECK = {
 	component: BookInfoCheck,
-
 	name: "bookInfoCheck",
 	path: "/i/bookInfos/:id",
 	props: true,
@@ -321,6 +332,36 @@ const USER_CHECK = {
 	props: true,
 	hidden: true
 };
+
+//#region role
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const ROLE = {
+	component: RoleManager,
+	name: "roleManager",
+	path: "/i/users/roles",
+	hidden: true
+};
+
+const ROLE_CHECK = {
+	component: RoleCheck,
+	name: "roleCheck",
+	path: "/i/users/roles/:id",
+	props: true,
+	hidden: true
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region permission
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const PERMISSION = {
+	component: PermissionManager,
+	name: "permissionManager",
+	path: "/i/users/permissions",
+	hidden: true
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -364,6 +405,7 @@ const BASE_I = {
 		BOOK_INFO_ADD,
 		USER,
 		USER_CHECK,
+		ROLE, ROLE_CHECK, PERMISSION,
 		LOG,
 		LOG_CHECK,
 		I_MY
@@ -405,13 +447,17 @@ export {
 	BOOK_INFO_ADD,
 	USER,
 	USER_CHECK,
+	ROLE,
+	ROLE_CHECK,
+	PERMISSION,
 	LOG,
 	LOG_CHECK,
 	I_MY,
 
 	// j
+	BASE_J,
 	J_HOME,
-	J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE,
+	J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE, J_BOOK_DETAIL,
 	J_USER_INFO,
 	J_MY
 };
@@ -424,5 +470,17 @@ export const PredefinedRoutes = [PUBLIC, BASE_I, BASE_J, ERROR];
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-// todo 添加路由守卫，更换页面title https://www.cnblogs.com/levywang/p/13532079.html
-// router.js
+
+const NO_TOKEN_PAGE = new Set();
+{
+	NO_TOKEN_PAGE.add("login");
+	NO_TOKEN_PAGE.add("login");
+	NO_TOKEN_PAGE.add("register");
+	NO_TOKEN_PAGE.add("resetPassword");
+	NO_TOKEN_PAGE.add("verify");
+}
+
+export {
+	NO_TOKEN_PAGE
+};
+

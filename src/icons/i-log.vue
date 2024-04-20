@@ -1,11 +1,9 @@
 <script setup>
-const props = defineProps(["color"]);
 </script>
 
 <template>
 	<svg
 		id="Capa_1"
-		:fill="props.color"
 		version="1.1"
 		viewBox="0 0 548.291 548.291"
 		xml:space="preserve"

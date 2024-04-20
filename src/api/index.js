@@ -33,7 +33,10 @@ const ServiceName = {
 	PUBLISHER: "publishers",
 	USER: "users",
 	DEBIT: "debits",
-	LOG: "logs"
+	LOG: "logs",
+	ROLE: "roles",
+	CLC_INDEX: "clcIndexes",
+	PERMISSION: "permissions"
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -64,8 +67,8 @@ Books.getDamageLevels = () => {
 	return request.get(`/books/damageLevels`);
 };
 
-Books.getBookInfoByKeyword = (keyword) => {
-	return request.get(`/books/bookInfo/${keyword}`);
+Books.getByInfoId = (id) => {
+	return request.get(`/books/bookInfoId/${id}`);
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -74,16 +77,16 @@ Books.getBookInfoByKeyword = (keyword) => {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BookInfos = new BaseService(ServiceName.BOOK_INFO);
 
-BookInfos.getTypeByKeyword = (keyword) => {
-	return request.get(`/bookInfos/bookType/${keyword}`);
-};
-
 BookInfos.getFirstLevelType = () => {
-	return request.get(`/bookInfos/bookType/firstLevel`);
+	return request.post(`/bookInfos/bookType:firstLevel`);
 };
 
 BookInfos.quickQuery = (filterPayload) =>
 	request.post(`/bookInfos/list:quick-query`, filterPayload);
+
+BookInfos.getByKeyword = (keyword) => {
+	return request.get(`/bookInfos/keyword/${keyword}`);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -119,7 +122,9 @@ Users.verifyEmail = (token) => {
 Users.resetPassword = (entity) => {
 	const _payload = {
 		email: encodeByRSA(entity.email),
-		authenticationString: encodeByRSA(entity.authenticationString)
+		authenticationString: encodeByRSA(entity.authenticationString),
+		revision: entity.revision,
+		remark: entity.remark
 	};
 	return request.post("/users/password:reset", _payload);
 };
@@ -153,8 +158,39 @@ const Logs = new BaseService(ServiceName.LOG);
 //#region token
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Token = {
-	refresh: () => request.post("/token:refresh", {})
+	refresh: () => request.post("/token:refresh", {}),
+	verify: (token) => request.post("/token:verify", { token })
 };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region clc index
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const ClcIndexes = new BaseService(ServiceName.CLC_INDEX);
+
+ClcIndexes.firstLevel = () => {
+	return request.get(`/clcIndexes/firstLevel`);
+};
+
+ClcIndexes.getByKeyword = (key) => {
+	return request.get(`/clcIndexes/${key}:startWith`);
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region role
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const Roles = new BaseService(ServiceName.ROLE);
+
+Roles.tokenRole = () => {
+	return request.get("/roles/tokenRole");
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region permission
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const Permissions = new BaseService(ServiceName.PERMISSION);
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -165,7 +201,10 @@ const Service = {
 	BookInfos,
 	Books,
 	Logs,
-	Token
+	Token,
+	Roles,
+	ClcIndexes,
+	Permissions
 };
 
 export { Service };

@@ -3,7 +3,7 @@ import { Service } from "@/api/index.js";
 import { GENDER_PRE_DEFINED } from "@/constant/map.js";
 import { convertGender } from "@/utils/convert.js";
 import { copyMatchingProperties } from "@/utils/index.js";
-import { queryInfo } from "@/utils/query.js";
+import { queryItem } from "@/utils/query.js";
 import {
 	NButton,
 	NCard,
@@ -53,7 +53,7 @@ const timestampRef = ref(0);
 const alterUserInfoRef = ref(false);
 
 onMounted(async () => {
-	await queryInfo(
+	await queryItem(
 		message,
 		Service.Users.tokenUser(),
 		info

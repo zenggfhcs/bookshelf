@@ -168,6 +168,30 @@ export { B_USER_INDEX, B_USER_ADD, B_USER_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region role
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const ROLE_INDEX = {
+	path: "/i/users/roles",
+	label: "角色"
+};
+
+function ROLE_CHECK(id) {
+	return {
+		path: `/i/users/roles/${id}`,
+		label: "详情"
+	};
+}
+
+const B_ROLE_INDEX = [I_HOME, USER_INDEX, ROLE_INDEX];
+
+function B_ROLE_CHECK(id) {
+	return [I_HOME, USER_INDEX, ROLE_INDEX, ROLE_CHECK(id)];
+}
+
+export { B_ROLE_INDEX, B_ROLE_CHECK };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 //#region log
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const LOG_INDEX = {

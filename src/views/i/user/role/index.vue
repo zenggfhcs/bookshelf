@@ -1,17 +1,16 @@
 <script setup>
 import { Service } from "@/api/index.js";
-import { B_USER_INDEX } from "@/constant/breadcrumb.js";
-import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
+import { B_ROLE_INDEX } from "@/constant/breadcrumb.js";
+import { messageOptions } from "@/constant/options.js";
+import IAdd from "@/icons/i-add.vue";
 import IDelete from "@/icons/i-delete.vue";
 import IReload from "@/icons/i-reload.vue";
-import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { USER_CHECK } from "@/router/router-value.js";
-import { convertGender, getTagType } from "@/utils/convert.js";
+import { ROLE_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
-import { inputValidator } from "@/utils/validator.js";
+import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NBackTop,
 	NButton,
@@ -21,18 +20,14 @@ import {
 	NFormItem,
 	NIcon,
 	NInput,
-	NInputGroup,
-	NInputGroupLabel,
 	NLayout,
 	NLayoutFooter,
 	NLayoutHeader,
 	NModal,
 	NPagination,
-	NSelect,
-	NTag,
 	useMessage
 } from "naive-ui";
-import { computed, h, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
@@ -57,22 +52,20 @@ const cols = [
 		type: "selection"
 	},
 	{
-		title: "用户昵称",
-		key: "displayName",
-		// 可拖动
-		resizable: true,
+		title: "角色名",
+		key: "name",
 		// 溢出省略
 		ellipsis: {
 			tooltip: true
 		},
 		render: (row) => {
-			if (!row?.displayName) return renderCell();
-			return row?.displayName;
+			if (!row?.name) return renderCell();
+			return row?.name;
 		}
 	},
 	{
-		title: "用户名",
-		key: "displayName",
+		title: "角色描述",
+		key: "remark",
 		// 可拖动
 		resizable: true,
 		// 溢出省略
@@ -80,131 +73,23 @@ const cols = [
 			tooltip: true
 		},
 		render: (row) => {
-			if (!(row?.surname || row?.name)) return renderCell();
-			return h(
-				NTag,
-				{
-					bordered: false
-				},
-				{
-					default: () => `${row?.surname} ${row?.name}`
-				}
-			);
-		}
-	},
-	{
-		title: "邮箱",
-		key: "email",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		render: (row) =>
-			h(
-				NTag,
-				{
-					bordered: false,
-					type: "error"
-				},
-				{
-					default: () => row?.email
-				}
-			)
-	},
-	{
-		title: "电话",
-		key: "phoneNumber",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		render: (row) => {
-			if (!row?.phoneNumber || row?.phoneNumber === "") return renderCell();
-			return h(
-				NTag,
-				{
-					bordered: false,
-					type: "error"
-				},
-				{
-					default: () => row?.phoneNumber
-				}
-			);
-		}
-	},
-	{
-		title: "角色",
-		key: "roles",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		render: (row) => {
-			return h(
-				NTag,
-				{
-					type: getTagType.byUserRole(row?.role?.name),
-					bordered: false
-				},
-				{
-					default: () => ROLE_MAP.getByValue(row?.role?.name)
-				}
-			);
-		}
-	},
-	{
-		title: "年龄",
-		key: "age",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		render: (row) => {
-			if (typeof row?.age !== "number" || row?.age <= 0) return renderCell();
-			return h(
-				NTag,
-				{
-					type: getTagType.byAge(row?.age),
-					bordered: false
-				},
-				{
-					default: () => row?.age
-				}
-			);
-		}
-	},
-	{
-		title: "性别",
-		key: "gender",
-		// 可拖动
-		resizable: true,
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		render: (row) => {
-			if (!convertGender(row?.gender)) return renderCell();
-			return h(
-				NTag,
-				{
-					bordered: false,
-					type: getTagType.byGender(row?.gender)
-				},
-				{
-					default: () => convertGender(row?.gender)
-				}
-			);
+			if (!row?.remark) return renderCell();
+			return row?.remark;
 		}
 	}
 ];
+
+const addFormRef = ref();
+
+const addRules = {
+	name: [
+		{
+			required: true,
+			message: "请输入",
+			trigger: ["input", "blur"]
+		}
+	]
+};
 
 const checkedRowKeysRef = ref([]);
 
@@ -214,14 +99,16 @@ function handleCheck(rowKeys) {
 
 const loadingQuery = ref(false);
 
-const showFilterModal = ref(false);
+const loadingAdd = ref(false);
+
+const showAddModal = ref(false);
 
 function rowProps(row) {
 	return {
 		onDblclick: (e) => {
 			e.preventDefault();
 			router.push({
-				name: USER_CHECK.name,
+				name: ROLE_CHECK.name,
 				params: {
 					id: row?.id
 				}
@@ -232,14 +119,8 @@ function rowProps(row) {
 
 const payloadReactive = reactive({
 	entity: {
-		surname: "",
 		name: "",
-		email: "",
-		phoneNumber: "",
-		role: {
-			id: "",
-			name: ""
-		}
+		remark: ""
 	},
 	filter: {
 		page: {
@@ -249,13 +130,11 @@ const payloadReactive = reactive({
 	}
 });
 
-const roleOptions = ROLE_PRE_DEFINED;
-
 async function query() {
 	loadingQuery.value = true;
 	await queryList(
 		message,
-		Service.Users.filteredList(payloadReactive),
+		Service.Roles.filteredList(payloadReactive),
 		itemCount,
 		tableData
 	);
@@ -290,10 +169,27 @@ const pagination = reactive({
 	}
 });
 
+const addHandler = debounce(() => {
+	formValidator(addFormRef, message, async () => {
+		loadingAdd.value = true;
+		await Service.Roles.add(payloadReactive.entity)
+			.then(_ => {
+				message.success("添加成功", messageOptions);
+				showAddModal.value = false;
+				query();
+			})
+			.catch((err) => {
+				message.error(err.message, messageOptions);
+			});
+		loadingAdd.value = false;
+	});
+
+});
+
 
 onMounted(() => {
-	props.updateMenuItem("i-user");
-	props.updateBreadcrumbArray(B_USER_INDEX);
+	props.updateMenuItem("i-role");
+	props.updateBreadcrumbArray(B_ROLE_INDEX);// todo
 	query();
 });
 </script>
@@ -318,18 +214,11 @@ onMounted(() => {
 				</template>
 				删除所选
 			</n-button>
-			<n-button
-				class="h-2.4em"
-				secondary
-				type="info"
-				@click.prevent="showFilterModal = true"
-			>
+			<n-button type="success" @click.prevent="showAddModal = true">
 				<template #icon>
-					<n-icon>
-						<write />
-					</n-icon>
+					<IAdd />
 				</template>
-				筛选
+				新增
 			</n-button>
 			<n-button
 				:loading="loadingQuery"
@@ -386,67 +275,36 @@ onMounted(() => {
 	</n-layout-footer>
 
 	<n-modal
-		id="filter-modal"
-		v-model:show="showFilterModal"
+		id="add-modal"
+		v-model:show="showAddModal"
 		:mask-closable="false"
 		class="w-25em"
 		preset="dialog"
-		title="筛选"
+		title="添加角色"
 		transform-origin="center"
 	>
-		<n-form :model="payloadReactive">
-			<n-form-item label="用户名" path="id">
-				<n-input-group>
-					<n-input
-						v-model:value="payloadReactive.entity.surname"
-						:allow-input="inputValidator.noSideSpace"
-						:style="{ width: '30%' }"
-						placeholder="姓"
-					/>
-					<n-input-group-label>&nbsp;</n-input-group-label>
-					<n-input
-						v-model:value="payloadReactive.entity.name"
-						:allow-input="inputValidator.noSideSpace"
-						placeholder="名"
-					/>
-				</n-input-group>
+		<n-form ref="addFormRef" :model="payloadReactive.entity" :rules="addRules">
+			<n-form-item label="角色名" path="name">
+				<n-input
+					v-model:value="payloadReactive.entity.name"
+					:allow-input="inputValidator.noSideSpace"
+					placeholder="名"
+				/>
 			</n-form-item>
 			<n-form-item label="邮箱" path="email">
 				<n-input
-					v-model:value="payloadReactive.entity.email"
+					v-model:value="payloadReactive.entity.remark"
 					:allow-input="inputValidator.noSideSpace"
 					clearable
-					placeholder="输入邮箱"
-				/>
-			</n-form-item>
-			<n-form-item label="电话" path="phone">
-				<n-input
-					v-model:value="payloadReactive.entity.phoneNumber"
-					:allow-input="inputValidator.onlyAllowNumber"
-					clearable
-					maxlength="11"
-					placeholder="输入电话"
-				/>
-			</n-form-item>
-			<n-form-item label="角色" path="role">
-				<n-select
-					v-model:value="payloadReactive.entity.role.name"
-					:options="roleOptions"
-					clearable
+					placeholder="描述"
 				/>
 			</n-form-item>
 		</n-form>
-		<n-flex justify="space-between">
-			<n-button tertiary type="warning" @click.prevent="filterResetHandler">
-				重置
-			</n-button>
+		<n-flex justify="right">
 			<n-button
+				:loading="loadingAdd"
 				type="success"
-				@click.prevent="
-					filterHandler();
-					showFilterModal = false;
-				"
-			>
+				@click.prevent="addHandler">
 				确定
 			</n-button>
 		</n-flex>

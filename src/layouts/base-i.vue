@@ -1,17 +1,16 @@
 <script setup>
 import BookBrain from "@/icons/book-brain.vue";
 import WorkBenchIcon from "@/icons/home.vue";
-import BookInfoManagerIcon from "@/icons/i-book-info.vue";
 import BookManagerIcon from "@/icons/i-book.vue";
-import LogIcon from "@/icons/log.vue";
+import DebitManagerIcon from "@/icons/i-debit.vue";
+import ILog from "@/icons/i-log.vue";
+import UserManagerIcon from "@/icons/i-user-setting.vue";
 import SelfIcon from "@/icons/self.vue";
 import sun from "@/icons/sun.vue";
-import { BASE_I, BOOK, BOOK_INFO, DEBIT, I_HOME, I_MY, LOG, USER } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { BASE_I, BASE_J, BOOK_INFO, DEBIT, I_HOME, I_MY, LOG, PERMISSION, ROLE, USER } from "@/router/router-value.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
-import { BookReader as DebitManagerIcon, UsersCog as UserManagerIcon } from "@vicons/fa";
 import {
 	NBreadcrumb,
 	NBreadcrumbItem,
@@ -84,36 +83,52 @@ const menuOptions = [
 		icon: renderIcon(DebitManagerIcon)
 	},
 	{
-		label: () =>
-			h(RouterLink, gProps(BOOK.name), { default: () => "书籍管理" }),
-		key: "i-book",
-		icon: renderIcon(BookManagerIcon)
+		label: "馆藏管理",
+		key: "j-collection",
+		icon: renderIcon(BookManagerIcon),
+		children: [
+			// {
+			// 	label: () =>
+			// 		h(RouterLink, gProps(BOOK.name), { default: () => "书籍管理" }),
+			// 	key: "i-book"
+			// 	// icon: renderIcon(BookManagerIcon)
+			// },
+			{
+				label: () =>
+					h(RouterLink, gProps(BOOK_INFO.name), {
+						default: () => "书籍信息"
+					}),
+				key: "i-book-info"
+				// icon: renderIcon(BookInfoManagerIcon)
+			}
+		]
+	},
+	{
+		label: "用户管理",
+		key: "i-user-manager",
+		icon: renderIcon(UserManagerIcon),
+		children: [
+			{
+				label: () => h(RouterLink, gProps(USER.name), { default: () => "用户信息" }),
+				key: "i-user"
+				// icon: renderIcon(IUser)
+			},
+			{
+				label: () => h(RouterLink, gProps(ROLE.name), { default: () => "角色信息" }),
+				key: "i-role"
+				// icon: renderIcon(IRole)
+			},
+			{
+				label: () => h(RouterLink, gProps(PERMISSION.name), { default: () => "权限信息" }),
+				key: "i-permission"
+			}
+		]
 	},
 	{
 		label: () =>
-			h(RouterLink, gProps(BOOK_INFO.name), {
-				default: () => "书籍信息管理"
-			}),
-		key: "i-book-info",
-		icon: renderIcon(BookInfoManagerIcon)
-	},
-	{
-		label: () =>
-			h(RouterLink, gProps(USER.name), { default: () => "用户管理" }),
-		key: "i-user",
-		icon: renderIcon(UserManagerIcon)
-	},
-	// {
-	// 	label: () =>
-	// 		h(RouterLink, gProps(USER.name), { default: () => "统计报表" }),
-	// 	key: "i-statistics",
-	// 	icon: renderIcon(IStatisticsIcon)
-	// },
-	{
-		label: () =>
-			h(RouterLink, gProps(LOG.name), { default: () => "系统日志" }),
+			h(RouterLink, gProps(LOG.name), { default: () => "操作日志" }),
 		key: "i-log",
-		icon: renderIcon(LogIcon)
+		icon: renderIcon(ILog)
 	},
 	{
 		label: () =>
@@ -123,7 +138,7 @@ const menuOptions = [
 	}
 ];
 
-const modal = reactive({
+const modalReactive = reactive({
 	show: false,
 	type: "default",
 	title: "",
@@ -133,15 +148,19 @@ const modal = reactive({
 });
 
 function showModal(type, title, content, action) {
-	modal.show = true;
-	modal.type = type;
-	modal.title = title;
-	modal.content = content;
-	modal.action = action;
+	modalReactive.show = true;
+	modalReactive.type = type;
+	modalReactive.title = title;
+	modalReactive.content = content;
+	modalReactive.action = action;
+}
+
+function confirmedHandler() {
+	modalReactive.action();
+	modalReactive.show = false;
 }
 
 onMounted(() => {
-	checkLoginState();
 });
 </script>
 
@@ -189,6 +208,7 @@ onMounted(() => {
 						:collapsed-width="64"
 						:expand-icon="expandIcon"
 						:options="menuOptions"
+						accordion
 					/>
 				</n-scrollbar>
 			</n-layout>
@@ -238,6 +258,14 @@ onMounted(() => {
 						</template>
 						<n-form label-placement="left">
 							<n-flex vertical>
+								<router-link :to="BASE_J.path">
+									<n-button
+										:bordered="false"
+										class="w-100% no-border-btn"
+									>
+										前台
+									</n-button>
+								</router-link>
 								<router-link
 									:to="I_MY"
 									@click.prevent="switchShowUserPopover()"
@@ -277,9 +305,9 @@ onMounted(() => {
 				<router-view v-slot="{ Component }">
 					<component
 						:is="Component"
-						:showModal="showModal"
-						:updateBreadcrumbArray="updateBreadcrumbArray"
-						:updateMenuItem="updateMenuItem"
+						:show-modal="showModal"
+						:update-breadcrumb-array="updateBreadcrumbArray"
+						:update-menu-item="updateMenuItem"
 					/>
 				</router-view>
 			</n-layout>
@@ -287,26 +315,22 @@ onMounted(() => {
 
 		<n-modal
 			id="checked-confirmed-modal"
-			v-model:show="modal.show"
+			v-model:show="modalReactive.show"
 			:mask-closable="false"
-			:title="modal.title"
-			:type="modal.type"
+			:title="modalReactive.title"
+			:type="modalReactive.type"
 			class="w-25em"
 			preset="dialog"
 			transform-origin="center"
 		>
 			<n-space vertical>
 				<div class="text-center m-t-1em m-b-1em font-size-1.2em">
-					{{ modal.content }}
+					{{ modalReactive.content }}
 				</div>
 				<n-flex justify="right">
 					<n-button
-						:type="modal.type"
-						@click.prevent="
-							modal.action();
-							modal.show = false;
-						"
-					>
+						:type="modalReactive.type"
+						@click.prevent="confirmedHandler">
 						是
 					</n-button>
 				</n-flex>

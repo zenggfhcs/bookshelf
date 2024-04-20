@@ -1,10 +1,11 @@
 <script setup>
+import { Service } from "@/api/index.js";
 import RankingList from "@/components/ranking-list.vue";
 import IReload from "@/icons/i-reload.vue";
 import Search from "@/icons/search.vue";
 import { dateDisabled } from "@/utils/disabled.js";
 import { NButton, NDatePicker, NFlex, NInputGroup, NInputGroupLabel, NSelect, NSpace } from "naive-ui";
-import { onMounted, reactive, ref } from "vue";
+import { onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps(["updateMenuItem"]);
 
@@ -50,8 +51,21 @@ function reset() {
 	info.size = "20";
 }
 
-onMounted(async () => {
+onBeforeMount(() => {
 	props.updateMenuItem("j-read-guide");
+	Service.ClcIndexes.firstLevel()
+		.then((res) => {
+			typeOptionsRef.value = res?.map(item => {
+				return {
+					value: item.key,
+					label: `${item.key}  ${item.value}`
+				};
+			});
+
+		});
+});
+
+onMounted(async () => {
 });
 </script>
 

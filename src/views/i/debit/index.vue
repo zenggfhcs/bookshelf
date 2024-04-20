@@ -5,8 +5,7 @@ import IReload from "@/icons/i-reload.vue";
 import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { DEBIT_CHECK } from "@/router/RouterValue.js";
-import { checkLoginState } from "@/utils/check-login-state.js";
+import { DEBIT_CHECK } from "@/router/router-value.js";
 import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { queryList } from "@/utils/query.js";
@@ -25,13 +24,11 @@ import {
 	NLayoutHeader,
 	NModal,
 	NPagination,
-	NRadio,
-	NRadioGroup,
-	NSpace,
+	NSelect,
 	NTag,
 	useMessage
 } from "naive-ui";
-import { h, onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, h, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
@@ -170,16 +167,12 @@ const timestamp = reactive({
 
 const showFilterModal = ref(false);
 
-const payloadReactive = reactive({
+const payload = reactive({
 	entity: {},
 	filter: {
 		page: {
-			start: 0,
-			end: 10
-		},
-		age: {
-			start: 0,
-			end: 255
+			start: computed(() => (pagination.page - 1) * pagination.pageSize),
+			end: computed(() => pagination.pageSize)
 		},
 		creationTime: {
 			start: null,
@@ -204,7 +197,7 @@ async function query() {
 
 	await queryList(
 		message,
-		Service.Debits.filteredList(payloadReactive),
+		Service.Debits.filteredList(payload),
 		itemCount,
 		tableData
 	);
@@ -212,7 +205,16 @@ async function query() {
 	loadingQuery.value = false;
 }
 
-const radioRef = ref();
+const stateOptions = [
+	{
+		label: "还期将近",
+		value: "0"
+	},
+	{
+		label: "逾期未还",
+		value: "-1"
+	}
+];
 
 const clickQuery = debounce(query);
 
@@ -247,9 +249,6 @@ function showRepayConfirmModal() {
 	});
 }
 
-onBeforeMount(() => {
-	checkLoginState();
-});
 
 onMounted(() => {
 	query();
@@ -323,14 +322,9 @@ onMounted(() => {
 			title="筛选"
 			transform-origin="center"
 		>
-			<n-form :model="payloadReactive">
+			<n-form :model="payload">
 				<n-form-item>
-					<n-radio-group v-model:value="radioRef">
-						<n-space>
-							<n-radio :key="'-1'" :value="'-1'">逾期未还</n-radio>
-							<n-radio :key="'1'" :value="'1'">还期将近</n-radio>
-						</n-space>
-					</n-radio-group>
+					<n-select :options="stateOptions" clearable />
 				</n-form-item>
 				<n-form-item label="借阅时间">
 					<n-date-picker

@@ -3,7 +3,7 @@ import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
 import { goto } from "@/router/goto.js";
-import { LOGIN } from "@/router/RouterValue.js";
+import { LOGIN } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator } from "@/utils/validator.js";
 import { NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage } from "naive-ui";
@@ -11,7 +11,7 @@ import { ref } from "vue";
 
 const formRef = ref(null);
 const message = useMessage();
-const model = ref({
+const info = ref({
 	email: null,
 	authenticationString: null,
 	reenteredAuthenticationString: null
