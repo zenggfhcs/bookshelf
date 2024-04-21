@@ -23,10 +23,7 @@ import RoleManager from "@/views/i/user/role/index.vue";
 import JBookDetail from "@/views/j/book-detail.vue";
 import J from "@/views/j/index.vue";
 import JMy from "@/views/j/my/index.vue";
-import AdvancedQuery from "@/views/j/query/advanced-query.vue";
-import QuickQuery from "@/views/j/query/quick-query.vue";
-import ReadGuide from "@/views/j/query/read-guide.vue";
-import TypeQuery from "@/views/j/query/type-query.vue";
+import JQUERY from "@/views/j/query.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
@@ -121,37 +118,45 @@ const J_USER_INFO = {
 	hidden: true
 };
 
-const J_QUERY_QUICK = {
-	component: QuickQuery,
-	name: "jQueryQuick",
-	path: "/j/query/quick",
-	props: (route) => ({ keyword: route.query.keyword }),
+const J_QUERY = {
+	component: JQUERY,
+	name: "jQuery",
+	path: "/j/query",
+	props: (route) => ({ keyword: route.query.keyword, defaultTab: route.query.defaultTab }),
 	hidden: true
 };
 
-const J_QUERY_ADVANCED = {
-	component: AdvancedQuery,
-	name: "jQueryAdvanced",
-	path: "/j/query/advanced",
-	props: true,
-	hidden: true
-};
-
-const J_QUERY_TYPE = {
-	component: TypeQuery,
-	name: "jQueryType",
-	path: "/j/query/type",
-	props: true,
-	hidden: true
-};
-
-const J_READ_GUIDE = {
-	component: ReadGuide,
-	name: "jReadGuide",
-	path: "/j/query/read-guide",
-	props: true,
-	hidden: true
-};
+// const J_QUERY_QUICK = {
+// 	component: QuickQuery,
+// 	name: "jQueryQuick",
+// 	path: "/j/query/quick",
+// 	props: (route) => ({ keyword: route.query.keyword }),
+// 	hidden: true
+// };
+//
+// const J_QUERY_ADVANCED = {
+// 	component: AdvancedQuery,
+// 	name: "jQueryAdvanced",
+// 	path: "/j/query/advanced",
+// 	props: true,
+// 	hidden: true
+// };
+//
+// const J_QUERY_TYPE = {
+// 	component: TypeQuery,
+// 	name: "jQueryType",
+// 	path: "/j/query/type",
+// 	props: true,
+// 	hidden: true
+// };
+//
+// const J_READ_GUIDE = {
+// 	component: ReadGuide,
+// 	name: "jReadGuide",
+// 	path: "/j/query/read-guide",
+// 	props: true,
+// 	hidden: true
+// };
 
 const J_MY = {
 	component: JMy,
@@ -174,7 +179,7 @@ const BASE_J = {
 	name: "j",
 	path: "/",
 	props: true,
-	children: [J_HOME, J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE, J_USER_INFO, J_MY, J_BOOK_DETAIL],
+	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE,*/ J_USER_INFO, J_MY, J_BOOK_DETAIL],
 	redirect: J_HOME,
 	hidden: true
 };
@@ -456,8 +461,9 @@ export {
 
 	// j
 	BASE_J,
-	J_HOME,
-	J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE, J_BOOK_DETAIL,
+	J_HOME, J_QUERY,
+	// J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE,
+	J_BOOK_DETAIL,
 	J_USER_INFO,
 	J_MY
 };

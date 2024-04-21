@@ -87,6 +87,10 @@ BookInfos.quickQuery = (filterPayload) =>
 BookInfos.getByKeyword = (keyword) => {
 	return request.get(`/bookInfos/keyword/${keyword}`);
 };
+
+BookInfos.borrow = (id) => {
+	return request.post(`/bookInfos/${id}/borrow`);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -119,14 +123,24 @@ Users.verifyEmail = (token) => {
 	return request.post("/users/email:verify", _entity); // todo test this fuc
 };
 
-Users.resetPassword = (entity) => {
-	const _payload = {
+Users.resetPasswordByForgot = (entity) => {
+	const _entity = {
 		email: encodeByRSA(entity.email),
 		authenticationString: encodeByRSA(entity.authenticationString),
 		revision: entity.revision,
 		remark: entity.remark
 	};
-	return request.post("/users/password:reset", _payload);
+	return request.post("/users/password:resetByForgot", _entity);
+};
+
+Users.resetPasswordByUpdate = (entity) => {
+	const _entity = {
+		email: encodeByRSA(entity.email),
+		authenticationString: encodeByRSA(entity.authenticationString),
+		revision: entity.revision,
+		remark: encodeByRSA(entity.newAuthenticationString)
+	};
+	return request.post("/users/password:resetByUpdate", _entity);
 };
 
 Users.sendMailForResetPassword = (entity) => {
@@ -138,14 +152,27 @@ Users.tokenUser = () => {
 };
 
 Users.borrowing = null;
-
-Users.return = null;
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
 //#region debit api
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 const Debits = new BaseService(ServiceName.DEBIT);
+
+Debits.currentDebits = () => {
+	return request.get(`/debits/currentUnreturned`);
+};
+
+Debits.restore = (entity) => {
+	const _entity = {
+		id: entity.id,
+		book: {
+			id: entity.book.id
+		},
+		revision: entity.revision
+	};
+	return request.post(`/debits/${entity.id}/restore`, _entity);
+};
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 

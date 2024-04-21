@@ -7,7 +7,7 @@ import { dateDisabled } from "@/utils/disabled.js";
 import { NButton, NDatePicker, NFlex, NInputGroup, NInputGroupLabel, NSelect, NSpace } from "naive-ui";
 import { onBeforeMount, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem"]);
+const props = defineProps({});
 
 const contentOptions = [
 	{
@@ -52,7 +52,6 @@ function reset() {
 }
 
 onBeforeMount(() => {
-	props.updateMenuItem("j-read-guide");
 	Service.ClcIndexes.firstLevel()
 		.then((res) => {
 			typeOptionsRef.value = res?.map(item => {

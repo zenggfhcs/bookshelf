@@ -1,9 +1,9 @@
 <script setup>
+import { queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { GENDER_PRE_DEFINED } from "@/constant/map.js";
 import { convertGender } from "@/utils/convert.js";
 import { copyMatchingProperties } from "@/utils/index.js";
-import { queryItem } from "@/utils/query.js";
 import {
 	NButton,
 	NCard,

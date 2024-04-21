@@ -1,12 +1,15 @@
 <script setup>
 
+import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
+import { messageOptions } from "@/constant/options.js";
 import { timeFormat } from "@/utils/convert.js";
-import { queryList } from "@/utils/query.js";
-import { NDataTable, NDivider, useMessage } from "naive-ui";
-import { onMounted, reactive, ref } from "vue";
+import { NButton, NDataTable, NDivider, useMessage } from "naive-ui";
+import { h, onMounted, ref } from "vue";
 
 const message = useMessage();
+
+const loadingReturnRef = ref(false);
 
 const cols = [
 	{
@@ -20,36 +23,53 @@ const cols = [
 			return timeFormat(row.creationTime);
 		}
 	},
-
 	{
 		title: "还期",
 		key: "returnDeadline"
+	},
+	{
+		title: "状态",
+		key: ""
+	},
+	{
+		title: "操作",
+		key: "action",
+		render: (row) => {
+			return h(
+				NButton,
+				{
+					loading: loadingReturnRef.value,
+					bordered: false,
+					type: "warning",
+					onClick: async () => {
+						loadingReturnRef.value = true;
+
+						action(message, Service.Debits.restore(row), () => {
+							message.success("归还成功", messageOptions);
+							query();
+						});
+
+						loadingReturnRef.value = false;
+					}
+				},
+				{ default: () => "归还" }
+			);
+		}
 	}
 ];
 
 const tableDataRef = ref([]);
 
-const itemCountRef = ref(0);
-
 const loadingQuery = ref(false);
 
-const payloadReactive = reactive({
-	entity: {},
-	filter: {
-		page: {
-			start: 0,
-			end: 10
-		}
-	}
-});
+function query() {
+	action(message, Service.Debits.currentDebits(), (res) => {
+		tableDataRef.value = [...res];
+	});
+}
 
-onMounted(async () => {
-	await queryList(
-		message,
-		Service.Debits.filteredList(payloadReactive),
-		itemCountRef,
-		tableDataRef
-	);
+onMounted(() => {
+	query();
 });
 </script>
 

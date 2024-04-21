@@ -1,4 +1,5 @@
 <script setup>
+import { action, queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_ROLE_CHECK } from "@/constant/breadcrumb.js";
@@ -7,7 +8,6 @@ import IBack from "@/icons/i-back.vue";
 import { goto } from "@/router/goto.js";
 import { ROLE } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryItem } from "@/utils/query.js";
 import {
 	NButton,
 	NCheckbox,
@@ -68,18 +68,14 @@ async function query(id) {
 
 const showRemoveModal = ref(false);
 
-const removeHandler = debounce(() => {
-	Service.Roles.remove(props.id)
-		.then((_) => {
-			message.success("删除成功", messageOptions);
-			goto(ROLE);
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			showRemoveModal.value = false;
-		});
+const removeHandler = debounce(async () => {
+
+	await action(message, Service.BookInfos.getFirstLevelType(), () => {
+		message.success("删除成功", messageOptions);
+		goto(ROLE);
+	}); // todo use remove item
+
+	showRemoveModal.value = false;
 });
 
 const showRemoveConfirmedHandler = debounce(() => {

@@ -1,4 +1,5 @@
 <script setup>
+import { queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 
@@ -7,7 +8,6 @@ import { B_BOOK_CHECK } from "@/constant/breadcrumb.js";
 import IBack from "@/icons/i-back.vue";
 import { BOOK } from "@/router/router-value.js";
 import { formatTime } from "@/utils/format.js";
-import { queryItem } from "@/utils/query.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
 import { onMounted, reactive } from "vue";
 

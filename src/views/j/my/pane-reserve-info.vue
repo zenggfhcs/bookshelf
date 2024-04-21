@@ -1,8 +1,8 @@
 <script setup>
 
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { timeFormat } from "@/utils/convert.js";
-import { queryList } from "@/utils/query.js";
 import { NDataTable, NDivider, useMessage } from "naive-ui";
 import { onMounted, reactive, ref } from "vue";
 

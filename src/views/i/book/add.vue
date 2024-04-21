@@ -1,11 +1,10 @@
 <script setup>
+import { action, addItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_BOOK_ADD } from "@/constant/breadcrumb.js";
-import { messageOptions } from "@/constant/options.js";
 import IAdd from "@/icons/i-add.vue";
 import IBack from "@/icons/i-back.vue";
 import { BOOK } from "@/router/router-value.js";
-import { addItem } from "@/utils/add.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
@@ -53,20 +52,14 @@ const handleQueryBookInfo = debounce((queryKeyword) => {
 		bookInfoOptionsRef.value = [];
 		return;
 	}
-	Service.BookInfos.getByKeyword(queryKeyword)
-		.then((res) => {
-			bookInfoOptionsRef.value = res?.map((item) => {
-				return {
-					label: `${item.bookName}`,
-					value: JSON.stringify(item)
-				};
-			});
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
+	action(message, Service.BookInfos.getByKeyword(queryKeyword), (res) => {
+		bookInfoOptionsRef.value = res?.map((item) => {
+			return {
+				label: `${item.bookName}`,
+				value: JSON.stringify(item)
+			};
 		});
+	});
 }, 100);
 
 const loadingAdd = ref(false);

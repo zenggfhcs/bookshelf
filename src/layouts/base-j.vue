@@ -4,23 +4,13 @@ import Home from "@/icons/home.vue";
 import IUser from "@/icons/i-user.vue";
 import Search from "@/icons/search.vue";
 import sun from "@/icons/sun.vue";
-import {
-	BASE_I,
-	J_HOME,
-	J_MY,
-	J_QUERY_ADVANCED,
-	J_QUERY_QUICK,
-	J_QUERY_TYPE,
-	J_READ_GUIDE,
-	J_USER_INFO,
-	LOGIN,
-	REGISTER
-} from "@/router/router-value.js";
+import { BASE_I, J_HOME, J_MY, J_QUERY, J_USER_INFO, LOGIN, REGISTER } from "@/router/router-value.js";
 import { local } from "@/storage/local.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
 import {
+	NBackTop,
 	NButton,
 	NFlex,
 	NForm,
@@ -36,7 +26,9 @@ import {
 import { computed, h, onBeforeMount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
-const props = defineProps(["switchTheme"]);
+const props = defineProps({
+	switchTheme: Function
+});
 
 const message = useMessage();
 
@@ -87,29 +79,29 @@ const menuOptions = [
 	},
 	{
 		label: () =>
-			h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "检索" }),
-		children: [
-			{
-				label: () =>
-					h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "快速检索" }),
-				key: "j-quick-query"
-			},
-			{
-				label: () =>
-					h(RouterLink, gProps(J_QUERY_ADVANCED.name), { default: () => "高级检索" }),
-				key: "j-advanced-query"
-			},
-			{
-				label: () =>
-					h(RouterLink, gProps(J_QUERY_TYPE.name), { default: () => "分类检索" }),
-				key: "j-type-query"
-			},
-			{
-				label: () =>
-					h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
-				key: "j-read-guide"
-			}
-		],
+			h(RouterLink, gProps(J_QUERY.name), { default: () => "检索" }),
+		// children: [
+		// 	{
+		// 		label: () =>
+		// 			h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "快速检索" }),
+		// 		key: "j-quick-query"
+		// 	},
+		// 	{
+		// 		label: () =>
+		// 			h(RouterLink, gProps(J_QUERY_ADVANCED.name), { default: () => "高级检索" }),
+		// 		key: "j-advanced-query"
+		// 	},
+		// 	{
+		// 		label: () =>
+		// 			h(RouterLink, gProps(J_QUERY_TYPE.name), { default: () => "分类检索" }),
+		// 		key: "j-type-query"
+		// 	},
+		// 	{
+		// 		label: () =>
+		// 			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+		// 		key: "j-read-guide"
+		// 	}
+		// ],
 		key: "j-query",
 		icon: renderIcon(Search)
 	},
@@ -151,16 +143,11 @@ onBeforeMount(() => {
 						:expand-icon="expandIcon"
 						:options="menuOptions"
 						:root-indent="0"
-						mode="horizontal"
-						@update:value="(v) => console.log(v)"
-					/>
-					<!--					<n-badge :value="15" class="m-l-a" dot>-->
-					<!--						<Msg class="w-2em h-2em" />-->
-					<!--					</n-badge>-->
+						mode="horizontal" />
 					<n-button
 						circle
 						strong
-						@click="props.switchTheme()"
+						@click.prevent="props.switchTheme"
 					>
 						<template #icon>
 							<n-icon :component="themeIcon" />
@@ -236,6 +223,7 @@ onBeforeMount(() => {
 			<router-view v-slot="{ Component }">
 				<component :is="Component" :updateMenuItem="updateMenuItem" />
 			</router-view>
+			<n-back-top />
 		</n-layout>
 	</n-layout>
 	<n-modal

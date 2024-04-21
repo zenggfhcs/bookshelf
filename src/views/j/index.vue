@@ -3,8 +3,8 @@ import { messageOptions } from "@/constant/options.js";
 import BookShelf from "@/icons/book-shelf.vue";
 import Search from "@/icons/search.vue";
 import { goto_ } from "@/router/goto.js";
-import { J_MY, J_QUERY_ADVANCED, J_QUERY_QUICK, J_QUERY_TYPE, J_READ_GUIDE } from "@/router/router-value.js";
-import { NButton, NCard, NFlex, NInput, NInputGroup, NSpace, useMessage } from "naive-ui";
+import { J_MY } from "@/router/router-value.js";
+import { NButton, NFlex, NInput, NInputGroup, NSpace, useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 
 const props = defineProps(["updateMenuItem"]);
@@ -18,7 +18,11 @@ function query() {
 		message.warning("检索内容不可为空", messageOptions);
 		return;
 	}
-	goto_(`/j/query/quick?keyword=${queryKeyword.value}`);
+	goto_(`/j/query?keyword=${queryKeyword.value}`);
+}
+
+function toQuery(type) {
+	goto_(`/j/query?defaultTab=${type}`);
 }
 
 onMounted(() => {
@@ -44,21 +48,13 @@ onMounted(() => {
 					</template>
 				</n-button>
 			</n-input-group>
-			<n-space class="max-w-50%">
-				<router-link :to="J_QUERY_QUICK">
-					<n-card class="max-w-max"> 快速检索</n-card>
-				</router-link>
-				<router-link :to="J_QUERY_ADVANCED">
-					<n-card class="max-w-max"> 高级检索</n-card>
-				</router-link>
-				<router-link :to="J_QUERY_TYPE">
-					<n-card class="max-w-max"> 类型检索</n-card>
-				</router-link>
-				<router-link :to="J_READ_GUIDE">
-					<n-card class="max-w-max"> 读者指引</n-card>
-				</router-link>
+			<n-space>
+				<!--				<n-button class="w-7em" secondary @click.prevent="toQuery('quick')">快速检索</n-button>-->
+				<n-button class="h-5em" secondary @click.prevent="toQuery('advanced')">高级检索</n-button>
+				<n-button class="h-5em" secondary @click.prevent="toQuery('type')">类型检索</n-button>
+				<n-button class="h-5em" secondary @click.prevent="toQuery('guide')">读者指引</n-button>
 				<router-link :to="J_MY">
-					<n-card class="max-w-max"> 我的图书馆</n-card>
+					<n-button class="h-5em" secondary>我的图书馆</n-button>
 				</router-link>
 			</n-space>
 		</n-flex>

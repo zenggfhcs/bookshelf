@@ -1,4 +1,5 @@
 <script setup>
+import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
@@ -121,38 +122,28 @@ const rules = {
  * @param e event
  */
 const resetPassword = debounce(() => {
-	formValidator(formRef, message, () => {
+	formValidator(formRef, message, async () => {
 		loadingRef.value = true;
-		Service.Users.resetPassword(info)
-			.then((_) => {
-				message.success("修改成功，3秒后自动跳转到登录界面...", messageOptions);
-				setTimeout(() => {
-					goto(LOGIN);
-				}, 3000);
-			})
-			.catch((err) => {
-				message.error(err.message, messageOptions);
-			})
-			.finally(() => {
-				loadingRef.value = false;
-			});
+
+		await action(message, Service.Users.resetPasswordByForgot(info), () => {
+			message.success("修改成功，3秒后自动跳转到登录界面...", messageOptions);
+			setTimeout(() => {
+				goto(LOGIN);
+			}, 3000);
+		});
+
+		loadingRef.value = false;
 	});
 });
 
 const sendLink = debounce(() => {
 	formValidator(formRef, message, async () => {
 		loadingRef.value = true;
-		await Service.Users.sendMailForResetPassword(info)
-			.then(_ => {
-				message.success("重置邮件已发送，请检查您的邮箱收件箱", messageOptions);
-				return Promise.resolve();
-			})
-			.catch((err) => {
-				message.error(err.message, messageOptions);
-			})
-			.finally(() => {
-				loadingRef.value = false;
-			});
+
+		await action(message, Service.Users.sendMailForResetPassword(info), () => {
+			message.success("重置邮件已发送，请检查您的邮箱收件箱", messageOptions);
+		});
+
 		loadingRef.value = false;
 	});
 });
@@ -160,19 +151,16 @@ const sendLink = debounce(() => {
 onBeforeMount(async () => {
 	// 检查有没有 token
 	if (props.token) {
-		await Service.Token.verify(props.token)
-			.then(res => {
-				copyMatchingProperties(res, info);
-				info.remark = props.token;
-				resetFlagRef.value = true;
-				return Promise.resolve();
-			})
-			.catch((err) => {
-				message.error(err.message, messageOptions);
-			})
-			.finally(() => {
-				loadingRef.value = false;
-			});
+		loadingRef.value = true;
+
+		await action(message, Service.Token.verify(props.token), (res) => {
+			copyMatchingProperties(res, info);
+			info.remark = props.token;
+			resetFlagRef.value = true;
+			return Promise.resolve();
+		});
+
+		loadingRef.value = false;
 	}
 });
 </script>

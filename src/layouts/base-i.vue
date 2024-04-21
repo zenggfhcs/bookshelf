@@ -32,7 +32,9 @@ import {
 import { h, onMounted, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
 
-const props = defineProps(["switchTheme"]);
+const props = defineProps({
+	switchTheme: Function
+});
 
 const message = useMessage();
 
@@ -168,13 +170,8 @@ onMounted(() => {
 	<n-layout
 		has-sider
 		position="absolute"
-		style="
-			--n-color: v-bind();
-			--n-text-color: v-bind();
-			--n-item-text-color-active: v-bind();
-			--n-text-color-hover: v-bind();
-		"
-	>
+		style="--n-color: v-bind();--n-text-color: v-bind();
+			--n-item-text-color-active: v-bind();--n-text-color-hover: v-bind();">
 		<n-layout-sider
 			:collapsed="collapsed"
 			:collapsed-width="64"
@@ -223,8 +220,7 @@ onMounted(() => {
 						class="m-l-15px m-r-15px"
 						secondary
 						strong
-						@click="props.switchTheme()"
-					>
+						@click.prevent="props.switchTheme">
 						<template #icon>
 							<n-icon :component="sun" />
 						</template>

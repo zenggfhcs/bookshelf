@@ -1,4 +1,5 @@
 <script setup>
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_BOOK } from "@/constant/breadcrumb.js";
 import IAdd from "@/icons/i-add.vue";
@@ -7,7 +8,6 @@ import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { BOOK_ADD, BOOK_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import {
 	NBackTop,
 	NButton,

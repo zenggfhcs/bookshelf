@@ -1,11 +1,12 @@
 <script setup>
 
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
+import { messageOptions } from "@/constant/options.js";
 import Search from "@/icons/search.vue";
 import router from "@/router/index.js";
 import { J_BOOK_DETAIL } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import {
 	NButton,
 	NCard,
@@ -24,7 +25,9 @@ import {
 } from "naive-ui";
 import { computed, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue";
 
-const props = defineProps(["keyword", "updateMenuItem"]);
+const props = defineProps({
+	keyword: String
+});
 
 const message = useMessage();
 
@@ -180,14 +183,16 @@ async function query() {
 	loadingQuery.value = false;
 }
 
-const handleQuery = debounce(() => {
-	if (queryKeyword.value) {
-		query();
+const queryHandler = debounce(() => {
+	if (!queryKeyword.value || !queryKeyword.value.toString().trim()) {
+		message.warning("检索内容不可为空", messageOptions);
+		// todo focus input
+		return;
 	}
+	query();
 });
 
 onBeforeMount(() => {
-	props.updateMenuItem("j-quick-query");
 	if (props.keyword) {
 		query();
 	}
@@ -210,7 +215,7 @@ onUnmounted(() => {
 					class="w-12em"
 				/>
 				<n-input v-model:value="queryKeyword" placeholder="请输入关键字" />
-				<n-button type="primary" @click.prevent="handleQuery">
+				<n-button type="primary" @click.prevent="queryHandler">
 					<template #icon>
 						<Search />
 					</template>

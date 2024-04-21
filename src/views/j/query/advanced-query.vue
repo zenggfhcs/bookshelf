@@ -1,8 +1,8 @@
 <script setup>
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { debounce } from "@/utils/debounce.js";
 import { copyMatchingProperties } from "@/utils/index.js";
-import { queryList } from "@/utils/query.js";
 import {
 	NButton,
 	NCard,
@@ -17,15 +17,17 @@ import {
 	NInput,
 	NLayout,
 	NLayoutContent,
+	NLayoutSider,
 	NPagination,
 	NSelect,
 	NSpace,
+	NText,
 	NTree,
 	useMessage
 } from "naive-ui";
 import { computed, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["updateMenuItem"]);
+const props = defineProps({});
 
 const message = useMessage();
 
@@ -156,127 +158,130 @@ const handleQuery = debounce(() => {
 });
 
 onMounted(() => {
-	props.updateMenuItem("j-advanced-query");
 });
 </script>
 
 <template>
-	<n-layout>
-		<n-flex class="items-center" justify="center" vertical>
-			<n-card class="w-80em">
-				<n-space vertical>
-					<div class="font-size-1.5em">馆藏书目组配检索(tips:&nbsp;检索点为前方一致)</div>
-					<n-form
-						class="w-100%"
-						label-placement="left"
-						label-width="auto"
-						size="small">
-						<n-grid :cols="4" x-gap="12" y-gap="0">
-							<n-gi>
-								<n-form-item label="题名">
-									<n-input v-model:value="payloadReactive.entity.bookName" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="出版社">
-									<n-input v-model:value="payloadReactive.entity.publisher" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="著者">
-									<n-input v-model:value="payloadReactive.entity.author" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="分类号">
-									<n-input v-model:value="payloadReactive.entity.bookType" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="主题词">
-									<n-input v-model:value="payloadReactive.entity.keyword" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="ISBN">
-									<n-input v-model:value="payloadReactive.entity.isbn" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="索引号">
-									<n-input v-model:value="payloadReactive.entity.callNumber" />
-								</n-form-item>
-							</n-gi>
-							<n-gi>
-								<n-form-item label="CIP">
-									<n-input v-model:value="payloadReactive.entity.cip" />
-								</n-form-item>
-							</n-gi>
-						</n-grid>
-						<n-flex justify="space-between">
-							<n-button secondary type="default" @click.prevent="reset">重置</n-button>
-							<n-button type="primary" @click.prevent="handleQuery">检索</n-button>
-						</n-flex>
-					</n-form>
-				</n-space>
-			</n-card>
-			<n-flex v-if="tableDataRef.length" class="w-80em" style="flex-wrap: nowrap">
-				<n-space class="flex-auto" vertical>
-					<n-space>
-						<n-pagination
-							v-model:page="pagination.page"
-							:item-count="itemCountRef"
-							simple
-							@update-page="pagination.onUpdatePage"
-							@update-pageSize="pagination.onUpdatePageSize"
-						/>
-						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
-						          size="small" @update:value="pagination.onUpdatePageSize" />
-						<n-button class="ml-2" size="small" type="primary">排序</n-button>
+	<n-card>
+		<n-layout has-sider>
+			<n-layout-sider class="m-r-4" collapse-mode="width" width="400">
+				<n-card>
+					<n-space vertical>
+						<div class="font-size-1.5em">馆藏书目组配检索</div>
+						<n-text>tips:&nbsp;检索点为前方一致</n-text>
+						<n-form
+							class="w-100%"
+							label-placement="left"
+							label-width="auto"
+							size="small">
+							<n-grid :cols="1" x-gap="12" y-gap="0">
+								<n-gi>
+									<n-form-item label="题名">
+										<n-input v-model:value="payloadReactive.entity.bookName" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="出版社">
+										<n-input v-model:value="payloadReactive.entity.publisher" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="著者">
+										<n-input v-model:value="payloadReactive.entity.author" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="分类号">
+										<n-input v-model:value="payloadReactive.entity.bookType" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="主题词">
+										<n-input v-model:value="payloadReactive.entity.keyword" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="ISBN">
+										<n-input v-model:value="payloadReactive.entity.isbn" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="索引号">
+										<n-input v-model:value="payloadReactive.entity.callNumber" />
+									</n-form-item>
+								</n-gi>
+								<n-gi>
+									<n-form-item label="CIP">
+										<n-input v-model:value="payloadReactive.entity.cip" />
+									</n-form-item>
+								</n-gi>
+							</n-grid>
+							<n-flex justify="space-between">
+								<n-button secondary type="default" @click.prevent="reset">重置</n-button>
+								<n-button type="primary" @click.prevent="handleQuery">检索</n-button>
+							</n-flex>
+						</n-form>
 					</n-space>
-					<n-layout-content>
-						<n-data-table
-							:bordered="false"
-							:columns="cols"
-							:data="tableDataRef"
-							:loading="loadingQuery"
-							:show-header="false"
-							:single-line="false"
-							remote />
-					</n-layout-content>
-					<n-space reverse>
-						<n-pagination
-							v-model:page="pagination.page"
-							:item-count="itemCountRef"
-							simple
-							@update-page="pagination.onUpdatePage"
-							@update-pageSize="pagination.onUpdatePageSize"
-						/>
-						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
-						          size="small" @update:value="pagination.onUpdatePageSize" />
-					</n-space>
-				</n-space>
-				<n-card class="w-16em" size="small">
-					<n-collapse>
-						<n-collapse-item name="1" title="分类">
-							<n-tree
-								:data="data"
-								block-node
-								checkable
-								checkbox-placement="right"
-								@update:checked-keys="(v) => {console.log(v)}"
-							/>
-						</n-collapse-item>
-						<n-collapse-item name="2" title="出版日期">
-							<n-tree />
-						</n-collapse-item>
-					</n-collapse>
 				</n-card>
-			</n-flex>
-			<n-card v-else-if="isQueriedRef">没有你想要的东西哦</n-card>
-		</n-flex>
-	</n-layout>
-
+			</n-layout-sider>
+			<n-card>
+				<n-flex v-if="tableDataRef.length" style="flex-wrap: nowrap">
+					<n-space class="flex-auto" vertical>
+						<n-space>
+							<n-pagination
+								v-model:page="pagination.page"
+								:item-count="itemCountRef"
+								simple
+								@update-page="pagination.onUpdatePage"
+								@update-pageSize="pagination.onUpdatePageSize"
+							/>
+							<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+							          size="small" @update:value="pagination.onUpdatePageSize" />
+							<n-button class="ml-2" size="small" type="primary">排序</n-button>
+						</n-space>
+						<n-layout-content>
+							<n-data-table
+								:bordered="false"
+								:columns="cols"
+								:data="tableDataRef"
+								:loading="loadingQuery"
+								:show-header="false"
+								:single-line="false"
+								remote />
+						</n-layout-content>
+						<n-space reverse>
+							<n-pagination
+								v-model:page="pagination.page"
+								:item-count="itemCountRef"
+								simple
+								@update-page="pagination.onUpdatePage"
+								@update-pageSize="pagination.onUpdatePageSize"
+							/>
+							<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+							          size="small" @update:value="pagination.onUpdatePageSize" />
+						</n-space>
+					</n-space>
+					<n-card class="w-16em" size="small">
+						<n-collapse>
+							<n-collapse-item name="1" title="分类">
+								<n-tree
+									:data="data"
+									block-node
+									checkable
+									checkbox-placement="right"
+									@update:checked-keys="(v) => {console.log(v)}"
+								/>
+							</n-collapse-item>
+							<n-collapse-item name="2" title="出版日期">
+								<n-tree />
+							</n-collapse-item>
+						</n-collapse>
+					</n-card>
+				</n-flex>
+				<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
+			</n-card>
+		</n-layout>
+	</n-card>
 </template>
 
 <style scoped>

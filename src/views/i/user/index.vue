@@ -1,4 +1,5 @@
 <script setup>
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_USER_INDEX } from "@/constant/breadcrumb.js";
 import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
@@ -9,7 +10,6 @@ import router from "@/router/index.js";
 import { USER_CHECK } from "@/router/router-value.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import { inputValidator } from "@/utils/validator.js";
 import {

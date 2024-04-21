@@ -1,4 +1,5 @@
 <script setup>
+import { action, queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_USER_CHECK } from "@/constant/breadcrumb.js";
@@ -11,7 +12,6 @@ import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { formatTime } from "@/utils/format.js";
 import { copyMatchingProperties } from "@/utils/index.js";
-import { queryItem } from "@/utils/query.js";
 import {
 	NButton,
 	NFlex,
@@ -103,18 +103,13 @@ const showResetPwdConfirmation = ref(false);
 
 const showRemoveConfirmation = ref(false);
 
-const remove = debounce(() => {
-	Service.Users.remove(props.id)
-		.then((_) => {
-			message.success("删除成功", messageOptions);
-			goto(USER);
-		})
-		.catch((err) => {
-			message.error(err.message, messageOptions);
-		})
-		.finally(() => {
-			showRemoveConfirmation.value = false;
-		});
+const remove = debounce(async () => {
+// todo use remove item
+	await action(message, Service.Users.remove(props.id), () => {
+		message.success("删除成功", messageOptions);
+		goto(USER);
+	});
+
 });
 
 const resetPassword = debounce(() => {

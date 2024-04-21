@@ -1,4 +1,5 @@
 <script setup>
+import { queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_DEBIT_CHECK } from "@/constant/breadcrumb.js";
@@ -10,7 +11,6 @@ import { BOOK_INFO_CHECK, DEBIT } from "@/router/router-value.js";
 import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { transMouth } from "@/utils/index.js";
-import { queryItem } from "@/utils/query.js";
 import { NButton, NFlex, NGi, NGrid, NIcon, NLayout, NLayoutHeader, NSpace, NTable, NTag, useMessage } from "naive-ui";
 import { computed, onMounted, reactive, ref } from "vue";
 

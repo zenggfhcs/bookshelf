@@ -1,4 +1,5 @@
 <script setup>
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_LOG_INDEX } from "@/constant/breadcrumb.js";
 import { LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP, SERVICE_NAME_MAP } from "@/constant/map.js";
@@ -10,7 +11,6 @@ import { PAGE, PAGE_SIZE } from "@/storage/key.js";
 import { session } from "@/storage/session.js";
 import { getTagType, timestampToDateTimeString } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import { inputValidator } from "@/utils/validator.js";
 import {

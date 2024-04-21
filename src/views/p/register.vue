@@ -1,4 +1,5 @@
 <script setup>
+import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
@@ -7,11 +8,11 @@ import { LOGIN } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator } from "@/utils/validator.js";
 import { NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage } from "naive-ui";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 
 const formRef = ref(null);
 const message = useMessage();
-const info = ref({
+const info = reactive({
 	email: null,
 	authenticationString: null,
 	reenteredAuthenticationString: null
@@ -23,18 +24,18 @@ const loadingRef = ref(false);
 
 function validatePasswordStartWith(_, value) {
 	return (
-		!!model.value.authenticationString &&
-		model.value.authenticationString.startsWith(value) &&
-		model.value.authenticationString.length >= value.length
+		!!info.value.authenticationString &&
+		info.value.authenticationString.startsWith(value) &&
+		info.value.authenticationString.length >= value.length
 	);
 }
 
 function validatePasswordSame(_, value) {
-	return value === model.value.authenticationString;
+	return value === info.value.authenticationString;
 }
 
 function handlePasswordInput() {
-	if (model.value.reenteredAuthenticationString) {
+	if (info.value.reenteredAuthenticationString) {
 		reenteredRef.value?.validate({ trigger: "authenticationString-input" });
 	}
 }
@@ -90,26 +91,21 @@ const rules = {
  * 注册
  * @param e event
  */
-const register = debounce((e) => {
-	e.preventDefault(); // 父默认方法
-	formValidator(formRef, message, () => {
+const registerHandler = debounce(() => {
+	formValidator(formRef, message, async () => {
 		loadingRef.value = true;
-		Service.Users.register(model.value)
-			.then((_) => {
-				message.success(
-					"注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...",
-					messageOptions
-				);
-				setTimeout(() => {
-					goto(LOGIN);
-				}, 3000);
-			})
-			.catch((err) => {
-				message.error(err.message, messageOptions);
-			})
-			.finally(() => {
-				loadingRef.value = false;
-			});
+
+		await action(message, Service.Users.register(info), (_) => {
+			message.success(
+				"注册成功，验证链接已经发送到您的邮箱，3秒后自动跳转到登录界面...",
+				messageOptions
+			);
+			setTimeout(() => {
+				goto(LOGIN);
+			}, 3000);
+		});
+
+		loadingRef.value = false;
 	});
 });
 </script>
@@ -132,10 +128,10 @@ const register = debounce((e) => {
 		</div>
 		<n-divider>OR</n-divider>
 	</n-flex>
-	<n-form id="login-form" ref="formRef" :model="model" :rules="rules">
+	<n-form id="login-form" ref="formRef" :model="info" :rules="rules">
 		<n-form-item label="邮箱" path="email" size="large">
 			<n-input
-				v-model:value="model.email"
+				v-model:value="info.email"
 				:maxlength="32"
 				:minlength="5"
 				placeholder="请正确输入您的邮箱"
@@ -144,7 +140,7 @@ const register = debounce((e) => {
 		</n-form-item>
 		<n-form-item label="密码" path="authenticationString" size="large">
 			<n-input
-				v-model:value="model.authenticationString"
+				v-model:value="info.authenticationString"
 				:maxlength="17"
 				:minlength="7"
 				placeholder="请正确输入您的密码"
@@ -161,7 +157,7 @@ const register = debounce((e) => {
 		>
 			<n-input
 				ref="reenteredRef"
-				v-model:value="model.reenteredAuthenticationString"
+				v-model:value="info.reenteredAuthenticationString"
 				:maxlength="17"
 				:minlength="7"
 				placeholder="请再次正确输入您的密码"
@@ -175,7 +171,7 @@ const register = debounce((e) => {
 				class="w-100%"
 				size="large"
 				type="success"
-				@click="register"
+				@click.prevent="registerHandler"
 			>
 				注册
 			</n-button>

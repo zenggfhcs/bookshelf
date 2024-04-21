@@ -1,6 +1,5 @@
 <script setup>
-import { ThEME } from "@/storage/key.js";
-import { local } from "@/storage/local.js";
+import { Service } from "@/api/index.js";
 import {
 	darkTheme,
 	dateZhCN,
@@ -9,35 +8,53 @@ import {
 	NMessageProvider,
 	NModalProvider,
 	NWatermark,
+	useOsTheme,
 	zhCN
 } from "naive-ui";
-import { ref } from "vue";
+import { onBeforeMount, onMounted, ref } from "vue";
 
-// 是暗色主题
-const isDark = ref(false);
-{
-	let _ = local.get(ThEME); // 刷新时读取
-	if (_) {
-		isDark.value = _ === "true"; // bool string to bool
-	} else {
-		local.put(ThEME, false); // save
+
+const watermarkRef = ref("大家艰苦一下，牛奶和面包都会有的");
+
+const osTheme = useOsTheme();
+
+const theme = ref(osTheme.value === "dark" ? darkTheme : null);
+
+function switchTheme() {
+	if (theme.value) {
+		theme.value = null;
+		return;
 	}
+	theme.value = darkTheme;
 }
 
-/**
- * 切换
- * @param v target value
- */
-function switchTheme(v = !isDark.value) {
-	if (isDark.value === v) return;
-	isDark.value = v;
-	// todo 可能有性能影响，替代方案是在 onBeforeUnmount 中执行，但是刷新页面时没有执行，达不到预期
-	local.put(ThEME, isDark.value?.toString());
-}
+onBeforeMount(() => {
+});
+
+onMounted(() => {
+	Service.Users.tokenUser()
+		.then(res => {
+			watermarkRef.value = `${res?.surname}${res?.name}@${res?.phoneNumber}`;
+		});
+});
 </script>
 
 <template>
+	<n-config-provider
+		:date-locale="dateZhCN"
+		:locale="zhCN" :theme="theme">
+		<n-modal-provider>
+			<n-dialog-provider>
+				<n-message-provider>
+					<RouterView v-slot="{ Component }">
+						<component :is="Component" :switch-theme="switchTheme" />
+					</RouterView>
+				</n-message-provider>
+			</n-dialog-provider>
+		</n-modal-provider>
+	</n-config-provider>
 	<n-watermark
+		:content="watermarkRef"
 		:font-size="16"
 		:height="384"
 		:line-height="16"
@@ -45,25 +62,9 @@ function switchTheme(v = !isDark.value) {
 		:width="384"
 		:x-offset="12"
 		:y-offset="70"
-		content="大家艰苦一下，牛奶和面包都会有的"
 		cross
 		fullscreen
 	/>
-	<n-config-provider
-		:date-locale="dateZhCN"
-		:locale="zhCN"
-		:theme="isDark ? darkTheme : null"
-	>
-		<n-modal-provider>
-			<n-dialog-provider>
-				<n-message-provider>
-					<RouterView v-slot="{ Component }">
-						<component :is="Component" :switchTheme="switchTheme" />
-					</RouterView>
-				</n-message-provider>
-			</n-dialog-provider>
-		</n-modal-provider>
-	</n-config-provider>
 </template>
 
 <style>

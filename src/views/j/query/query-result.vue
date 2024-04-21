@@ -1,8 +1,8 @@
 <script setup>
 
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { optional } from "@/utils/convert.js";
-import { queryList } from "@/utils/query.js";
 import {
 	NButton,
 	NCard,

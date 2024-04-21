@@ -1,4 +1,5 @@
 <script setup>
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_DEBIT } from "@/constant/breadcrumb.js";
 import IReload from "@/icons/i-reload.vue";
@@ -8,7 +9,6 @@ import router from "@/router/index.js";
 import { DEBIT_CHECK } from "@/router/router-value.js";
 import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import {
 	NBackTop,

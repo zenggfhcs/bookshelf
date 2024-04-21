@@ -1,4 +1,5 @@
 <script setup>
+import { action, queryItem, removeItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import BookAdd from "@/components/book-add.vue";
 import BookInfoUpdate from "@/components/book-info-update.vue";
@@ -13,8 +14,6 @@ import IReload from "@/icons/i-reload.vue";
 import IWarehouse from "@/icons/i-warehouse.vue";
 import { BOOK_INFO } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryItem } from "@/utils/query.js";
-import { removeItem } from "@/utils/remove.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NModal, useMessage } from "naive-ui";
 import { onBeforeMount, onMounted, reactive, ref } from "vue";
 
@@ -60,13 +59,9 @@ async function query(id) {
 
 	await queryItem(message, Service.BookInfos.get(id), info);
 
-	await Service.Books.getByInfoId(info.id)
-		.then(res => {
-			books.value = [...res];
-		})
-		.catch(err => {
-			message.error(err.message, messageOptions);
-		});
+	await action(message, Service.BookInfos.getFirstLevelType(), (res) => {
+		books.value = [...res];
+	});
 
 	loadingQuery.value = false;
 }

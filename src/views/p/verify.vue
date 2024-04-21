@@ -1,8 +1,8 @@
 <script setup>
+import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_BASE64 } from "@/constant/regular-expression.js";
-import { SC } from "@/constant/response-code.js";
 
 import { NInput, useMessage } from "naive-ui";
 import { onMounted } from "vue";
@@ -27,23 +27,11 @@ const start = async () => {
 
 	updateMessage("loading", "验证中");
 
-	Service.Users.verifyEmail(query.token)
-		.then((res) => {
-			const data = res.data;
-			if (data?.code !== SC.OK) {
-				updateMessage(
-					"error",
-					"VERIFIED_FAILED: 验证失败，请联系管理员(1635276938@qq.com)"
-				);
-			} else {
-				updateMessage("success", "验证通过");
-			}
-		})
-		.catch((err) => {
-			updateMessage("error", err.message);
-		})
-		.finally(() => {
-		});
+	action(message, Service.Users.verifyEmail(query.token), () => {
+		message.success("验证通过", messageOptions);
+	}, () => {
+		message.error("验证失败，请联系管理员(1635276938@qq.com)", messageOptions);
+	});
 };
 
 onMounted(() => {

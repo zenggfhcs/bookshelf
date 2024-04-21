@@ -1,8 +1,12 @@
 <script setup>
 
+import { action, queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
-import { queryItem } from "@/utils/query.js";
+import { messageOptions } from "@/constant/options.js";
+import { debounce } from "@/utils/debounce.js";
+import logout from "@/utils/logout.js";
+import { formValidator } from "@/utils/validator.js";
 
 import { NButton, NCard, NFlex, NForm, NFormItem, NInput, NSpace, NTag, useMessage } from "naive-ui";
 import { onMounted, reactive, ref } from "vue";
@@ -14,7 +18,8 @@ const info = reactive({
 	email: "",
 	authenticationString: "",
 	newAuthenticationString: "",
-	reenteredNewAuthenticationString: ""
+	reenteredNewAuthenticationString: "",
+	revision: 0
 });
 
 const reenteredRef = ref();
@@ -72,6 +77,24 @@ const rules = {
 
 };
 
+const resetFormRef = ref();
+
+const loadingReset = ref(false);
+
+const resetHandler = debounce(() => {
+	formValidator(resetFormRef, message, async () => {
+		loadingReset.value = true;
+
+		await action(message, Service.Users.resetPasswordByUpdate(info), () => {
+			message.success("更改成功", messageOptions);
+			// todo 更改成功需要重新登录，这里退出登录
+			logout(message);
+		});
+
+		loadingReset.value = false;
+	});
+});
+
 onMounted(() => {
 	queryItem(
 		message,
@@ -87,7 +110,8 @@ onMounted(() => {
 		<n-card class="w-30em">
 			<n-space vertical>
 				<span class="font-bold font-size-1.2em text-center"> 修改密码 </span>
-				<n-form :model="info" :rules="rules" label-align="right" label-placement="left" label-width="auto">
+				<n-form ref="resetFormRef" :model="info" :rules="rules" label-align="right" label-placement="left"
+				        label-width="auto">
 					<n-form-item label="邮箱">
 						<n-tag v-if="info.email" :bordered="false" type="success">
 							{{ info.email }}
@@ -108,7 +132,7 @@ onMounted(() => {
 					</n-form-item>
 				</n-form>
 				<n-flex justify="right">
-					<n-button type="primary" @click=""> 确定</n-button>
+					<n-button :loading="loadingReset" type="primary" @click.prevent="resetHandler"> 提交</n-button>
 				</n-flex>
 			</n-space>
 		</n-card>

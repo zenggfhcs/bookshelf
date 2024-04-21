@@ -1,10 +1,11 @@
 <script setup>
+import { action, queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import InfoBookList from "@/components/info-book-list.vue";
 import BookInfo from "@/components/j/book-info.vue";
 import { messageOptions } from "@/constant/options.js";
 import IEdit from "@/icons/i-edit.vue";
-import { queryItem } from "@/utils/query.js";
+import { debounce } from "@/utils/debounce.js";
 import { NBackTop, NButton, NCard, NFlex, NIcon, useMessage } from "naive-ui";
 import { onBeforeMount, onMounted, reactive, ref } from "vue";
 
@@ -45,13 +46,9 @@ async function query(id) {
 
 	await queryItem(message, Service.BookInfos.get(id), info);
 
-	await Service.Books.getByInfoId(info.id)
-		.then(res => {
-			books.value = [...res];
-		})
-		.catch(err => {
-			message.error(err.message, messageOptions);
-		});
+	await action(message, Service.Books.getByInfoId(info.id), (res) => {
+		books.value = [...res];
+	});
 
 	loadingQuery.value = false;
 }
@@ -65,12 +62,24 @@ onMounted(() => {
 	query(props.id);
 });
 
+const loadingBorrowRef = ref(false);
+
+const borrowHandler = debounce(async () => {
+	loadingBorrowRef.value = true;
+
+	await action(message, Service.BookInfos.borrow(props.id), () => {
+		message.success("借阅成功", messageOptions);
+	});
+
+	loadingBorrowRef.value = false;
+});
+
 </script>
 
 <template>
-	<n-flex justify="center">
+	<n-flex class="m-t-.5em" justify="center">
 		<n-flex class="w-80em items-center" justify="right">
-			<n-button type="warning" @click.prevent="">
+			<n-button :loading="loadingBorrowRef" type="warning" @click.prevent="borrowHandler">
 				<template #icon>
 					<n-icon :component="IEdit" />
 				</template>

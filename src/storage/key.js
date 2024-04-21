@@ -7,6 +7,4 @@ const TOKEN = "token";
 
 const REFRESH_TOKEN = "refreshToken";
 
-const ThEME = "isDark";
-
-export { PAGE, PAGE_SIZE, TOKEN, REFRESH_TOKEN, ThEME };
+export { PAGE, PAGE_SIZE, TOKEN, REFRESH_TOKEN };

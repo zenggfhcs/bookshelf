@@ -1,8 +1,7 @@
 <script setup>
+import { action, queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
-import { queryList } from "@/utils/query.js";
 import {
-	NBackTop,
 	NButton,
 	NCard,
 	NDataTable,
@@ -12,6 +11,7 @@ import {
 	NPagination,
 	NSelect,
 	NSpace,
+	NText,
 	NTree,
 	useMessage
 } from "naive-ui";
@@ -19,10 +19,7 @@ import { computed, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const message = useMessage();
 
-const props = defineProps(["updateMenuItem"]);
-{
-	props.updateMenuItem("j-type-query");
-}
+const props = defineProps({});
 
 const defaultExpandedKeys = ref([]);
 
@@ -136,20 +133,15 @@ async function query() {
 }
 
 onBeforeMount(() => {
-
 });
 
-onMounted(() => {
-	Service.BookInfos.getFirstLevelType()
-		.then((res) => {
-			res?.forEach((item) => {
-				setItemLabel(item);
-			});
-			treeDataRef.value = res;
-		})
-		.catch((err) => {
-			console.log(err);
+onMounted(async () => {
+	action(message, Service.BookInfos.getFirstLevelType(), (res) => {
+		res?.forEach((item) => {
+			setItemLabel(item);
 		});
+		treeDataRef.value = [...res];
+	});
 });
 </script>
 
@@ -190,11 +182,10 @@ onMounted(() => {
 						<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
 					</n-space>
 				</n-space>
-				<n-card v-else-if="isQueriedRef">没有你想要的东西哦</n-card>
+				<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
 			</n-card>
 		</n-layout>
 	</n-card>
-	<n-back-top :right="100" />
 </template>
 
 <style scoped></style>

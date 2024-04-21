@@ -1,4 +1,5 @@
 <script setup>
+import { action, addItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_BOOK_INFO_ADD } from "@/constant/breadcrumb.js";
 import { Header } from "@/constant/Header.js";
@@ -9,7 +10,6 @@ import IBack from "@/icons/i-back.vue";
 import { goto } from "@/router/goto.js";
 import { BOOK_INFO } from "@/router/router-value.js";
 import { local } from "@/storage/local.js";
-import { addItem } from "@/utils/add.js";
 import { convertToChineseNum, optional } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { dateDisabled } from "@/utils/disabled.js";
@@ -273,19 +273,17 @@ const handleQueryType = debounce((queryKeyword) => {
 		typeOptionsRef.value = [];
 		return;
 	}
-	Service.ClcIndexes.getByKeyword(queryKeyword)
-		.then((res) => {
-			typeOptionsRef.value = res?.map((item) => {
-				return {
-					label: `${item.key}:${item.value}`,
-					value: `${item.value}`
-				};
-			});
-		})
-		.catch(_ => {
-			typeOptionsRef.value = [];
-		})
-		.finally();
+
+	action(message, Service.ClcIndexes.getByKeyword(queryKeyword), (res) => {
+		typeOptionsRef.value = res?.map((item) => {
+			return {
+				label: `${item.key}:${item.value}`,
+				value: `${item.value}`
+			};
+		});
+	}, () => {
+		typeOptionsRef.value = [];
+	});
 }, 100);
 
 const add = debounce(() => {

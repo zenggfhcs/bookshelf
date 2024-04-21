@@ -1,4 +1,5 @@
 <script setup>
+import { action, queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_ROLE_INDEX } from "@/constant/breadcrumb.js";
 import { messageOptions } from "@/constant/options.js";
@@ -8,7 +9,6 @@ import IReload from "@/icons/i-reload.vue";
 import router from "@/router/index.js";
 import { ROLE_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import { renderCell } from "@/utils/render.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
@@ -172,15 +172,13 @@ const pagination = reactive({
 const addHandler = debounce(() => {
 	formValidator(addFormRef, message, async () => {
 		loadingAdd.value = true;
-		await Service.Roles.add(payloadReactive.entity)
-			.then(_ => {
-				message.success("添加成功", messageOptions);
-				showAddModal.value = false;
-				query();
-			})
-			.catch((err) => {
-				message.error(err.message, messageOptions);
-			});
+
+		await action(message, Service.Roles.add(payloadReactive.entity), () => {
+			message.success("添加成功", messageOptions);
+			showAddModal.value = false;
+			query();
+		});
+
 		loadingAdd.value = false;
 	});
 

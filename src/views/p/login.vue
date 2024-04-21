@@ -1,6 +1,6 @@
 <script setup>
+import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
-import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
 import router from "@/router/index.js";
 import { REGISTER, RESET_PASSWORD } from "@/router/router-value.js";
@@ -55,23 +55,17 @@ const rules = {
  * 登录
  * @param e event
  */
-const login = debounce((e) => {
-	e.preventDefault(); // 父默认方法
-	formValidator(formRef, message, () => {
+const login = debounce(() => {
+	formValidator(formRef, message, async () => {
 		loadingRef.value = true;
-		console.log(model);
-		Service.Users.login(model)
-			.then((res) => {
-				const _tokenInfo = JSON.parse(res?.token);
-				resetToken(_tokenInfo);
-				router.push("/");
-			})
-			.catch((err) => {
-				message.error(err.message, messageOptions);
-			})
-			.finally(() => {
-				loadingRef.value = false;
-			});
+
+		await action(message, Service.Users.login(model), (res) => {
+			const _tokenInfo = JSON.parse(res?.token);
+			resetToken(_tokenInfo);
+			router.push("/"); // todo goto index
+		});
+
+		loadingRef.value = false;
 	});
 });
 </script>
@@ -126,7 +120,7 @@ const login = debounce((e) => {
 				class="w-100%"
 				size="large"
 				type="success"
-				@click="login"
+				@click.prevent="login"
 			>
 				登入
 			</n-button>

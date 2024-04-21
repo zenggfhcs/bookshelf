@@ -1,4 +1,5 @@
 <script setup>
+import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_BOOK_INFO } from "@/constant/breadcrumb.js";
 import { LANG_TYPE_MAP } from "@/constant/map.js";
@@ -9,7 +10,6 @@ import write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
-import { queryList } from "@/utils/query.js";
 import {
 	NBackTop,
 	NButton,

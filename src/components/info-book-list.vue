@@ -1,8 +1,8 @@
 <script setup>
 
+import { removeItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { debounce } from "@/utils/debounce.js";
-import { removeItem } from "@/utils/remove.js";
 import { NButton, NFlex, NSpace, NTable, useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 
