@@ -1,10 +1,11 @@
 <script setup>
 import { Header } from "@/constant/Header.js";
 import Home from "@/icons/home.vue";
+import IGuide from "@/icons/i-guide.vue";
 import IUser from "@/icons/i-user.vue";
 import Search from "@/icons/search.vue";
 import sun from "@/icons/sun.vue";
-import { BASE_I, J_HOME, J_MY, J_QUERY, J_USER_INFO, LOGIN, REGISTER } from "@/router/router-value.js";
+import { BASE_I, J_HOME, J_MY, J_QUERY, J_READ_GUIDE, J_USER_INFO, LOGIN, REGISTER } from "@/router/router-value.js";
 import { local } from "@/storage/local.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -104,6 +105,12 @@ const menuOptions = [
 		// ],
 		key: "j-query",
 		icon: renderIcon(Search)
+	},
+	{
+		label: () =>
+			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+		key: "j-read-guide",
+		icon: renderIcon(IGuide)
 	},
 	// {
 	// 	label: () =>

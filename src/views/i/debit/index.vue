@@ -7,7 +7,6 @@ import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { DEBIT_CHECK } from "@/router/router-value.js";
-import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { renderCell } from "@/utils/render.js";
 import {
@@ -77,7 +76,7 @@ const cols = [
 					bordered: false
 				},
 				{
-					default: () => timeFormat(row?.creationTime)
+					default: () => row?.creationTime
 				}
 			)
 	},
@@ -118,7 +117,7 @@ const cols = [
 					bordered: false
 				},
 				{
-					default: () => timeFormat(row?.lastUpdatedTime)
+					default: () => row?.lastUpdatedTime
 				}
 			);
 		}

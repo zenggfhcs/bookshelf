@@ -159,7 +159,7 @@ onMounted(() => {
 				<template #icon>
 					<n-icon :component="IEdit" />
 				</template>
-				更新
+				提交
 			</n-button>
 		</n-flex>
 	</n-layout-header>

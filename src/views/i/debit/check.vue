@@ -8,8 +8,8 @@ import IReload from "@/icons/i-reload.vue";
 import IReturn from "@/icons/i-return.vue";
 import Send from "@/icons/send.vue";
 import { BOOK_INFO_CHECK, DEBIT } from "@/router/router-value.js";
-import { timeFormat } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
+import { formatTime } from "@/utils/format.js";
 import { transMouth } from "@/utils/index.js";
 import { NButton, NFlex, NGi, NGrid, NIcon, NLayout, NLayoutHeader, NSpace, NTable, NTag, useMessage } from "naive-ui";
 import { computed, onMounted, reactive, ref } from "vue";
@@ -251,7 +251,7 @@ onMounted(() => {
 						<td>借期</td>
 						<td>
 							<n-tag :bordered="false" type="primary">
-								{{ timeFormat(info.creationTime) }}
+								{{ info.creationTime }}
 							</n-tag>
 						</td>
 					</tr>
@@ -322,7 +322,7 @@ onMounted(() => {
 						<td>归还状态</td>
 						<td>
 							<n-tag v-if="info.returnDate" :bordered="false" type="success">已归还</n-tag>
-							<n-tag v-else-if="info.returnDeadline >= (new Date().toDateString)" :bordered="false"
+							<n-tag v-else-if="info.returnDeadline >= formatTime(new Date())" :bordered="false"
 							       type="warning">
 								未归还
 							</n-tag>
@@ -353,9 +353,5 @@ onMounted(() => {
 
 .trc tr > td:nth-child(2n - 1) {
 	text-align: right;
-}
-
-.b-r {
-	border-right: 0 solid var(--n-merged-border-color);
 }
 </style>

@@ -3,7 +3,7 @@
 import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
-import { timeFormat } from "@/utils/convert.js";
+import { formatTime } from "@/utils/format.js";
 import { NButton, NDataTable, NDivider, useMessage } from "naive-ui";
 import { h, onMounted, ref } from "vue";
 
@@ -14,13 +14,16 @@ const loadingReturnRef = ref(false);
 const cols = [
 	{
 		title: "题名",
-		key: "book.bookInfo.bookName"
+		key: "book.bookInfo.bookName",
+		render: (row) => {
+			return `${row.book.bookInfo.bookName} | ${row.book.bookInfo.author}`;
+		}
 	},
 	{
 		title: "借期",
 		key: "creationTime",
 		render: (row) => {
-			return timeFormat(row.creationTime);
+			return formatTime(row.creationTime);
 		}
 	},
 	{
@@ -29,7 +32,13 @@ const cols = [
 	},
 	{
 		title: "状态",
-		key: ""
+		key: "returnDeadline",
+		render: (row) => {
+			if (new Date(row.returnDeadline) < new Date()) {
+				return "已逾期";
+			}
+			return "借阅中";
+		}
 	},
 	{
 		title: "操作",

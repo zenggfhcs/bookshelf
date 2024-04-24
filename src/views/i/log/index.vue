@@ -7,10 +7,9 @@ import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { LOG_CHECK } from "@/router/router-value.js";
-import { PAGE, PAGE_SIZE } from "@/storage/key.js";
-import { session } from "@/storage/session.js";
-import { getTagType, timestampToDateTimeString } from "@/utils/convert.js";
+import { getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
+import { formatTime } from "@/utils/format.js";
 import { renderCell } from "@/utils/render.js";
 import { inputValidator } from "@/utils/validator.js";
 import {
@@ -170,7 +169,7 @@ const cols = [
 	}
 ];
 
-let tableData = ref([]);
+let tableDataRef = ref([]);
 
 const loadingRefresh = ref(false);
 
@@ -212,10 +211,10 @@ const payloadReactive = reactive({
 		},
 		creationTime: {
 			start: computed(() => {
-				return timestampToDateTimeString(timestamp.creationTime?.[0]);
+				return formatTime(timestamp.creationTime?.[0]);
 			}),
 			end: computed(() => {
-				return timestampToDateTimeString(timestamp.creationTime?.[1]);
+				return formatTime(timestamp.creationTime?.[1]);
 			})
 		},
 		elapsedTime: {
@@ -238,15 +237,15 @@ async function query() {
 	await queryList(
 		message,
 		Service.Logs.filteredList(payloadReactive),
-		itemCount,
-		tableData
+		itemCountRef,
+		tableDataRef
 	);
 	loadingRefresh.value = false;
 }
 
-const clickQuery = debounce(query);
+const queryHandler = debounce(query);
 
-const itemCount = ref(0);
+const itemCountRef = ref(0);
 
 const pagination = reactive({
 	page: 1,
@@ -306,8 +305,6 @@ onBeforeUnmount(() => {
 onMounted(() => {
 	props.updateMenuItem("i-log");
 	props.updateBreadcrumbArray(B_LOG_INDEX);
-	session.put(PAGE, pagination.page);
-	session.put(PAGE_SIZE, pagination.pageSize);
 	query();
 });
 </script>
@@ -332,7 +329,7 @@ onMounted(() => {
 				:loading="loadingRefresh"
 				class="h-2.4em"
 				type="info"
-				@click.prevent="clickQuery"
+				@click.prevent="queryHandler"
 			>
 				<template #icon>
 					<n-icon :component="IReload" />
@@ -351,7 +348,7 @@ onMounted(() => {
 		<!--   数据表   -->
 		<n-data-table
 			:columns="cols"
-			:data="tableData"
+			:data="tableDataRef"
 			:loading="loadingRefresh"
 			:render-cell="renderCell"
 			:row-props="rowProps"
@@ -462,7 +459,7 @@ onMounted(() => {
 				v-model:page="pagination.page"
 				v-model:page-size="pagination.pageSize"
 				v-model:page-sizes="pagination.pageSizes"
-				:item-count="itemCount"
+				:item-count="itemCountRef"
 				:on-update-page="pagination.onUpdatePage"
 				:on-update-page-size="pagination.onUpdatePageSize"
 				class="text-center"
@@ -470,7 +467,7 @@ onMounted(() => {
 				show-size-picker
 				size="large"
 			>
-				<template #prefix="{ itemCount }"> 共 {{ itemCount }} 项</template>
+				<template #prefix="{ itemCount }"> 共 {{ itemCountRef }} 项</template>
 				<template #goto> 跳至</template>
 				<template #suffix="{}"> 页</template>
 			</n-pagination>

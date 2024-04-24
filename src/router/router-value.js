@@ -9,6 +9,8 @@ import BookAdd from "@/views/i/book/add.vue";
 import BookCheck from "@/views/i/book/check.vue";
 
 import BookManager from "@/views/i/book/index.vue";
+
+import ClcIndexManager from "@/views/i/clc-index/index.vue";
 import DebitCheck from "@/views/i/debit/check.vue";
 import DebitManager from "@/views/i/debit/index.vue";
 import I from "@/views/i/index.vue";
@@ -23,7 +25,8 @@ import RoleManager from "@/views/i/user/role/index.vue";
 import JBookDetail from "@/views/j/book-detail.vue";
 import J from "@/views/j/index.vue";
 import JMy from "@/views/j/my/index.vue";
-import JQUERY from "@/views/j/query.vue";
+import JQUERY from "@/views/j/query/index.vue";
+import ReadGuide from "@/views/j/read-guide/index.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
@@ -122,7 +125,7 @@ const J_QUERY = {
 	component: JQUERY,
 	name: "jQuery",
 	path: "/j/query",
-	props: (route) => ({ keyword: route.query.keyword, defaultTab: route.query.defaultTab }),
+	props: (route) => ({ keyword: route.query.keyword, tab: route.query.tab }),
 	hidden: true
 };
 
@@ -150,13 +153,14 @@ const J_QUERY = {
 // 	hidden: true
 // };
 //
-// const J_READ_GUIDE = {
-// 	component: ReadGuide,
-// 	name: "jReadGuide",
-// 	path: "/j/query/read-guide",
-// 	props: true,
-// 	hidden: true
-// };
+
+const J_READ_GUIDE = {
+	component: ReadGuide,
+	name: "jReadGuide",
+	path: "/j/read-guide",
+	props: true,
+	hidden: true
+};
 
 const J_MY = {
 	component: JMy,
@@ -179,7 +183,7 @@ const BASE_J = {
 	name: "j",
 	path: "/",
 	props: true,
-	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE,*/ J_USER_INFO, J_MY, J_BOOK_DETAIL],
+	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE,*/J_READ_GUIDE, J_USER_INFO, J_MY, J_BOOK_DETAIL],
 	redirect: J_HOME,
 	hidden: true
 };
@@ -220,11 +224,22 @@ const BOOK_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region clc index
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const CLC_INDEX = {
+	component: ClcIndexManager,
+	name: "clcIndexManager",
+	path: "/i/clcIndexes",
+	props: true,
+	hidden: true
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 //#region book info
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BOOK_INFO = {
 	component: BookInfoManager,
-
 	name: "bookInfoManager",
 	path: "/i/bookInfos",
 	props: true,
@@ -408,6 +423,7 @@ const BASE_I = {
 		BOOK_INFO,
 		BOOK_INFO_CHECK,
 		BOOK_INFO_ADD,
+		CLC_INDEX,
 		USER,
 		USER_CHECK,
 		ROLE, ROLE_CHECK, PERMISSION,
@@ -450,6 +466,7 @@ export {
 	BOOK_INFO,
 	BOOK_INFO_CHECK,
 	BOOK_INFO_ADD,
+	CLC_INDEX,
 	USER,
 	USER_CHECK,
 	ROLE,
@@ -462,6 +479,7 @@ export {
 	// j
 	BASE_J,
 	J_HOME, J_QUERY,
+	J_READ_GUIDE,
 	// J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE,
 	J_BOOK_DETAIL,
 	J_USER_INFO,
@@ -479,7 +497,6 @@ export const PredefinedRoutes = [PUBLIC, BASE_I, BASE_J, ERROR];
 
 const NO_TOKEN_PAGE = new Set();
 {
-	NO_TOKEN_PAGE.add("login");
 	NO_TOKEN_PAGE.add("login");
 	NO_TOKEN_PAGE.add("register");
 	NO_TOKEN_PAGE.add("resetPassword");

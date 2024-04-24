@@ -1,7 +1,10 @@
 import { format } from "date-fns";
 
 function formatTime(timeString) {
-	return format(new Date(timeString), "yyyy-MM-dd hh:mm:ss");
+	if (timeString) {
+		return format(new Date(timeString), "yyyy-MM-dd HH:mm:ss");
+	}
+	return null;
 }
 
 function formatDate(dateString) {

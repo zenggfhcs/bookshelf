@@ -1,0 +1,140 @@
+<script setup>
+import { action } from "@/api/action.js";
+import { Service } from "@/api/index.js";
+import Rankings from "@/components/rankings.vue";
+import IReload from "@/icons/i-reload.vue";
+import Search from "@/icons/search.vue";
+import { debounce } from "@/utils/debounce.js";
+import { dateDisabled } from "@/utils/disabled.js";
+import { NButton, NDatePicker, NInputGroup, NInputGroupLabel, NSelect, NSpace, useMessage } from "naive-ui";
+import { onBeforeMount, reactive, ref } from "vue";
+
+const message = useMessage();
+
+const info = reactive({
+	year: 2024,
+	month: 4,
+	type: null,
+	size: 20
+});
+
+const cols = [
+	{
+		title: "借阅次数",
+		key: "count",
+		width: 120
+	},
+	{
+		title: "读者",
+		key: "user"
+	}
+];
+
+const dateRef = ref(Date.parse(new Date().toDateString()));
+
+const queryHandler = debounce(() => {
+	query();
+});
+
+function reset() {
+	dateRef.value = Date.parse(new Date().toDateString());
+	info.type = null;
+	info.size = 20;
+}
+
+const typeOptionsRef = ref([]);
+
+const sizeOptions = [
+	{
+		label: "20",
+		value: 20
+	},
+	{
+		label: "50",
+		value: 50
+	},
+	{
+		label: "100",
+		value: 100
+	}
+];
+
+function preQuery() {
+	const date = new Date(dateRef.value);
+	info.year = date.getFullYear();
+	info.month = date.getMonth() + 1; // 获取到的 month从 0开始，0代表一月，+1进行修正
+}
+
+function query() {
+	preQuery();
+
+	action(message, Service.Debits.bookDebitRankings(info), (res) => {
+		rankingsRef.value = res.map((item, index) => {
+			item.ranking = index;
+			return item;
+		});
+	});
+}
+
+const rankingsRef = ref([]);
+
+onBeforeMount(() => {
+	action(message, Service.ClcIndexes.firstLevel(), (res) => {
+		typeOptionsRef.value = res?.map(item => {
+			return {
+				value: item.key,
+				label: `${item.key}  ${item.value}`
+			};
+		});
+	});
+});
+</script>
+
+<template>
+
+	<n-space class="w-80em">
+		<n-date-picker
+			v-model:value="dateRef"
+			:is-date-disabled="dateDisabled"
+			class="w-8em"
+			type="month"
+			update-value-on-close
+			value-format="yyyy-MM-dd"
+		/>
+		<n-input-group>
+			<n-input-group-label>分类号:</n-input-group-label>
+			<n-select
+				v-model:value="info.type"
+				:options="typeOptionsRef"
+				class="min-w-10em"
+				clearable
+			/>
+		</n-input-group>
+		<n-input-group>
+			<n-input-group-label>前</n-input-group-label>
+			<n-select
+				v-model:value="info.size"
+				:options="sizeOptions"
+				class="min-w-5em"
+			/>
+			<n-input-group-label>名</n-input-group-label>
+		</n-input-group>
+		<n-button :bordered="false" type="primary" @click.prevent="queryHandler">
+			<template #icon>
+				<Search />
+			</template>
+			查询
+		</n-button>
+		<n-button secondary @click.prevent="reset">
+			<template #icon>
+				<IReload />
+			</template>
+			重置
+		</n-button>
+	</n-space>
+	<Rankings :cols="cols" :data="rankingsRef" />
+</template>
+
+<style scoped>
+
+</style>

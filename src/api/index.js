@@ -78,7 +78,7 @@ Books.getByInfoId = (id) => {
 const BookInfos = new BaseService(ServiceName.BOOK_INFO);
 
 BookInfos.getFirstLevelType = () => {
-	return request.post(`/bookInfos/bookType:firstLevel`);
+	return request.get(`/clcIndexes/firstLevel`);
 };
 
 BookInfos.quickQuery = (filterPayload) =>
@@ -173,6 +173,10 @@ Debits.restore = (entity) => {
 	};
 	return request.post(`/debits/${entity.id}/restore`, _entity);
 };
+
+Debits.bookDebitRankings = (rankingsBody) => {
+	return request.post("/debits/bookDebitRankings", rankingsBody);
+};
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
@@ -201,6 +205,10 @@ ClcIndexes.firstLevel = () => {
 
 ClcIndexes.getByKeyword = (key) => {
 	return request.get(`/clcIndexes/${key}:startWith`);
+};
+
+ClcIndexes.getByParent = (parent) => {
+	return request.get(`/clcIndexes/parent/${parent}`);
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

@@ -22,7 +22,7 @@ function query() {
 }
 
 function toQuery(type) {
-	goto_(`/j/query?defaultTab=${type}`);
+	goto_(`/j/query?tab=${type}`);
 }
 
 onMounted(() => {

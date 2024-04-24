@@ -4,10 +4,22 @@ import WorkBenchIcon from "@/icons/home.vue";
 import BookManagerIcon from "@/icons/i-book.vue";
 import DebitManagerIcon from "@/icons/i-debit.vue";
 import ILog from "@/icons/i-log.vue";
-import UserManagerIcon from "@/icons/i-user-setting.vue";
+import IUserSetting from "@/icons/i-user-setting.vue";
 import SelfIcon from "@/icons/self.vue";
-import sun from "@/icons/sun.vue";
-import { BASE_I, BASE_J, BOOK_INFO, DEBIT, I_HOME, I_MY, LOG, PERMISSION, ROLE, USER } from "@/router/router-value.js";
+import Sun from "@/icons/sun.vue";
+import {
+	BASE_I,
+	BASE_J,
+	BOOK_INFO,
+	CLC_INDEX,
+	DEBIT,
+	I_HOME,
+	I_MY,
+	LOG,
+	PERMISSION,
+	ROLE,
+	USER
+} from "@/router/router-value.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
@@ -102,13 +114,21 @@ const menuOptions = [
 					}),
 				key: "i-book-info"
 				// icon: renderIcon(BookInfoManagerIcon)
+			},
+			{
+				label: () =>
+					h(RouterLink, gProps(CLC_INDEX.name), {
+						default: () => "分类信息"
+					}),
+				key: "i-clc-index"
+				// icon: renderIcon(BookInfoManagerIcon)
 			}
 		]
 	},
 	{
 		label: "用户管理",
 		key: "i-user-manager",
-		icon: renderIcon(UserManagerIcon),
+		icon: renderIcon(IUserSetting),
 		children: [
 			{
 				label: () => h(RouterLink, gProps(USER.name), { default: () => "用户信息" }),
@@ -222,7 +242,7 @@ onMounted(() => {
 						strong
 						@click.prevent="props.switchTheme">
 						<template #icon>
-							<n-icon :component="sun" />
+							<n-icon :component="Sun" />
 						</template>
 					</n-button>
 				</n-flex>

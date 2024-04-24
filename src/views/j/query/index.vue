@@ -1,19 +1,18 @@
 <script setup>
-import AdvancedQuery from "@/views/j/query/advanced-query.vue";
-import QuickQuery from "@/views/j/query/quick-query.vue";
-import ReadGuide from "@/views/j/query/read-guide.vue";
-import TypeQuery from "@/views/j/query/type-query.vue";
+import AdvancedQuery from "@/views/j/query/pane-advanced.vue";
+import QuickQuery from "@/views/j/query/pane-quick.vue";
+import TypeQuery from "@/views/j/query/pane-type.vue";
 import { NTabPane, NTabs } from "naive-ui";
 import { onBeforeMount, ref } from "vue";
 
 const props = defineProps({
 	keyword: String,
 	updateMenuItem: Function,
-	defaultTab: String
+	tab: String
 });
 
 function getTabName() {
-	switch (props.defaultTab) {
+	switch (props.tab) {
 		case "quick" : {
 			return "quick-query";
 		}
@@ -26,10 +25,13 @@ function getTabName() {
 		case "guide" : {
 			return "read-guide";
 		}
+		default: {
+			return "quick-query";
+		}
 	}
 }
 
-const typeRef = ref(props.defaultTab ? getTabName() : "quick-query");
+const typeRef = ref(props.tab ? getTabName() : "quick-query");
 
 onBeforeMount(() => {
 	props.updateMenuItem("j-query");
@@ -47,9 +49,9 @@ onBeforeMount(() => {
 		<n-tab-pane name="type-query" tab="分类检索">
 			<TypeQuery />
 		</n-tab-pane>
-		<n-tab-pane name="read-guide" tab="读者指引">
-			<ReadGuide />
-		</n-tab-pane>
+		<!--		<n-tab-pane name="read-guide" tab="读者指引">-->
+		<!--			<ReadGuide />-->
+		<!--		</n-tab-pane>-->
 	</n-tabs>
 </template>
 

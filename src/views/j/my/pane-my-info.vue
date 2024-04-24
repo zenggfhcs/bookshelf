@@ -90,7 +90,7 @@ onMounted(async () => {
 						:bordered="false"
 						type="warning"
 						@click="">
-						更新
+						提交
 					</n-button>
 				</n-space>
 			</template>

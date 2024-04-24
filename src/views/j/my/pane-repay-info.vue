@@ -2,7 +2,6 @@
 
 import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
-import { timeFormat } from "@/utils/convert.js";
 import { NDataTable, NDivider, useMessage } from "naive-ui";
 import { onMounted, reactive, ref } from "vue";
 
@@ -17,7 +16,7 @@ const cols = [
 		title: "借期",
 		key: "creationTime",
 		render: (row) => {
-			return timeFormat(row.creationTime);
+			return row.creationTime;
 		}
 	},
 

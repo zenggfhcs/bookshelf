@@ -13,8 +13,8 @@
 		"@vicons/ionicons5": "^0.12.0",
 		"@vitejs/plugin-vue": "^4.6.2",
 		"prettier": "3.2.5",
-		"unocss": "^0.58.6",
-		"vite": "^5.2.6"
+		"unocss": "^0.58.9",
+		"vite": "^5.2.10"
 	},
 	"dependencies": {
 		"@vicons/fa": "^0.12.0",
@@ -26,10 +26,10 @@
 		"naive-ui": "^2.38.1",
 		"pinia": "^2.1.7",
 		"postcss": "^8.4.38",
-		"vue": "^3.4.21",
-		"vue-echarts": "^6.6.9",
+		"vue": "^3.4.24",
+		"vue-echarts": "^6.7.1",
 		"vue-json-viewer": "^3.0.4",
-		"vue-router": "^4.3.0",
+		"vue-router": "^4.3.2",
 		"vue3-eventbus": "^2.0.0"
 	}
 }

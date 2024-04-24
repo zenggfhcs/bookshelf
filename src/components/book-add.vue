@@ -161,7 +161,7 @@ onMounted(() => {
 			</n-form>
 			<n-flex justify="right">
 				<n-button :loading="loadingAdd" type="success" @click.prevent="addHandler">
-					确定
+					提交
 				</n-button>
 			</n-flex>
 		</n-card>

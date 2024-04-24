@@ -1,16 +1,19 @@
 .fill {
     fill: var(--n-text-color);
-    stroke: var(--n-text-color);
+    stroke: none;
 }
 
 .n-menu-item .n-menu-item-content--selected .n-icon svg,
-.n-menu-item .n-menu-item-content:hover .n-icon svg,
+.n-menu--horizontal .n-menu-item .n-menu-item-content:hover .n-icon svg,
 .n-menu-item .n-menu-item-content:focus .n-icon svg,
-.n-menu-item .n-menu-item-content:hover .n-icon svg g path,
+.n-menu--horizontal .n-menu-item .n-menu-item-content:hover .n-icon svg g,
+.n-menu-item .n-menu-item-content:focus .n-icon svg g,
+.n-menu--horizontal .n-menu-item .n-menu-item-content:hover .n-icon svg g path,
 .n-menu-item .n-menu-item-content:focus .n-icon svg g path,
 .n-menu-item .n-menu-item-content--hover .n-icon svg,
 .n-menu-item .n-menu-item-content--hover .n-icon svg g path,
 .n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg path,
+.n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g,
 .n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g path,
 .n-menu-item .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg path,
 .n-menu-item .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg g path {
@@ -25,6 +28,9 @@
 .n-button:not(.n-button--disabled):focus .n-button__icon svg g path,
 .n-icon:hover svg,
 .n-icon:focus svg,
+.n-menu-item .n-menu-item-content:hover .n-icon svg,
+.n-menu-item .n-menu-item-content:hover .n-icon svg g,
+.n-menu-item .n-menu-item-content:hover .n-icon svg g path,
 .n-icon:hover svg g path,
 .n-icon:focus svg g path {
     fill: var(--n-text-color-hover);
