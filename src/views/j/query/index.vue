@@ -39,7 +39,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-	<n-tabs :default-value="typeRef" animated placement="left" type="line">
+	<n-tabs :default-value="typeRef" placement="left" type="line">
 		<n-tab-pane name="quick-query" tab="快速检索">
 			<QuickQuery :keyword="props.keyword" />
 		</n-tab-pane>

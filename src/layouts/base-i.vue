@@ -20,6 +20,7 @@ import {
 	ROLE,
 	USER
 } from "@/router/router-value.js";
+import { debounce } from "@/utils/debounce.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
 import { expandIcon, renderIcon } from "@/utils/render.js";
@@ -64,26 +65,26 @@ function updateMenuItem(itemValue) {
 	menuItemValue.value = itemValue;
 }
 
-const showUserPopover = ref(false);
+const showUserPopoverRef = ref(false);
 
 const canSwitch = ref(true);
 
 // todo
-function switchShowUserPopover(target = !showUserPopover.value) {
+function switchUserPopover(target = !showUserPopoverRef.value) {
 	if (canSwitch.value) {
-		showUserPopover.value = target;
+		showUserPopoverRef.value = target;
 	}
 }
 
 function handleClickPopoverOutSide() {
-	showUserPopover.value = false;
+	showUserPopoverRef.value = false;
 	canSwitch.value = false;
 	setTimeout(() => {
 		canSwitch.value = true;
 	}, 100);
 }
 
-const menuOptions = [
+const menuOptions = ref([
 	{
 		label: () =>
 			h(RouterLink, gProps(I_HOME.name), { default: () => "工作台" }),
@@ -158,7 +159,7 @@ const menuOptions = [
 		key: "i-my",
 		icon: renderIcon(SelfIcon)
 	}
-];
+]);
 
 const modalReactive = reactive({
 	show: false,
@@ -181,6 +182,18 @@ function confirmedHandler() {
 	modalReactive.action();
 	modalReactive.show = false;
 }
+
+const exitHandler = debounce(() => {
+	switchUserPopover();
+	showModal(
+		"warning",
+		"登出二次确认",
+		"是否要确认登出？",
+		() => {
+			logout(message);
+		}
+	);
+});
 
 onMounted(() => {
 });
@@ -259,7 +272,7 @@ onMounted(() => {
 						</n-breadcrumb-item>
 					</n-breadcrumb>
 					<n-popover
-						:show="showUserPopover"
+						:show="showUserPopoverRef"
 						class="p-0"
 						placement="left-start"
 						trigger="click"
@@ -268,7 +281,7 @@ onMounted(() => {
 						<template #trigger>
 							<n-button
 								class="m-l-a m-.2em h-2.4em w-2.4em b-rd-50% p-0 b-0 cursor-pointer"
-								@click.prevent="switchShowUserPopover()">
+								@click.prevent="switchUserPopover()">
 								<span class="font-800" style="font-family: inter, sans-serif">ME</span>
 							</n-button>
 						</template>
@@ -282,10 +295,7 @@ onMounted(() => {
 										前台
 									</n-button>
 								</router-link>
-								<router-link
-									:to="I_MY"
-									@click.prevent="switchShowUserPopover()"
-								>
+								<router-link :to="I_MY" @click.prevent="switchUserPopover()">
 									<n-button
 										:bordered="false"
 										class="w-100% no-border-btn"
@@ -293,21 +303,7 @@ onMounted(() => {
 										个人信息
 									</n-button>
 								</router-link>
-								<n-button
-									:bordered="false"
-									class="no-border-btn"
-									@click.prevent="
-										switchShowUserPopover();
-										showModal(
-											'warning',
-											'登出二次确认',
-											'是否要确认登出？',
-											() => {
-												logout(message);
-											},
-										);
-									"
-								>
+								<n-button :bordered="false" class="no-border-btn" @click.prevent="exitHandler">
 									登出
 								</n-button>
 							</n-flex>

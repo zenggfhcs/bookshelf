@@ -26,7 +26,21 @@ const cols = [
 	},
 	{
 		title: "读者",
-		key: "user"
+		key: "target",
+		render: (row) => {
+			let res = "";
+			if (row.target.surname) {
+				res += row.target.surname + " ";
+			}
+			if (row.target.name) {
+				res += row.target.name + " ";
+			}
+			if (row.target.displayName) {
+				res += `(${row.target.displayName})`;
+			}
+
+			return res;
+		}
 	}
 ];
 
@@ -65,14 +79,19 @@ function preQuery() {
 	info.month = date.getMonth() + 1; // 获取到的 month从 0开始，0代表一月，+1进行修正
 }
 
+const queriedRef = ref(false);
+
 function query() {
 	preQuery();
 
-	action(message, Service.Debits.bookDebitRankings(info), (res) => {
+	action(message, Service.Debits.readerDebitRankings(info), (res) => {
 		rankingsRef.value = res.map((item, index) => {
 			item.ranking = index;
 			return item;
 		});
+		if (!queriedRef.value) {
+			queriedRef.value = true;
+		}
 	});
 }
 
@@ -132,7 +151,7 @@ onBeforeMount(() => {
 			重置
 		</n-button>
 	</n-space>
-	<Rankings :cols="cols" :data="rankingsRef" />
+	<Rankings v-if="rankingsRef.length" :cols="cols" :data="rankingsRef" />
 </template>
 
 <style scoped>

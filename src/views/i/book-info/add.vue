@@ -85,7 +85,7 @@ const info = reactive({
 	lang: null,
 	price: computed(
 		() =>
-			`${optional(priceReactive.int, 0)}${priceReactive.dec ? "." + priceReactive.dec : ""}`
+			+`${optional(priceReactive.int, 0)}${priceReactive.dec ? "." + priceReactive.dec : ""}`
 	),
 	stock: 0,
 	remark: null
@@ -241,11 +241,12 @@ const typeOptionsRef = ref([]);
 
 function addKeyword(l) {
 	l = l?.toString().trim();
+
 	let _i = keywordsRef.value.length;
-	if (l === "" || (_i = keywordsRef.value.indexOf(l)) !== -1) {
+	if (l === "" || keywordsRef.value.indexOf(l) !== -1) {
 		setTimeout(() => {
 			keywordsRef.value.splice(_i, 1);
-		});
+		}, 100);
 	}
 
 	return l;
@@ -296,12 +297,19 @@ const add = debounce(() => {
 	});
 });
 
+function beforeUpload(data) {
+	if (data.file.file?.type === "image/png") {
+		return true;
+	}
+	message.error("只能上传png格式的图片文件，请重新上传", messageOptions);
+	return false;
+}
+
 const showPreviewModal = ref(false);
 const previewCoverUrl = ref("");
 
 function handleUploadCoverFinish({ file, event }) {
 	const response = JSON.parse(event.target?.response);
-	console.log(event);
 	previewCoverUrl.value = response.data;
 	info.cover = response.data;
 	return file;
@@ -374,6 +382,7 @@ onMounted(() => {
 								@finish="handleUploadCoverFinish"
 								@preview="handlePreview"
 								@remove="removeCover"
+								@before-upload="beforeUpload"
 							/>
 						</n-form-item>
 					</n-gi>
@@ -406,15 +415,22 @@ onMounted(() => {
 							/>
 						</n-form-item>
 						<n-form-item label="中图法分类号" path="bookType">
-							<n-select
+							<!--							<n-select-->
+							<!--								v-model:value="info.bookType"-->
+							<!--								:loading="loadingQueryType"-->
+							<!--								:options="typeOptionsRef"-->
+							<!--								clearable-->
+							<!--								filterable-->
+							<!--								placeholder="查找类型"-->
+							<!--								remote-->
+							<!--								@search="handleQueryType"-->
+							<!--							/>-->
+							<n-input
 								v-model:value="info.bookType"
-								:loading="loadingQueryType"
-								:options="typeOptionsRef"
+								:allow-input="inputValidator.noSideSpace"
 								clearable
-								filterable
-								placeholder="查找类型"
-								remote
-								@search="handleQueryType"
+								maxlength="32"
+								placeholder="输入"
 							/>
 						</n-form-item>
 						<n-form-item label="作者" path="author">

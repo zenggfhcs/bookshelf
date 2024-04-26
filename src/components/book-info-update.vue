@@ -1,8 +1,15 @@
 <script setup>
 
+import { updateItem } from "@/api/action.js";
+import { Service } from "@/api/index.js";
+import { Header } from "@/constant/Header.js";
 import { LANG_TYPE_PRE_DEFINED } from "@/constant/map.js";
 import { messageOptions } from "@/constant/options.js";
+import { local } from "@/storage/local.js";
+import { convertToChineseNum, convertToNum, optional } from "@/utils/convert.js";
 import { dateDisabled } from "@/utils/disabled.js";
+import { copyMatchingNullProperties, subMatchingProperties } from "@/utils/index.js";
+import { renderTag } from "@/utils/render.js";
 import { inputValidator } from "@/utils/validator.js";
 import {
 	NDatePicker,
@@ -16,25 +23,181 @@ import {
 	NInputNumber,
 	NSelect,
 	NTable,
-	NTag,
 	NUpload,
 	useMessage
 } from "naive-ui";
-import { computed, h, onBeforeMount, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
-const props = defineProps(["info"]);
+const props = defineProps({
+	dataInfo: Object
+});
+
+defineExpose({
+	handleUpdate
+});
 
 const message = useMessage();
+
+const updateFormRef = ref();
+
+const rules = {
+	bookName: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+	isbn: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+	cip: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+
+	bookType: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+	author: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+	describe: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+	keyword: [
+		{
+			required: true,
+			trigger: ["blur"],
+			validator(_, value) {
+				if (value === undefined || value === null || value.length === 0) {
+					return new Error("需要主题词");
+				}
+			}
+		}
+	],
+	lang: [
+		{
+			required: true,
+			trigger: ["blur"],
+			message: "请选择"
+		}
+	],
+	price: [
+		{
+			required: true,
+			trigger: ["blur"],
+			validator(_, value) {
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value === "null" ||
+					value === "0"
+				) {
+					return new Error("需要售价");
+				}
+			}
+		}
+	],
+	publishedDate: [
+		{
+			required: true,
+			trigger: ["blur"],
+			message: "请选择"
+		}
+	],
+	publisher: [
+		{
+			required: true,
+			trigger: ["blur"],
+			message: "请输入"
+		}
+	],
+	edition: [
+		{
+			required: true,
+			trigger: ["blur", "input"],
+			validator(_, value) {
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value.toString().includes("null")
+				) {
+					return new Error("请输入");
+				}
+			}
+		}
+	],
+	printing: [
+		{
+			required: true,
+			trigger: ["blur", "input"],
+			validator(_, value) {
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value.toString().includes("null")
+				) {
+					return new Error("请输入");
+				}
+			}
+		}
+	],
+	stock: [
+		{
+			required: true,
+			trigger: ["blur", "input"],
+			validator(_, value) {
+				console.log(value);
+				if (
+					value === undefined ||
+					value === null ||
+					value.length === 0 ||
+					value.toString().includes("null")
+				) {
+					return new Error("请输入");
+				}
+			}
+		}
+	]
+};
 
 const defaultFileListRef = [
 	{
 		id: "c",
 		name: ".png",
 		status: "finished",
-		url: computed(() => props.info.cover)
+		url: computed(() => info.cover)
 	}
 ];
 
+
+const coverHeaders = {
+	"Access-Control-Allow-Origin": "*"
+};
+coverHeaders[Header.TOKEN] = local.get(Header.TOKEN);
 
 function beforeUpload(data) {
 	if (data.file.file?.type === "image/png") {
@@ -44,8 +207,28 @@ function beforeUpload(data) {
 	return false;
 }
 
+function handleUploadCoverFinish({ file, event }) {
+	const response = JSON.parse(event.target?.response);
+	info.cover = response.data;
+	return file;
+}
 
-const updateInfo = reactive({
+function handleUploadCoverError({ file, event }) {
+	const response = JSON.parse(event.target?.response);
+	message.error(response.message, messageOptions);
+	return file;
+}
+
+function removeCover() {
+	// todo data
+	info.cover = "";
+}
+
+const editionRef = ref(1);
+
+const printingRef = ref(1);
+
+const info = reactive({
 	id: null,
 	isbn: null,
 	cip: null,
@@ -56,11 +239,11 @@ const updateInfo = reactive({
 	describe: null,
 	publishedDate: null,
 	publisher: "",
-	edition: 1,
-	printing: 1,
-	keyword: null,
+	edition: computed(() => `第${convertToChineseNum(editionRef.value)}版`),
+	printing: computed(() => `第${convertToChineseNum(printingRef.value)}次`),
+	keyword: computed(() => keywordsRef.value.join("－")),
 	lang: null,
-	price: null,
+	price: computed(() => +`${optional(priceReactive.int, 0)}${priceReactive.dec ? "." + priceReactive.dec : ""}`),
 	remark: null,
 	revision: null
 });
@@ -69,33 +252,6 @@ const priceReactive = reactive({
 	int: 0,
 	dec: 0
 });
-
-const loadingQueryType = ref(false);
-
-const typeOptionsRef = ref([]);
-
-function handleQueryType() {
-
-}
-
-const keywords = ref([]);
-
-function renderTag(v, i) {
-	return h(
-		NTag,
-		{
-			type: "info",
-			bordered: false,
-			closable: true,
-			onClose: () => {
-				keywords.value.splice(i, 1);
-			}
-		},
-		{
-			default: () => v
-		}
-	);
-}
 
 const keywordsRef = ref([]);
 
@@ -111,31 +267,88 @@ function addKeyword(l) {
 	return l;
 }
 
-onBeforeMount(() => {
-	Object.assign(updateInfo, props.info);
+async function handleUpdate() {
+	// todo 更新逻辑
+	await updateFormRef?.value?.validate((errors) => {
+		if (errors) {
+			message.error("表单没有通过验证，请检查表单项", messageOptions);
+			return Promise.reject();
+		}
+	});
+
+	const _subInfo = subMatchingProperties(props.dataInfo, info);
+	let _hasUpdate = false;
+	for (let k in _subInfo) {
+		if (_subInfo[k]) {
+			_hasUpdate = true;
+			break;
+		}
+	}
+	if (!_hasUpdate) {
+		message.warning("没有需要更新的内容", messageOptions);
+		return Promise.reject();
+	}
+
+	_subInfo.id = props.dataInfo.id;
+	_subInfo.revision = props.dataInfo.revision;
+
+	return updateItem(message, Service.BookInfos.update(_subInfo));
+
+	// action(
+	// 	message,
+	// 	Service.BookInfos.update(info),
+	// 	() => {
+	// 		message.success("更新成功");
+	// 	}
+	// );
+}
+
+onMounted(() => {
+	// 拆分价格
+	const [int, dec] = props.dataInfo.price?.toString().split(".");
+	// 赋值价格
+	priceReactive.int = int ? +int : null;
+	priceReactive.dec = dec ? +dec : null;
+
+	// 转换版次和印次
+	editionRef.value = convertToNum(/^第(.*)版$/.exec(props.dataInfo.edition)?.[1]);
+	printingRef.value = convertToNum(/^第(.*)次$/.exec(props.dataInfo.printing)?.[1]);
+
+	// 拆分主题词
+	keywordsRef.value = props.dataInfo.keyword.toString().split("－");
+
+	// 克隆属性
+	copyMatchingNullProperties(props.dataInfo, info);
 });
 </script>
 
 <template>
 	<n-flex class="w-100%" style="flex-flow: nowrap;">
-		<n-form :show-feedback="false" :show-label="false" class="flex-auto">
+		<n-form ref="updateFormRef" :model="info" :rules="rules" :show-feedback="false" :show-label="false"
+		        class="flex-auto">
 			<n-table :single-line="false" class="w-100%">
 				<tbody class="trc">
 				<tr>
 					<td class="w-384px" rowspan="12" style="border-bottom: 0;">
-						<n-upload
-							:default-file-list="defaultFileListRef"
-							:max="1"
-							action="http://10.3.105.0:9090/bookInfos/cover:upload"
-							list-type="image-card"
-							@before-upload="beforeUpload"
-						/>
+						<n-form-item path="cover">
+							<n-upload
+								:default-file-list="defaultFileListRef"
+								:headers="coverHeaders"
+								:max="1"
+								action="http://10.3.105.0:9090/bookInfos/cover:upload"
+								list-type="image-card"
+								@error="handleUploadCoverError"
+								@finish="handleUploadCoverFinish"
+								@remove="removeCover"
+								@before-upload="beforeUpload"
+							/>
+						</n-form-item>
 					</td>
 					<td class="w-12%">ISBN</td>
 					<td class="w-20%">
 						<n-form-item path="isbn">
 							<n-input
-								v-model:value="updateInfo.isbn"
+								v-model:value="info.isbn"
 								:allow-input="inputValidator.noSideSpace"
 								clearable
 								maxlength="32"
@@ -147,7 +360,7 @@ onBeforeMount(() => {
 					<td>
 						<n-form-item path="cip">
 							<n-input
-								v-model:value="updateInfo.cip"
+								v-model:value="info.cip"
 								:allow-input="inputValidator.noSideSpace"
 								clearable
 								maxlength="32"
@@ -161,7 +374,7 @@ onBeforeMount(() => {
 					<td>
 						<n-form-item path="bookName">
 							<n-input
-								v-model:value="updateInfo.bookName"
+								v-model:value="info.bookName"
 								:allow-input="inputValidator.noSideSpace"
 								clearable
 								maxlength="32"
@@ -173,7 +386,7 @@ onBeforeMount(() => {
 					<td>
 						<n-form-item path="author">
 							<n-input
-								v-model:value="updateInfo.author"
+								v-model:value="info.author"
 								:allow-input="inputValidator.noSideSpace"
 								clearable
 								maxlength="32"
@@ -186,15 +399,22 @@ onBeforeMount(() => {
 					<td>中图法分类号</td>
 					<td colspan="3">
 						<n-form-item path="bookType">
-							<n-select
-								v-model:value="updateInfo.bookType"
-								:loading="loadingQueryType"
-								:options="typeOptionsRef"
+							<!--							<n-select-->
+							<!--								v-model:value="info.bookType"-->
+							<!--								:loading="loadingQueryType"-->
+							<!--								:options="typeOptionsRef"-->
+							<!--								clearable-->
+							<!--								filterable-->
+							<!--								placeholder="查找类型"-->
+							<!--								remote-->
+							<!--								@search="handleQueryType"-->
+							<!--							/>-->
+							<n-input
+								v-model:value="info.bookType"
+								:allow-input="inputValidator.noSideSpace"
 								clearable
-								filterable
-								placeholder="查找类型"
-								remote
-								@search="handleQueryType"
+								maxlength="32"
+								placeholder="输入"
 							/>
 						</n-form-item>
 					</td>
@@ -205,7 +425,7 @@ onBeforeMount(() => {
 						<n-form-item path="keyword">
 							<n-dynamic-tags
 								v-model:value="keywordsRef"
-								:render-tag="renderTag"
+								:render-tag="renderTag(keywordsRef)"
 								@create="addKeyword"
 							/>
 						</n-form-item>
@@ -216,7 +436,7 @@ onBeforeMount(() => {
 					<td colspan="3">
 						<n-form-item path="lang">
 							<n-select
-								v-model:value="updateInfo.lang"
+								v-model:value="info.lang"
 								:options="LANG_TYPE_PRE_DEFINED"
 								filterable
 								placeholder="选择语种"
@@ -257,7 +477,7 @@ onBeforeMount(() => {
 					<td>
 						<n-form-item path="publisher">
 							<n-input
-								v-model:value="updateInfo.publisher"
+								v-model:value="info.publisher"
 								clearable
 								maxlength="32"
 								placeholder="输入出版社"
@@ -268,7 +488,7 @@ onBeforeMount(() => {
 					<td colspan="3">
 						<n-form-item path="publishedDate">
 							<n-date-picker
-								v-model:formatted-value="updateInfo.publishedDate"
+								v-model:formatted-value="info.publishedDate"
 								:is-date-disabled="dateDisabled"
 								class="w-100%"
 								clearable
@@ -284,7 +504,7 @@ onBeforeMount(() => {
 					<td>
 						<n-form-item path="edition">
 							<n-input-number
-								v-model:value="updateInfo.edition"
+								v-model:value="editionRef"
 								:min="1"
 								class="w-100%"
 								clearable
@@ -296,7 +516,7 @@ onBeforeMount(() => {
 					<td>
 						<n-form-item path="printing">
 							<n-input-number
-								v-model:value="updateInfo.printing"
+								v-model:value="printingRef"
 								:min="1"
 								class="w-100%"
 								clearable
@@ -310,7 +530,7 @@ onBeforeMount(() => {
 					<td colspan="3">
 						<n-form-item path="describe">
 							<n-input
-								v-model:value="updateInfo.describe"
+								v-model:value="info.describe"
 								:allow-input="inputValidator.noSideSpace"
 								autosize
 								clearable
@@ -330,7 +550,7 @@ onBeforeMount(() => {
 
 						<n-form-item path="remark">
 							<n-input
-								v-model:value="updateInfo.remark"
+								v-model:value="info.remark"
 								:allow-input="inputValidator.noSideSpace"
 								autosize
 								clearable

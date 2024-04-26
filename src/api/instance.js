@@ -148,7 +148,7 @@ instance.interceptors.request.use(
 	}
 );
 
-// todo 出现的错误，通过 Promise.reject 返回；要避免在错误中产生错误
+// 出现的错误，通过 Promise.reject 返回；要避免在错误中产生错误
 // 添加响应拦截器
 instance.interceptors.response.use(
 	(response) => {

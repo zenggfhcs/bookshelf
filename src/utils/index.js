@@ -23,6 +23,15 @@ export function copyMatchingProperties(source, target) {
 	}
 }
 
+export function copyMatchingNullProperties(source, target) {
+	for (const key in target) {
+		if (target[key]) {
+			continue;
+		}
+		target[key] = source?.[key];
+	}
+}
+
 export function subProperty(v1, v2) {
 	return v1 === v2 ? null : v2;
 }

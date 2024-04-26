@@ -41,8 +41,6 @@ function queryList(message, promise, itemCount, tableData) {
 	return action(message, promise, (res) => {
 		itemCount.value = res?.length;
 		tableData.value = res?.list;
-		// todo
-		console.log(tableData.value);
 		tableData.value.forEach((item) => {
 			item.key = item.id;
 		});
@@ -61,3 +59,11 @@ function removeItem(message, promise, toComponent = undefined) {
 }
 
 export { removeItem };
+
+function updateItem(message, promise) {
+	return action(message, promise, () => {
+		message.success("更新成功", messageOptions);
+	});
+}
+
+export { updateItem };

@@ -160,7 +160,6 @@ onBeforeMount(() => {
 							<n-icon :component="themeIcon" />
 						</template>
 					</n-button>
-					<!-- todo 添加头像，登录后显示，没有登录显示以下内容 -->
 					<template v-if="loginStatus">
 						<n-popover
 							:show="showUserPopover"

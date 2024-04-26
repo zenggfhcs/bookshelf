@@ -46,10 +46,13 @@ const tableData = ref([]);
 
 const cols = [
 	{
-		title: "借阅人 id",
-		key: "createdBy.id",
+		title: "借阅人",
+		key: "createdBy",
 		ellipsis: {
 			tooltip: true
+		},
+		render: (row) => {
+			return `${row?.createdBy.role.name} | ${row?.createdBy?.surname}-${row?.createdBy?.name}`;
 		}
 	},
 	{
@@ -72,7 +75,7 @@ const cols = [
 			h(
 				NTag,
 				{
-					type: "primary",
+					type: "info",
 					bordered: false
 				},
 				{
@@ -91,7 +94,7 @@ const cols = [
 			h(
 				NTag,
 				{
-					type: "primary",
+					type: "info",
 					bordered: false
 				},
 				{
@@ -268,7 +271,7 @@ onMounted(() => {
 			</n-button>
 			<n-button
 				class="h-2.4em"
-				secondary
+				tertiary
 				type="info"
 				@click="showFilterModal = true"
 			>
@@ -320,6 +323,7 @@ onMounted(() => {
 			preset="dialog"
 			title="筛选"
 			transform-origin="center"
+			type="info"
 		>
 			<n-form :model="payload">
 				<n-form-item>
@@ -350,8 +354,8 @@ onMounted(() => {
 				>
 					重置
 				</n-button>
-				<n-button type="success" @click.prevent="filterHandler">
-					确定
+				<n-button type="info" @click.prevent="filterHandler">
+					提交
 				</n-button>
 			</n-flex>
 		</n-modal>

@@ -13,9 +13,9 @@ import { reactive, ref } from "vue";
 const formRef = ref(null);
 const message = useMessage();
 const info = reactive({
-	email: null,
-	authenticationString: null,
-	reenteredAuthenticationString: null
+	email: "",
+	authenticationString: "",
+	reenteredAuthenticationString: ""
 });
 
 const reenteredRef = ref(null);
@@ -23,19 +23,18 @@ const reenteredRef = ref(null);
 const loadingRef = ref(false);
 
 function validatePasswordStartWith(_, value) {
-	return (
-		!!info.value.authenticationString &&
-		info.value.authenticationString.startsWith(value) &&
-		info.value.authenticationString.length >= value.length
-	);
+	return !!info.authenticationString &&
+		info.authenticationString.startsWith(value) &&
+		info.authenticationString.length >= value.length;
 }
 
 function validatePasswordSame(_, value) {
-	return value === info.value.authenticationString;
+	return value === info.authenticationString;
 }
 
 function handlePasswordInput() {
-	if (info.value.reenteredAuthenticationString) {
+	console.log("handlePasswordInput");
+	if (info.reenteredAuthenticationString) {
 		reenteredRef.value?.validate({ trigger: "authenticationString-input" });
 	}
 }
@@ -63,7 +62,7 @@ const rules = {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
 				} else if (value.length < 7 || value.length > 17) {
-					return new Error("password 长度应为 7-17");
+					return new Error("长度应为 7-17");
 				}
 			}
 		}
@@ -129,7 +128,7 @@ const registerHandler = debounce(() => {
 		<n-divider>OR</n-divider>
 	</n-flex>
 	<n-form id="login-form" ref="formRef" :model="info" :rules="rules">
-		<n-form-item label="邮箱" path="email" size="large">
+		<n-form-item label="邮箱" path="email">
 			<n-input
 				v-model:value="info.email"
 				:maxlength="32"
@@ -138,7 +137,7 @@ const registerHandler = debounce(() => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-form-item label="密码" path="authenticationString" size="large">
+		<n-form-item label="密码" path="authenticationString">
 			<n-input
 				v-model:value="info.authenticationString"
 				:maxlength="17"
@@ -150,13 +149,11 @@ const registerHandler = debounce(() => {
 			/>
 		</n-form-item>
 		<n-form-item
+			ref="reenteredRef"
 			first
 			label="确认密码"
-			path="reenteredAuthenticationString"
-			size="large"
-		>
+			path="reenteredAuthenticationString">
 			<n-input
-				ref="reenteredRef"
 				v-model:value="info.reenteredAuthenticationString"
 				:maxlength="17"
 				:minlength="7"
@@ -169,7 +166,6 @@ const registerHandler = debounce(() => {
 			<n-button
 				:loadingRef="loadingRef"
 				class="w-100%"
-				size="large"
 				type="success"
 				@click.prevent="registerHandler"
 			>

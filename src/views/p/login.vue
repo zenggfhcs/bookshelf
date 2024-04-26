@@ -86,7 +86,7 @@ const login = debounce(() => {
 		<n-divider>OR</n-divider>
 	</n-flex>
 	<n-form id="login-form" ref="formRef" :model="model" :rules="rules">
-		<n-form-item label="邮箱" path="email" size="large">
+		<n-form-item label="邮箱" path="email">
 			<n-input
 				v-model:value="model.email"
 				:maxlength="32"
@@ -95,7 +95,7 @@ const login = debounce(() => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-form-item label="密码" path="authenticationString" size="large">
+		<n-form-item label="密码" path="authenticationString">
 			<div class="w-100% relative">
 				<n-input
 					v-model:value="model.authenticationString"
@@ -118,7 +118,6 @@ const login = debounce(() => {
 			<n-button
 				:loadingRef="loadingRef"
 				class="w-100%"
-				size="large"
 				type="success"
 				@click.prevent="login"
 			>

@@ -497,6 +497,8 @@ export const PredefinedRoutes = [PUBLIC, BASE_I, BASE_J, ERROR];
 
 const NO_TOKEN_PAGE = new Set();
 {
+	NO_TOKEN_PAGE.add("j");
+	NO_TOKEN_PAGE.add("jIndex");
 	NO_TOKEN_PAGE.add("login");
 	NO_TOKEN_PAGE.add("register");
 	NO_TOKEN_PAGE.add("resetPassword");

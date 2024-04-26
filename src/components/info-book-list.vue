@@ -12,6 +12,10 @@ const props = defineProps({
 	options: Object
 });
 
+const emits = defineEmits({
+	afterDelete: Function
+});
+
 const message = useMessage();
 
 const books = ref([]);
@@ -20,12 +24,17 @@ const removeHandler = debounce((id) => {
 	if (!id) {
 		return;
 	}
-	props.showModal("error", "删除二次确认", "您是否要删除该图书？", async () => {
-		await removeItem(
-			message,
-			Service.Books.remove(id)
-		);
-	});
+	props.showModal(
+		"error",
+		"删除二次确认",
+		"您是否要删除该图书？",
+		async () => {
+			await removeItem(
+				message,
+				Service.Books.remove(id)
+			);
+			emits("afterDelete");
+		});
 
 });
 

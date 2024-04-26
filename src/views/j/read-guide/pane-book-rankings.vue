@@ -6,7 +6,7 @@ import IReload from "@/icons/i-reload.vue";
 import Search from "@/icons/search.vue";
 import { debounce } from "@/utils/debounce.js";
 import { dateDisabled } from "@/utils/disabled.js";
-import { NButton, NDatePicker, NInputGroup, NInputGroupLabel, NSelect, NSpace, useMessage } from "naive-ui";
+import { NButton, NCard, NDatePicker, NInputGroup, NInputGroupLabel, NSelect, NSpace, useMessage } from "naive-ui";
 import { onBeforeMount, reactive, ref } from "vue";
 
 const message = useMessage();
@@ -73,6 +73,8 @@ function preQuery() {
 	info.month = date.getMonth() + 1; // 获取到的 month从 0开始，0代表一月，+1进行修正
 }
 
+const queriedRef = ref(false);
+
 function query() {
 	preQuery();
 
@@ -81,6 +83,9 @@ function query() {
 			item.ranking = index;
 			return item;
 		});
+		if (!queriedRef.value) {
+			queriedRef.value = true;
+		}
 	});
 }
 
@@ -140,7 +145,8 @@ onBeforeMount(() => {
 			重置
 		</n-button>
 	</n-space>
-	<Rankings :cols="cols" :data="rankingsRef" />
+	<Rankings v-if="rankingsRef.length" :cols="cols" :data="rankingsRef" />
+	<n-card v-else-if="queriedRef" class="m-t-1em">无数据</n-card>
 </template>
 
 <style scoped>

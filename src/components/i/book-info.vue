@@ -100,12 +100,7 @@ onMounted(() => {
 				</td>
 				<td class="w-30">出版日期</td>
 				<td colspan="3">
-					<n-tag
-						v-if="props.info.publishedDate"
-						:bordered="false"
-						type="default"
-					>
-						<!--								 todo yyyy-MM	-->
+					<n-tag v-if="props.info.publishedDate" :bordered="false" type="default">
 						{{ format(props.info.publishedDate, "yyyy年MM月") }}
 					</n-tag>
 					<NoData v-else />

@@ -70,6 +70,10 @@ Books.getDamageLevels = () => {
 Books.getByInfoId = (id) => {
 	return request.get(`/books/bookInfoId/${id}`);
 };
+
+Books.collectionInfo = () => {
+	return request.get(`/books/collectionInfo`);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -176,6 +180,10 @@ Debits.restore = (entity) => {
 
 Debits.bookDebitRankings = (rankingsBody) => {
 	return request.post("/debits/bookDebitRankings", rankingsBody);
+};
+
+Debits.readerDebitRankings = (rankingsBody) => {
+	return request.post("/debits/readerDebitRankings", rankingsBody);
 };
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion

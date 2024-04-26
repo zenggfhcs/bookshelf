@@ -51,11 +51,9 @@ const reenteredRef = ref(null);
 const loadingRef = ref(false);
 
 function validatePasswordStartWith(_, value) {
-	return (
-		!!info.authenticationString &&
+	return !!info.authenticationString &&
 		info.authenticationString?.toString().startsWith(value) &&
-		info.authenticationString.length >= value.length
-	);
+		info.authenticationString.length >= value.length;
 }
 
 function validatePasswordSame(_, value) {
@@ -77,7 +75,8 @@ const rules = {
 				// 自定义检查
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入邮箱");
-				} else if (!REG_EMAIL.test(value.trim())) {
+				}
+				if (!REG_EMAIL.test(value.trim())) {
 					return new Error("邮箱格式错误");
 				}
 				return true;
@@ -91,7 +90,8 @@ const rules = {
 			validator(_, value) {
 				if (value === undefined || value === null || value.length === 0) {
 					return new Error("请输入密码");
-				} else if (value.length < 7 || value.length > 17) {
+				}
+				if (value.length < 7 || value.length > 17) {
 					return new Error("password 长度应为 7-17");
 				}
 				return true;
@@ -163,6 +163,10 @@ onBeforeMount(async () => {
 		loadingRef.value = false;
 	}
 });
+
+/*
+todo 功能没测
+ */
 </script>
 
 <template>
@@ -177,7 +181,7 @@ onBeforeMount(async () => {
 	</n-flex>
 
 	<n-form id="login-form" ref="formRef" :model="info" :rules="rules">
-		<n-form-item label="邮箱" path="email" size="large">
+		<n-form-item label="邮箱" path="email">
 			<n-text v-if="resetFlagRef" class="font-size-1.5em">
 				{{ info.email }}
 			</n-text>
@@ -190,7 +194,7 @@ onBeforeMount(async () => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<!--		<n-form-item first label="验证码" path="code" size="large">-->
+		<!--		<n-form-item first label="验证码" path="code">-->
 		<!--			<div class="flex w-100%">-->
 		<!--				<n-input-->
 		<!--					ref="codeRef"-->
@@ -221,7 +225,7 @@ onBeforeMount(async () => {
 		<!--				</n-button>-->
 		<!--			</div>-->
 		<!--		</n-form-item>-->
-		<n-form-item v-if="resetFlagRef" first label="密码" path="authenticationString" size="large">
+		<n-form-item v-if="resetFlagRef" label="密码" path="authenticationString">
 			<n-input
 				v-model:value="info.authenticationString"
 				:maxlength="17"
@@ -233,14 +237,8 @@ onBeforeMount(async () => {
 				@keydown.enter.prevent
 			/>
 		</n-form-item>
-		<n-form-item v-if="resetFlagRef"
-		             first
-		             label="确认密码"
-		             path="reenteredAuthenticationString"
-		             size="large"
-		>
+		<n-form-item v-if="resetFlagRef" ref="reenteredRef" first label="确认密码" path="reenteredAuthenticationString">
 			<n-input
-				ref="reenteredRef"
 				v-model:value="info.reenteredAuthenticationString"
 				:maxlength="17"
 				:minlength="7"
@@ -254,14 +252,7 @@ onBeforeMount(async () => {
 			<n-grid :cols="5" x-gap="12">
 				<n-gi :span="2">
 					<router-link :to="LOGIN">
-						<n-button
-							:bordered="false"
-							class="w-100%"
-							secondary
-							size="large"
-							strong
-							type="tertiary"
-						>
+						<n-button :bordered="false" class="w-100%" secondary strong type="tertiary">
 							<template #icon>
 								<ChevronBackOutline />
 							</template>
@@ -270,24 +261,16 @@ onBeforeMount(async () => {
 					</router-link>
 				</n-gi>
 				<n-gi :span="3">
-					<n-button
-						v-if="resetFlagRef"
-						:loading="loadingRef"
-						class="w-100%"
-						size="large"
-						type="success"
-						@click.prevent="resetPassword"
-					>
-						重置密码
+					<n-button v-if="resetFlagRef" :loading="loadingRef" class="w-100%" type="success"
+					          @click.prevent="resetPassword">
+						提交
 					</n-button>
 					<n-button
 						v-else
 						:loading="loadingRef"
 						class="w-100%"
-						size="large"
 						type="success"
-						@click.prevent="sendLink"
-					>
+						@click.prevent="sendLink">
 						请求重置
 					</n-button>
 				</n-gi>

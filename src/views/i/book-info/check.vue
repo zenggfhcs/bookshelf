@@ -52,6 +52,19 @@ const info = reactive({
 // todo 编写测试更新功能
 const isUpdatingRef = ref(false);
 
+const bookInfoUpdateRef = ref();
+
+const updateHandler = debounce(() => {
+	if (!bookInfoUpdateRef.value) {
+		return;
+	}
+	bookInfoUpdateRef.value.handleUpdate().then((_) => {
+		isUpdatingRef.value = false;
+		query(props.id);
+	}).catch(() => {
+	});
+});
+
 const books = ref([]);
 
 async function query(id) {
@@ -59,7 +72,7 @@ async function query(id) {
 
 	await queryItem(message, Service.BookInfos.get(id), info);
 
-	await action(message, Service.BookInfos.getFirstLevelType(), (res) => {
+	await action(message, Service.Books.getByInfoId(info.id), (res) => {
 		books.value = [...res];
 	});
 
@@ -122,7 +135,7 @@ onMounted(() => {
 				</n-button>
 			</router-link>
 			<n-button
-				:loading="loadingQuery"
+				v-show="!isUpdatingRef" :loading="loadingQuery"
 				class="h-2.4em"
 				type="info"
 				@click.prevent="queryHandler">
@@ -155,7 +168,7 @@ onMounted(() => {
 				</template>
 				取消修改
 			</n-button>
-			<n-button v-show="isUpdatingRef" type="warning" @click.prevent="isUpdatingRef = false">
+			<n-button v-show="isUpdatingRef" type="warning" @click.prevent="updateHandler">
 				<template #icon>
 					<n-icon :component="IEdit" />
 				</template>
@@ -169,10 +182,11 @@ onMounted(() => {
 		content-style="padding: .5em 1em"
 	>
 		<n-flex vertical>
-			<BookInfoUpdate v-if="isUpdatingRef" :info="info" />
+			<BookInfoUpdate v-if="isUpdatingRef" ref="bookInfoUpdateRef" :data-info="info" @handle-update="" />
 			<template v-else>
 				<BookInfoShow :info="info" />
-				<InfoBookList :data="books" :options="options" :show-modal="props.showModal" />
+				<InfoBookList :data="books" :options="options" :show-modal="props.showModal"
+				              @after-delete="query(info.id)" />
 			</template>
 		</n-flex>
 	</n-layout>

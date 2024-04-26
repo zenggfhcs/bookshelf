@@ -28,7 +28,7 @@ function renderTag(tagsRef) {
 				bordered: false,
 				closable: true,
 				onClose: () => {
-					tagsRef.value.splice(i, 1);
+					tagsRef.splice(i, 1);
 				}
 			},
 			{
@@ -39,3 +39,28 @@ function renderTag(tagsRef) {
 }
 
 export { renderTag };
+
+function renderH(type, props, children) {
+	return h(
+		type,
+		props,
+		children
+	);
+}
+
+export { renderH };
+
+function renderNTag(type, value) {
+	return h(
+		NTag,
+		{
+			type: type,
+			bordered: false
+		},
+		{
+			default: () => value
+		}
+	);
+}
+
+export { renderNTag };

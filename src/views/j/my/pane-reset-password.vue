@@ -25,11 +25,9 @@ const info = reactive({
 const reenteredRef = ref();
 
 function validateAuthenticationStringStartWith(_, value) {
-	return (
-		!!info.newAuthenticationString &&
+	return !!info.newAuthenticationString &&
 		info.newAuthenticationString.startsWith(value) &&
-		info.newAuthenticationString.length >= value.length
-	);
+		info.newAuthenticationString.length >= value.length;
 }
 
 function validateAuthenticationStringSame(_, value) {
@@ -47,14 +45,31 @@ const rules = {
 		{
 			required: true,
 			trigger: ["input", "blur"],
-			message: "请输入密码"
+			validator: (_, value) => {
+				if (value === undefined || value === null || value.length === 0) {
+					return new Error("请输入密码");
+				}
+				if (value.length < 7 || value.length > 17) {
+					return new Error("长度应为 7-17");
+				}
+			}
 		}
 	],
 	newAuthenticationString: [
 		{
 			required: true,
 			trigger: ["input", "blur"],
-			message: "请输入新密码"
+			validator: (_, value) => {
+				if (value === undefined || value === null || value.length === 0) {
+					return new Error("请输入新密码");
+				}
+				if (value.length < 7 || value.length > 17) {
+					return new Error("长度应为 7-17");
+				}
+				if (value === info.authenticationString) {
+					return new Error("新旧密码不可相同");
+				}
+			}
 		}
 	],
 	reenteredNewAuthenticationString: [
@@ -122,13 +137,13 @@ onMounted(() => {
 						<n-input v-model:value="info.authenticationString" placeholder="请输入密码" />
 					</n-form-item>
 					<n-form-item label="新密码" path="newAuthenticationString">
-						<n-input v-model:value="info.newAuthenticationString" placeholder="请再次输入密码" />
+						<n-input v-model:value="info.newAuthenticationString" placeholder="请输入新密码"
+						         @input="handleAuthenticationStringInput" />
 					</n-form-item>
-					<n-form-item first label="确认新密码" path="reenteredNewAuthenticationString">
+					<n-form-item ref="reenteredRef" first label="确认新密码" path="reenteredNewAuthenticationString">
 						<n-input
-							ref="reenteredRef"
 							v-model:value="info.reenteredNewAuthenticationString" placeholder="请再次输入密码"
-							@input="handleAuthenticationStringInput" />
+						/>
 					</n-form-item>
 				</n-form>
 				<n-flex justify="right">

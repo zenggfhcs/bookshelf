@@ -39,7 +39,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-	<n-tabs animated placement="left" type="line">
+	<n-tabs placement="left" type="line">
 		<n-tab-pane name="book-ranking-list" tab="书籍借阅排行榜">
 			<PaneBookRankingList />
 		</n-tab-pane>

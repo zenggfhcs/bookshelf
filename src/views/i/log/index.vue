@@ -44,28 +44,28 @@ const props = defineProps([
 const message = useMessage();
 
 const cols = [
-	{
-		title: "数据 id",
-		key: "dataId",
-		// 溢出省略
-		ellipsis: {
-			tooltip: true
-		},
-		render: (row) => {
-			const _dataId = JSON.parse(row.input)?.id;
-			if (!_dataId || _dataId === "") return renderCell();
-			return h(
-				NTag,
-				{
-					type: "info",
-					bordered: false
-				},
-				{
-					default: () => _dataId
-				}
-			);
-		}
-	},
+	// {
+	// 	title: "数据 id",
+	// 	key: "dataId",
+	// 	// 溢出省略
+	// 	ellipsis: {
+	// 		tooltip: true
+	// 	},
+	// 	render: (row) => {
+	// 		const _dataId = JSON.parse(row.input)?.id;
+	// 		if (!_dataId || _dataId === "") return renderCell();
+	// 		return h(
+	// 			NTag,
+	// 			{
+	// 				type: "info",
+	// 				bordered: false
+	// 			},
+	// 			{
+	// 				default: () => _dataId
+	// 			}
+	// 		);
+	// 	}
+	// },
 	{
 		title: "操作类型",
 		key: "type",
@@ -111,7 +111,7 @@ const cols = [
 		}
 	},
 	{
-		title: "运行时间-毫秒",
+		title: "运行时间(ms)",
 		key: "elapsedTime",
 		// 溢出省略
 		ellipsis: {
@@ -130,7 +130,7 @@ const cols = [
 			)
 	},
 	{
-		title: "记录时刻",
+		title: "操作时刻",
 		key: "creationTime",
 		// 溢出省略
 		ellipsis: {
@@ -149,8 +149,8 @@ const cols = [
 			)
 	},
 	{
-		title: "操作者 id",
-		key: "createdBy.id",
+		title: "操作者",
+		key: "createdBy",
 		// 溢出省略
 		ellipsis: {
 			tooltip: true
@@ -163,7 +163,7 @@ const cols = [
 					bordered: false
 				},
 				{
-					default: () => row?.createdBy.id
+					default: () => `${row?.createdBy.role.name} | ${row?.createdBy?.surname}-${row?.createdBy?.name}`
 				}
 			)
 	}
@@ -394,7 +394,6 @@ onMounted(() => {
 						v-model:value="payloadReactive.entity.type"
 						:options="typeOptions"
 						clearable
-						multiple
 						placeholder="选择操作类型"
 					/>
 				</n-form-item>
