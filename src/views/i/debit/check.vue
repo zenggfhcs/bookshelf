@@ -1,8 +1,9 @@
 <script setup>
-import { queryItem } from "@/api/action.js";
+import { action, queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_DEBIT_CHECK } from "@/constant/breadcrumb.js";
+import { messageOptions } from "@/constant/options.js";
 import IBack from "@/icons/i-back.vue";
 import IReload from "@/icons/i-reload.vue";
 import IReturn from "@/icons/i-return.vue";
@@ -35,7 +36,7 @@ const info = reactive({
 		bookInfo: {}
 	},
 	returnDeadline: null,
-	returnDate: null,
+	returnTime: null,
 	createdBy: {
 		id: null,
 		displayName: null,
@@ -59,7 +60,10 @@ async function query(id) {
 }
 
 function showRepayConfirmModal() {
-	props.showModal("error", "催还二次确认", "是否要进行催还？", () => {
+	props.showModal("error", "催还二次确认", "是否要进行催还？", async () => {
+		await action(message, Service.Debits.remind(info), () => {
+			message.success("催还成功", messageOptions);
+		});
 	});
 }
 
@@ -97,7 +101,7 @@ onMounted(() => {
 				</template>
 				刷新
 			</n-button>
-			<n-button type="error" @click.prevent="showRepayConfirmModal">
+			<n-button v-if="!info.returnTime" type="error" @click.prevent="showRepayConfirmModal">
 				<template #icon>
 					<n-icon>
 						<send />
@@ -312,8 +316,8 @@ onMounted(() => {
 					<tr>
 						<td>归还日期</td>
 						<td>
-							<n-tag v-if="info.returnDate" :bordered="false" type="primary">
-								{{ info.returnDate }}
+							<n-tag v-if="info.returnTime" :bordered="false" type="primary">
+								{{ info.returnTime }}
 							</n-tag>
 							<NoData v-else />
 						</td>
@@ -321,7 +325,7 @@ onMounted(() => {
 					<tr>
 						<td>归还状态</td>
 						<td>
-							<n-tag v-if="info.returnDate" :bordered="false" type="success">已归还</n-tag>
+							<n-tag v-if="info.returnTime" :bordered="false" type="success">已归还</n-tag>
 							<n-tag v-else-if="info.returnDeadline >= formatTime(new Date())" :bordered="false"
 							       type="warning">
 								未归还

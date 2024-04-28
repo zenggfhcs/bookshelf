@@ -1,29 +1,27 @@
 <script setup>
-import { action, queryItem } from "@/api/action.js";
+import { action, addItem, queryItem, removeItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_ROLE_CHECK } from "@/constant/breadcrumb.js";
 import { messageOptions } from "@/constant/options.js";
 import IBack from "@/icons/i-back.vue";
+import IReload from "@/icons/i-reload.vue";
 import { goto } from "@/router/goto.js";
 import { ROLE } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
 import {
 	NButton,
-	NCheckbox,
-	NCheckboxGroup,
-	NCollapse,
-	NCollapseItem,
+	NDynamicTags,
 	NFlex,
-	NGi,
-	NGrid,
 	NIcon,
 	NLayout,
 	NLayoutHeader,
+	NSelect,
 	NTable,
+	NTag,
 	useMessage
 } from "naive-ui";
-import { onBeforeMount, onMounted, reactive, ref } from "vue";
+import { computed, createVNode, onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const props = defineProps({
 	id: Number,
@@ -37,39 +35,47 @@ const message = useMessage();
 const info = reactive({
 	id: 0,
 	name: "",
-	createdBy: {
-		id: null,
-		displayName: null,
-		name: null,
-		surname: null,
-		email: null,
-		phoneNumber: null
-	},
-	creationTime: null,
-	updatedBy: {
-		id: null,
-		displayName: null,
-		name: null,
-		surname: null,
-		email: null,
-		phoneNumber: null
-	},
-	lastUpdatedTime: null,
 	remark: null,
-	revision: null
+	revision: null,
+	permissions: []
 });
+
+const rolePermissionNameMap = new Map();
+
+const permissionNameMap = new Map();
 
 async function query(id) {
 	if (!id) {
 		return;
 	}
+	loadingQuery.value = true;
 	await queryItem(message, Service.Roles.get(id), info);
+
+	await action(message, Service.Permissions.list(), (res) => {
+		permissionsRef.value = res;
+	});
+
+	info.permissions.forEach(item => {
+		rolePermissionNameMap.set(item.name, item);
+	});
+
+	permissionOptions.value = [];
+	permissionsRef.value.forEach(item => {
+		permissionNameMap.set(item.name, item);
+		if (!rolePermissionNameMap.get(item.name)) {
+			permissionOptions.value.push({
+				label: item?.remark,
+				value: item?.id
+			});
+		}
+	});
+	loadingQuery.value = false;
+
 }
 
 const showRemoveModal = ref(false);
 
 const removeHandler = debounce(async () => {
-
 	await action(message, Service.BookInfos.getFirstLevelType(), () => {
 		message.success("删除成功", messageOptions);
 		goto(ROLE);
@@ -82,6 +88,74 @@ const showRemoveConfirmedHandler = debounce(() => {
 	props.showModal("error", "删除二次确认", "您是否要删除该角色？", removeHandler);
 });
 
+const permissionOptions = ref([]);
+
+const permissionsRef = ref([]);
+
+const rolePermissionTagsRef = computed(() => info.permissions.map(item => item?.remark));
+
+function renderTag(tag, index) {
+	return createVNode(
+		NTag,
+		{
+			style: {
+				marginBottom: "1em",
+				marginRight: "1em"
+			},
+			type: index < 3 ? "success" : "error",
+			bordered: false,
+			closable: true,
+			onClose: () => {
+				handleRemoveRolePermission(info.permissions[index].id);
+			}
+		},
+		{
+			default: () => createVNode(
+				"div",
+				{
+					style: {
+						minWidth: "10em"
+					}
+				},
+				{
+					default: () => tag
+				}
+			)
+		}
+	);
+}
+
+async function handleRemoveRolePermission(permissionId) {
+	const _info = {
+		id: info.id,
+		name: info.name,
+		remark: permissionId,
+		revision: info.revision
+	};
+	await removeItem(message, Service.Roles.removePermission(_info));
+
+	await query(props.id);
+}
+
+async function handleAddRolePermission(permissionName) {
+	// addItem(message, Service.Roles.addPermission())
+	const _info = {
+		id: info.id,
+		name: info.name,
+		remark: permissionName,
+		revision: info.revision
+	};
+	await addItem(message, Service.Roles.addPermission(_info));
+
+	await query(props.id);
+}
+
+const loadingQuery = ref(false);
+
+const queryHandler = debounce(() => {
+	query(props.id);
+});
+
 onBeforeMount(() => {
 	// 加载数据
 
@@ -91,6 +165,9 @@ onMounted(() => {
 	props.updateMenuItem("i-role");
 	props.updateBreadcrumbArray(B_ROLE_CHECK(props.id));
 	query(props.id);
+	// action(message, Service.Permissions.rolePermission(), (res) => {
+	// 	rolePermissionsRef.value = res;
+	// });
 });
 </script>
 
@@ -110,6 +187,17 @@ onMounted(() => {
 				@click.prevent="showRemoveConfirmedHandler">
 				删除
 			</n-button>
+			<n-button
+				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="queryHandler"
+			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -128,62 +216,76 @@ onMounted(() => {
 			<tr>
 				<td>对应权限</td>
 				<td>
-					<n-collapse>
-						<n-collapse-item name="1" title="图书">
-							<n-checkbox-group>
-								<n-grid :cols="2" :y-gap="8">
-									<n-gi>
-										<n-checkbox label="推开" value="Pushes Open" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="窗户" value="The Window" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="举起" value="And Raises" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="望远镜" value="The Spyglass" />
-									</n-gi>
-								</n-grid>
-							</n-checkbox-group>
-						</n-collapse-item>
-						<n-collapse-item name="2" title="用户">
-							<n-checkbox-group>
-								<n-grid :cols="2" :y-gap="8">
-									<n-gi>
-										<n-checkbox label="推开" value="Pushes Open" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="窗户" value="The Window" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="举起" value="And Raises" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="望远镜" value="The Spyglass" />
-									</n-gi>
-								</n-grid>
-							</n-checkbox-group>
-						</n-collapse-item>
-						<n-collapse-item name="3" title="权限">
-							<n-checkbox-group>
-								<n-grid :cols="2" :y-gap="8">
-									<n-gi>
-										<n-checkbox label="推开" value="Pushes Open" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="窗户" value="The Window" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="举起" value="And Raises" />
-									</n-gi>
-									<n-gi>
-										<n-checkbox label="望远镜" value="The Spyglass" />
-									</n-gi>
-								</n-grid>
-							</n-checkbox-group>
-						</n-collapse-item>
-					</n-collapse>
+					<div style="width: calc(14em * 3 + 2 * 8px);">
+						<n-dynamic-tags v-model:value="rolePermissionTagsRef" :render-tag="renderTag"
+						                @create="handleAddRolePermission">
+							<template #input="{ submit, deactivate }">
+								<n-select
+									:options="permissionOptions"
+									style="min-width: calc(12em + 4px)"
+									@blur="deactivate"
+									@update:value="submit($event)"
+								/>
+							</template>
+						</n-dynamic-tags>
+					</div>
+
+					<!--					<n-collapse>-->
+					<!--						<n-collapse-item name="1" title="图书">-->
+					<!--							<n-checkbox-group>-->
+					<!--								<n-grid :cols="2" :y-gap="8">-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="推开" value="Pushes Open" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="窗户" value="The Window" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="举起" value="And Raises" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="望远镜" value="The Spyglass" />-->
+					<!--									</n-gi>-->
+					<!--								</n-grid>-->
+					<!--							</n-checkbox-group>-->
+					<!--						</n-collapse-item>-->
+					<!--						<n-collapse-item name="2" title="用户">-->
+					<!--							<n-checkbox-group>-->
+					<!--								<n-grid :cols="2" :y-gap="8">-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="推开" value="Pushes Open" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="窗户" value="The Window" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="举起" value="And Raises" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="望远镜" value="The Spyglass" />-->
+					<!--									</n-gi>-->
+					<!--								</n-grid>-->
+					<!--							</n-checkbox-group>-->
+					<!--						</n-collapse-item>-->
+					<!--						<n-collapse-item name="3" title="权限">-->
+					<!--							<n-checkbox-group>-->
+					<!--								<n-grid :cols="2" :y-gap="8">-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="推开" value="Pushes Open" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="窗户" value="The Window" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="举起" value="And Raises" />-->
+					<!--									</n-gi>-->
+					<!--									<n-gi>-->
+					<!--										<n-checkbox label="望远镜" value="The Spyglass" />-->
+					<!--									</n-gi>-->
+					<!--								</n-grid>-->
+					<!--							</n-checkbox-group>-->
+					<!--						</n-collapse-item>-->
+					<!--					</n-collapse>-->
 				</td>
 			</tr>
 			</tbody>

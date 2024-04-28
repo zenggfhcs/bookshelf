@@ -21,9 +21,12 @@ function action(message, promise, then, error) {
 
 export { action };
 
-function addItem(message, promise) {
+function addItem(message, promise, then) {
 	return action(message, promise, () => {
 		message.success("新增成功", messageOptions);
+		if (then) {
+			then();
+		}
 	});
 }
 

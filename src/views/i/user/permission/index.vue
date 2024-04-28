@@ -1,5 +1,5 @@
 <script setup>
-import { action, queryList } from "@/api/action.js";
+import { action, addItem, queryList, removeItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_ROLE_INDEX } from "@/constant/breadcrumb.js";
 import { INFO } from "@/constant/default-info.js";
@@ -8,13 +8,14 @@ import IAdd from "@/icons/i-add.vue";
 import IDelete from "@/icons/i-delete.vue";
 import IReload from "@/icons/i-reload.vue";
 import { debounce } from "@/utils/debounce.js";
-import { copyMatchingProperties } from "@/utils/index.js";
+import { copyMatchingProperties, subMatchingProperties } from "@/utils/index.js";
 import { renderCell } from "@/utils/render.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NBackTop,
 	NButton,
 	NDataTable,
+	NDropdown,
 	NFlex,
 	NForm,
 	NFormItem,
@@ -27,7 +28,7 @@ import {
 	NPagination,
 	useMessage
 } from "naive-ui";
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, h, nextTick, onMounted, reactive, ref } from "vue";
 
 const props = defineProps([
 	"showModal",
@@ -146,13 +147,67 @@ const showAddModal = ref(false);
 
 const showUpdateModal = ref(false);
 
+const showDropdownRef = ref(false);
+
+function handleSelect(key) {
+	showDropdownRef.value = false;
+	// console.log(currentSelectedNodeRef);
+	switch (key) {
+		case "edit": {
+			showUpdateModal.value = true;
+			break;
+		}
+		case "del": {
+			props.showModal("error", "删除二次确认", "是否要删除该权限？", debounce(async () => {
+				await removeItem(message, Service.Permissions.remove(currentSelectedRow.id));
+				await query();
+			}));
+			break;
+		}
+	}
+}
+
+const xRef = ref(0);
+
+const yRef = ref(0);
+
+const options = [
+	{
+		label: () => h("span", { style: { color: "#f2c97d" } }, "编辑"),
+		key: "edit"
+	},
+	{
+		label: () => h("span", { style: { color: "#e88080" } }, "删除"),
+		key: "del"
+	}
+];
+
+const currentSelectedRow = reactive({
+	id: 0,
+	name: "",
+	url: "",
+	remark: "",
+	revision: ""
+});
+
 function rowProps(row) {
 	return {
-		onDblclick: (e) => {
+		// onDblclick: (e) => {
+		// 	e.preventDefault();
+		// 	Object.assign(updateInfo, INFO.PERMISSION);
+		// 	copyMatchingProperties(row, updateInfo);
+		// 	showUpdateModal.value = true;
+		// },
+		onContextmenu: (e) => {
 			e.preventDefault();
-			Object.assign(updateInfo, INFO.PERMISSION);
+			copyMatchingProperties(row, currentSelectedRow);
 			copyMatchingProperties(row, updateInfo);
-			showUpdateModal.value = true;
+			showDropdownRef.value = false;
+			nextTick().then(() => {
+				showDropdownRef.value = true;
+				xRef.value = e.clientX;
+				yRef.value = e.clientY;
+			});
 		}
 	};
 }
@@ -234,12 +289,10 @@ const addHandler = debounce(() => {
 	formValidator(addFormRef, message, async () => {
 		loadingAdd.value = true;
 
-		await action(message, Service.Users.register(info), () => {
-			message.success("添加成功", messageOptions);
+		await addItem(message, Service.Permissions.add(addInfo), () => {
 			showAddModal.value = false;
 			query();
 		});
-
 
 		loadingAdd.value = false;
 	});
@@ -250,7 +303,10 @@ const updateHandler = debounce(() => {
 	formValidator(updateFormRef, message, async () => {
 		loadingUpdate.value = true;
 
-		await action(message, Service.Users.register(info), () => {
+		const _subInfo = subMatchingProperties(currentSelectedRow, updateInfo);
+		_subInfo.id = currentSelectedRow.id;
+		_subInfo.revision = currentSelectedRow.revision;
+		await action(message, Service.Permissions.update(_subInfo), () => {
 			message.success("更新成功", messageOptions);
 			showUpdateModal.value = false;
 			query();
@@ -348,6 +404,17 @@ onMounted(() => {
 		</n-flex>
 	</n-layout-footer>
 
+	<n-dropdown
+		:on-clickoutside="handleSelect"
+		:options="options"
+		:show="showDropdownRef"
+		:x="xRef"
+		:y="yRef"
+		placement="bottom-start"
+		trigger="manual"
+		@clickoutside="showDropdownRef = false;"
+		@select="handleSelect"
+	/>
 	<n-modal
 		id="add-modal"
 		v-model:show="showAddModal"

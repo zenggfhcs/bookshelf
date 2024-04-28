@@ -1,11 +1,11 @@
 <script setup>
 
-import { action, addItem, removeItem } from "@/api/action.js";
+import { action, addItem, removeItem, updateItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import IReload from "@/icons/i-reload.vue";
 import { debounce } from "@/utils/debounce.js";
-import { copyMatchingProperties } from "@/utils/index.js";
-import { inputValidator } from "@/utils/validator.js";
+import { copyMatchingProperties, subMatchingProperties } from "@/utils/index.js";
+import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NBackTop,
 	NButton,
@@ -59,14 +59,41 @@ const addInfo = reactive({
 });
 
 const addHandler = debounce(async () => {
-	await addItem(message, Service.ClcIndexes.add(addInfo));
-	showAddModal.value = false;
-	query(lastParent.id);
+	if (addFormRef.value) {
+		formValidator(addFormRef, message, async () => {
+			await addItem(message, Service.ClcIndexes.add(addInfo));
+			showAddModal.value = false;
+			query(lastParent.id);
+		});
+	}
 });
 
+const editFormRef = ref();
+
+const addFormRef = ref();
+
+const rules = {
+	key: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	],
+	value: [
+		{
+			required: true,
+			trigger: ["input", "blur"],
+			message: "请输入"
+		}
+	]
+};
+
 const updateInfo = reactive({
+	id: 0,
 	key: "",
-	value: ""
+	value: "",
+	revision: 0
 });
 
 function edit() {
@@ -80,13 +107,13 @@ function handleSelect(key) {
 	// console.log(currentSelectedNodeRef);
 	switch (key) {
 		case "edit": {
-			copyMatchingProperties(currentSelectedNodeRef.value, updateInfo);
+			copyMatchingProperties(currentSelectedNode, updateInfo);
 			showEditModal.value = true;
 			break;
 		}
 		case "del": {
 			props.showModal("error", "删除二次确认", "是否要删除该分类？", debounce(async () => {
-				await removeItem(message, Service.ClcIndexes.remove(currentSelectedNodeRef.value.id));
+				await removeItem(message, Service.ClcIndexes.remove(currentSelectedNode.id));
 				query(lastParent.id);
 			}));
 			break;
@@ -94,7 +121,12 @@ function handleSelect(key) {
 	}
 }
 
-const currentSelectedNodeRef = ref(null);
+const currentSelectedNode = reactive({
+	id: 0,
+	key: "",
+	value: "",
+	revision: 0
+});
 
 function nodeProps({ option }) {
 	return {
@@ -109,11 +141,10 @@ function nodeProps({ option }) {
 			query(option.id);
 		},
 		onContextmenu: (e) => {
-			currentSelectedNodeRef.value = option;
 			e.preventDefault();
+			copyMatchingProperties(option, currentSelectedNode);
 			showDropdownRef.value = false;
 			nextTick().then(() => {
-
 				showDropdownRef.value = true;
 				xRef.value = e.clientX;
 				yRef.value = e.clientY;
@@ -147,13 +178,30 @@ function back(parent, index) {
 	query(parent);
 }
 
+const updateHandler = debounce(() => {
+	if (editFormRef.value) {
+		formValidator(editFormRef, message, async () => {
+			const _subInfo = subMatchingProperties(currentSelectedNode, updateInfo);
+			_subInfo.id = currentSelectedNode.id;
+			_subInfo.revision = currentSelectedNode.revision;
+			await updateItem(message, Service.ClcIndexes.update(_subInfo));
+			showEditModal.value = false;
+			query(lastParent.id);
+		});
+	}
+});
+
+const loadingQuery = ref(false);
+
 function query(parent) {
+	loadingQuery.value = true;
 	action(message, Service.ClcIndexes.getByParent(parent), (res) => {
 		res?.forEach((item) => {
 			setItemLabel(item);
 		});
 		treeDataRef.value = [...res];
 	});
+	loadingQuery.value = false;
 }
 
 const queryHandler = debounce(() => {
@@ -169,20 +217,10 @@ onMounted(() => {
 </script>
 
 <template>
-	<n-dropdown
-		:on-clickoutside="handleSelect"
-		:options="options"
-		:show="showDropdownRef"
-		:x="xRef"
-		:y="yRef"
-		placement="bottom-start"
-		trigger="manual"
-		@clickoutside="showDropdownRef = false;"
-		@select="handleSelect"
-	/>
 	<n-layout-header bordered class="h-3em" position="absolute">
 		<n-flex :wrap="false" class="h-3em items-center m-l-1em m-r-1em" justify="center">
 			<n-button
+				:loading="loadingQuery"
 				class="h-2.4em"
 				type="info"
 				@click.prevent="queryHandler">
@@ -192,7 +230,7 @@ onMounted(() => {
 				刷新
 			</n-button>
 			<template v-for="(item, index) in pathRef">
-				<n-button @click.prevent="back(item.id, index)">
+				<n-button secondary type="tertiary" @click.prevent="back(item.id, index)">
 					{{ item.key }}
 				</n-button>
 				<span v-if="index < pathRef.length - 1"> > </span>
@@ -201,7 +239,6 @@ onMounted(() => {
 		</n-flex>
 
 	</n-layout-header>
-
 	<n-layout
 		id="main"
 		:native-scrollbar="false"
@@ -225,6 +262,17 @@ onMounted(() => {
 		<!--   返回顶部   -->
 		<n-back-top />
 	</n-layout>
+	<n-dropdown
+		:on-clickoutside="handleSelect"
+		:options="options"
+		:show="showDropdownRef"
+		:x="xRef"
+		:y="yRef"
+		placement="bottom-start"
+		trigger="manual"
+		@clickoutside="showDropdownRef = false;"
+		@select="handleSelect"
+	/>
 	<n-modal
 		id="edit-modal"
 		v-model:show="showEditModal"
@@ -235,15 +283,15 @@ onMounted(() => {
 		transform-origin="center"
 		type="warning"
 	>
-		<n-form :model="updateInfo">
-			<n-form-item label="分类号">
+		<n-form ref="editFormRef" :model="updateInfo" :rules="rules">
+			<n-form-item label="分类号" path="key">
 				<n-input
 					v-model:value="updateInfo.key"
 					:allow-input="inputValidator.noSideSpace"
 					clearable
 				/>
 			</n-form-item>
-			<n-form-item label="分类名">
+			<n-form-item label="分类名" path="value">
 				<n-input
 					v-model:value="updateInfo.value"
 					:allow-input="inputValidator.noSideSpace"
@@ -252,7 +300,7 @@ onMounted(() => {
 			</n-form-item>
 		</n-form>
 		<n-flex justify="right">
-			<n-button type="warning" @click.prevent="">
+			<n-button type="warning" @click.prevent="updateHandler">
 				提交
 			</n-button>
 		</n-flex>
@@ -265,17 +313,17 @@ onMounted(() => {
 		preset="dialog"
 		title="添加"
 		transform-origin="center"
-		type="warning"
+		type="success"
 	>
-		<n-form :model="addInfo">
-			<n-form-item label="分类号">
+		<n-form ref="addFormRef" :model="addInfo" :rules="rules">
+			<n-form-item label="分类号" path="key">
 				<n-input
 					v-model:value="addInfo.key"
 					:allow-input="inputValidator.noSideSpace"
 					clearable
 				/>
 			</n-form-item>
-			<n-form-item label="分类名">
+			<n-form-item label="分类名" path="value">
 				<n-input
 					v-model:value="addInfo.value"
 					:allow-input="inputValidator.noSideSpace"
@@ -284,7 +332,7 @@ onMounted(() => {
 			</n-form-item>
 		</n-form>
 		<n-flex justify="right">
-			<n-button type="warning" @click.prevent="addHandler">
+			<n-button type="success" @click.prevent="addHandler">
 				提交
 			</n-button>
 		</n-flex>

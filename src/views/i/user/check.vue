@@ -10,7 +10,6 @@ import { goto } from "@/router/goto.js";
 import { USER } from "@/router/router-value.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
-import { formatTime } from "@/utils/format.js";
 import { copyMatchingProperties } from "@/utils/index.js";
 import {
 	NButton,
@@ -225,16 +224,16 @@ onMounted(() => {
 	>
 		<n-table :single-line="false" class="w-100%">
 			<tbody class="trc">
+			<!--			<tr>-->
+			<!--				<td class="w-43%">id</td>-->
+			<!--				<td>-->
+			<!--					<n-tag :bordered="false" type="info">-->
+			<!--						{{ info.id }}-->
+			<!--					</n-tag>-->
+			<!--				</td>-->
+			<!--			</tr>-->
 			<tr>
-				<td class="w-43%">id</td>
-				<td>
-					<n-tag :bordered="false" type="info">
-						{{ info.id }}
-					</n-tag>
-				</td>
-			</tr>
-			<tr>
-				<td>昵称</td>
+				<td class="w-43%">昵称</td>
 				<td>
 					<n-tag
 						v-if="info.displayName"
@@ -291,6 +290,18 @@ onMounted(() => {
 			</tr>
 
 			<tr>
+				<td>出生日期</td>
+				<td>
+					<n-tag
+						v-if="info.birthday"
+						:bordered="false"
+					>
+						{{ info.birthday }}
+					</n-tag>
+					<NoData v-else />
+				</td>
+			</tr>
+			<tr>
 				<td>年龄</td>
 				<td>
 					<n-tag
@@ -317,155 +328,153 @@ onMounted(() => {
 				</td>
 			</tr>
 
-			<tr>
-				<td>最后登录时间</td>
-				<td>
-					<n-tag :bordered="false" type="primary">
-						{{ formatTime(info.lastUpdatedTime) }}
-					</n-tag>
-				</td>
-			</tr>
-
-
-			<tr>
-				<td>创建者</td>
-				<td :style="info.createdBy?.id ? '--n-td-padding: 0;' : ''">
-					<n-table
-						v-if="info.createdBy"
-						:bordered="false"
-						:single-line="false"
-					>
-						<tbody>
-						<tr>
-							<td class="w-30">id</td>
-							<td>
-								<n-tag :bordered="false" type="info">
-									{{ info.createdBy.id }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>用户昵称</td>
-							<td>{{ info.createdBy.displayName }}</td>
-						</tr>
-						<tr>
-							<td>用户名</td>
-							<td>
-								<n-tag :bordered="false" type="primary">
-									{{ info.createdBy.surname }}
-								</n-tag>
-								<n-tag
-									:bordered="false"
-									class="m-l-1"
-									type="primary"
-								>
-									{{ info.createdBy.name }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>邮箱</td>
-							<td>
-								<n-tag :bordered="false" type="error">
-									{{ info.createdBy.email }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>电话</td>
-							<td>
-								<n-tag :bordered="false" type="error">
-									{{ info.createdBy.phoneNumber }}
-								</n-tag>
-							</td>
-						</tr>
-						</tbody>
-					</n-table>
-					<NoData v-else />
-				</td>
-			</tr>
-			<tr>
-				<td>创建时间</td>
-				<td>
-					<n-tag :bordered="false" type="primary">
-						{{ formatTime(info.creationTime) }}
-					</n-tag>
-				</td>
-			</tr>
-			<tr>
-				<td>更新者</td>
-				<td :style="info.updatedBy?.id ? '--n-td-padding: 0;' : ''">
-					<n-table
-						v-if="info.updatedBy"
-						:bordered="false"
-						:single-line="false"
-					>
-						<tbody class="trc">
-						<tr>
-							<td class="w-30">id</td>
-							<td>
-								<n-tag :bordered="false" type="info">
-									{{ info.updatedBy.id }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>用户昵称</td>
-							<td>{{ info.updatedBy.displayName }}</td>
-						</tr>
-						<tr>
-							<td>用户名</td>
-							<td>
-								<n-tag :bordered="false" type="primary">
-									{{ info.updatedBy.surname }}
-								</n-tag>
-								<n-tag
-									:bordered="false"
-									class="m-l-1"
-									type="primary"
-								>
-									{{ info.updatedBy.name }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>邮箱</td>
-							<td>
-								<n-tag :bordered="false" type="error">
-									{{ info.updatedBy.email }}
-								</n-tag>
-							</td>
-						</tr>
-						<tr>
-							<td>电话</td>
-							<td>
-								<n-tag :bordered="false" type="error">
-									{{ info.updatedBy.phoneNumber }}
-								</n-tag>
-							</td>
-						</tr>
-						</tbody>
-					</n-table>
-					<NoData v-else />
-				</td>
-			</tr>
-			<tr>
-				<td>最后更新时间</td>
-				<td>
-					<n-tag :bordered="false" type="warning">
-						{{ formatTime(info.lastUpdatedTime) }}
-					</n-tag>
-				</td>
-			</tr>
-			<tr>
-				<td>备注</td>
-				<td>
-					<n-tag v-if="info.remark">
-						{{ info.remark }}
-					</n-tag>
-					<NoData v-else />
-				</td>
-			</tr>
+			<!--			<tr>-->
+			<!--				<td>最后登录时间</td>-->
+			<!--				<td>-->
+			<!--					<n-tag :bordered="false" type="primary">-->
+			<!--						{{ formatTime(info.lastUpdatedTime) }}-->
+			<!--					</n-tag>-->
+			<!--				</td>-->
+			<!--			</tr>-->
+			<!--			<tr>-->
+			<!--				<td>创建者</td>-->
+			<!--				<td :style="info.createdBy?.id ? '&#45;&#45;n-td-padding: 0;' : ''">-->
+			<!--					<n-table-->
+			<!--						v-if="info.createdBy"-->
+			<!--						:bordered="false"-->
+			<!--						:single-line="false"-->
+			<!--					>-->
+			<!--						<tbody>-->
+			<!--						<tr>-->
+			<!--							<td class="w-30">id</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="info">-->
+			<!--									{{ info.createdBy.id }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>用户昵称</td>-->
+			<!--							<td>{{ info.createdBy.displayName }}</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>用户名</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="primary">-->
+			<!--									{{ info.createdBy.surname }}-->
+			<!--								</n-tag>-->
+			<!--								<n-tag-->
+			<!--									:bordered="false"-->
+			<!--									class="m-l-1"-->
+			<!--									type="primary"-->
+			<!--								>-->
+			<!--									{{ info.createdBy.name }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>邮箱</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="error">-->
+			<!--									{{ info.createdBy.email }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>电话</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="error">-->
+			<!--									{{ info.createdBy.phoneNumber }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						</tbody>-->
+			<!--					</n-table>-->
+			<!--					<NoData v-else />-->
+			<!--				</td>-->
+			<!--			</tr>-->
+			<!--			<tr>-->
+			<!--				<td>创建时间</td>-->
+			<!--				<td>-->
+			<!--					<n-tag :bordered="false" type="primary">-->
+			<!--						{{ formatTime(info.creationTime) }}-->
+			<!--					</n-tag>-->
+			<!--				</td>-->
+			<!--			</tr>-->
+			<!--			<tr>-->
+			<!--				<td>更新者</td>-->
+			<!--				<td :style="info.updatedBy?.id ? '&#45;&#45;n-td-padding: 0;' : ''">-->
+			<!--					<n-table-->
+			<!--						v-if="info.updatedBy"-->
+			<!--						:bordered="false"-->
+			<!--						:single-line="false"-->
+			<!--					>-->
+			<!--						<tbody class="trc">-->
+			<!--						<tr>-->
+			<!--							<td class="w-30">id</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="info">-->
+			<!--									{{ info.updatedBy.id }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>用户昵称</td>-->
+			<!--							<td>{{ info.updatedBy.displayName }}</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>用户名</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="primary">-->
+			<!--									{{ info.updatedBy.surname }}-->
+			<!--								</n-tag>-->
+			<!--								<n-tag-->
+			<!--									:bordered="false"-->
+			<!--									class="m-l-1"-->
+			<!--									type="primary"-->
+			<!--								>-->
+			<!--									{{ info.updatedBy.name }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>邮箱</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="error">-->
+			<!--									{{ info.updatedBy.email }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						<tr>-->
+			<!--							<td>电话</td>-->
+			<!--							<td>-->
+			<!--								<n-tag :bordered="false" type="error">-->
+			<!--									{{ info.updatedBy.phoneNumber }}-->
+			<!--								</n-tag>-->
+			<!--							</td>-->
+			<!--						</tr>-->
+			<!--						</tbody>-->
+			<!--					</n-table>-->
+			<!--					<NoData v-else />-->
+			<!--				</td>-->
+			<!--			</tr>-->
+			<!--			<tr>-->
+			<!--				<td>最后更新时间</td>-->
+			<!--				<td>-->
+			<!--					<n-tag :bordered="false" type="warning">-->
+			<!--						{{ formatTime(info.lastUpdatedTime) }}-->
+			<!--					</n-tag>-->
+			<!--				</td>-->
+			<!--			</tr>-->
+			<!--			<tr>-->
+			<!--				<td>备注</td>-->
+			<!--				<td>-->
+			<!--					<n-tag v-if="info.remark">-->
+			<!--						{{ info.remark }}-->
+			<!--					</n-tag>-->
+			<!--					<NoData v-else />-->
+			<!--				</td>-->
+			<!--			</tr>-->
 			</tbody>
 		</n-table>
 	</n-layout>

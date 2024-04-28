@@ -1,9 +1,10 @@
 <script setup>
+import { Service } from "@/api/index.js";
 import { B_I } from "@/constant/breadcrumb.js";
 import router from "@/router/index.js";
 import { DEBIT_CHECK } from "@/router/router-value.js";
 import { NCard, NGi, NGrid, NLayout, NNumberAnimation, NTag } from "naive-ui";
-import { h, onMounted, ref } from "vue";
+import { h, onMounted, reactive, ref } from "vue";
 
 const props = defineProps(["updateMenuItem", "updateBreadcrumbArray"]);
 
@@ -35,19 +36,6 @@ const cols = [
 
 const tableData = ref([]);
 
-async function init() {
-	const _array = Array.from({ length: 100 }).map((_, index) => {
-		return {
-			id: index
-		};
-	});
-	return new Promise((resolve) => {
-		resolve({
-			list: _array
-		});
-	});
-}
-
 function rowProps(row) {
 	return {
 		onDblclick: (e) => {
@@ -62,41 +50,90 @@ function rowProps(row) {
 	};
 }
 
-onMounted(async () => {
-	init().then((res) => {
-		tableData.value = res.list;
-	});
+const todayDebitCount = reactive({
+	from: 0,
+	to: 0
 });
-{
+
+const todayRestoreCount = reactive({
+	from: 0,
+	to: 0
+});
+
+const todayActiveUserCount = reactive({
+	from: 0,
+	to: 0
+});
+
+const todayNewUserCount = reactive({
+	from: 0,
+	to: 0
+});
+
+onMounted(async () => {
 	props.updateMenuItem("i-index");
 	props.updateBreadcrumbArray(B_I);
-}
+
+	Service.Debits.getTodayDebitCount().then(res => {
+		todayDebitCount.to = +res;
+	});
+
+	Service.Debits.getTodayRestoreCount().then(res => {
+		todayRestoreCount.to = +res;
+	});
+
+
+	Service.Users.todayActiveUserCount().then(res => {
+		todayActiveUserCount.to = +res;
+	});
+
+	Service.Users.todayNewUserCount().then(res => {
+		todayNewUserCount.to = +res;
+	});
+});
 </script>
 
 <template>
 	<n-layout
 		:native-scrollbar="false"
 		content-class="p-1em"
-		position="absolute"
-	>
+		position="absolute">
 		<n-grid :cols="4" :x-gap="14" :y-gap="14">
 			<n-gi>
-				<n-card title="借阅">
+				<n-card title="今日借阅">
 					<n-number-animation
 						ref="numberAnimationInstRef"
-						:from="0"
-						:to="12039"
+						:from="todayDebitCount.from"
+						:to="todayDebitCount.to"
 					/>
 				</n-card>
 			</n-gi>
 			<n-gi>
-				<n-card title="今日归还"> 第2个card</n-card>
+				<n-card title="今日归还">
+					<n-number-animation
+						ref="numberAnimationInstRef"
+						:from="todayRestoreCount.from"
+						:to="todayRestoreCount.to"
+					/>
+				</n-card>
 			</n-gi>
 			<n-gi>
-				<n-card title="今日活跃用户"> 第3个card</n-card>
+				<n-card title="今日活跃用户">
+					<n-number-animation
+						ref="numberAnimationInstRef"
+						:from="todayActiveUserCount.from"
+						:to="todayActiveUserCount.to"
+					/>
+				</n-card>
 			</n-gi>
 			<n-gi>
-				<n-card title="今日归还"> 第4个card</n-card>
+				<n-card title="今日新增用户">
+					<n-number-animation
+						ref="numberAnimationInstRef"
+						:from="todayNewUserCount.from"
+						:to="todayNewUserCount.to"
+					/>
+				</n-card>
 			</n-gi>
 		</n-grid>
 	</n-layout>

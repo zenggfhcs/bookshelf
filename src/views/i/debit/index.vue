@@ -8,6 +8,7 @@ import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
 import { DEBIT_CHECK } from "@/router/router-value.js";
 import { debounce } from "@/utils/debounce.js";
+import { preTime } from "@/utils/pre.js";
 import { renderCell } from "@/utils/render.js";
 import {
 	NBackTop,
@@ -104,13 +105,13 @@ const cols = [
 	},
 	{
 		title: "归还时间",
-		key: "lastUpdatedTime",
+		key: "returnTime",
 		// 溢出省略
 		ellipsis: {
 			tooltip: true
 		},
 		render: (row) => {
-			if (!row?.lastUpdatedTime || !row?.returnDate) {
+			if (!row?.returnTime) {
 				return renderCell();
 			}
 			return h(
@@ -120,7 +121,7 @@ const cols = [
 					bordered: false
 				},
 				{
-					default: () => row?.lastUpdatedTime
+					default: () => row?.returnTime
 				}
 			);
 		}
@@ -136,11 +137,11 @@ const cols = [
 			h(
 				NTag,
 				{
-					type: row?.returnDate ? "success" : "error",
+					type: row?.returnTime ? "success" : "error",
 					bordered: false
 				},
 				{
-					default: () => (row?.returnDate ? "已归还" : "未归还")
+					default: () => (row?.returnTime ? "已归还" : "未归还")
 				}
 			)
 	}
@@ -164,7 +165,7 @@ function rowProps(row) {
 
 const timestamp = reactive({
 	creationTime: null,
-	lastUpdatedTime: null
+	returnTime: null
 });
 
 const showFilterModal = ref(false);
@@ -176,11 +177,15 @@ const payload = reactive({
 			start: computed(() => (pagination.page - 1) * pagination.pageSize),
 			end: computed(() => pagination.pageSize)
 		},
+		state: {
+			start: null,
+			end: null
+		},
 		creationTime: {
 			start: null,
 			end: null
 		},
-		lastUpdatedTime: {
+		returnTime: {
 			start: null,
 			end: null
 		}
@@ -188,14 +193,25 @@ const payload = reactive({
 });
 
 function filterResetHandler() {
+	payload.filter.state.start = null;
+	timestamp.creationTime = null;
+	timestamp.returnTime = null;
 }
 
 function filterHandler() {
+	query();
 	showFilterModal.value = false;
+}
+
+function preQuery() {
+	preTime(payload.filter.creationTime, timestamp.creationTime);
+	preTime(payload.filter.returnTime, timestamp.returnTime);
 }
 
 async function query() {
 	loadingQuery.value = true;
+
+	preQuery();
 
 	await queryList(
 		message,
@@ -208,6 +224,10 @@ async function query() {
 }
 
 const stateOptions = [
+	{
+		label: "已归还",
+		value: "1"
+	},
 	{
 		label: "还期将近",
 		value: "0"
@@ -326,8 +346,8 @@ onMounted(() => {
 			type="info"
 		>
 			<n-form :model="payload">
-				<n-form-item>
-					<n-select :options="stateOptions" clearable />
+				<n-form-item label="借阅状态">
+					<n-select v-model:value="payload.filter.state.start" :options="stateOptions" clearable />
 				</n-form-item>
 				<n-form-item label="借阅时间">
 					<n-date-picker
@@ -339,7 +359,7 @@ onMounted(() => {
 				</n-form-item>
 				<n-form-item label="归还时间">
 					<n-date-picker
-						v-model:value="timestamp.lastUpdatedTime"
+						v-model:value="timestamp.returnTime"
 						clearable
 						type="datetimerange"
 						update-value-on-close

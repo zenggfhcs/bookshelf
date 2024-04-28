@@ -9,7 +9,7 @@
 		<g id="SVGRepo_iconCarrier"><title>search</title>
 			<desc>Created with Sketch Beta.</desc>
 			<defs></defs>
-			<g id="Page-1" data-darkreader-inline-stroke="" fill="none" fill-rule="evenodd" data-sketch-type="MSPage"
+			<g id="Page-1" data-darkreader-inline-stroke="" data-sketch-type="MSPage" fill="none" fill-rule="evenodd"
 			   stroke="none"
 			   stroke-width="1" style="--darkreader-inline-stroke: none;">
 				<g id="Icon-Set-Filled" class="fill" data-sketch-type="MSLayerGroup"

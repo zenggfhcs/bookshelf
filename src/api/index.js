@@ -155,7 +155,13 @@ Users.tokenUser = () => {
 	return request.get("/users/tokenUser");
 };
 
-Users.borrowing = null;
+Users.todayNewUserCount = () => {
+	return request.get("/users/todayNewUserCount");
+};
+
+Users.todayActiveUserCount = () => {
+	return request.get("/users/todayActiveUserCount");
+};
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
@@ -165,6 +171,10 @@ const Debits = new BaseService(ServiceName.DEBIT);
 
 Debits.currentDebits = () => {
 	return request.get(`/debits/currentUnreturned`);
+};
+
+Debits.remind = (info) => {
+	return request.post(`/debits/${info.id}/remind`, info);
 };
 
 Debits.restore = (entity) => {
@@ -184,6 +194,14 @@ Debits.bookDebitRankings = (rankingsBody) => {
 
 Debits.readerDebitRankings = (rankingsBody) => {
 	return request.post("/debits/readerDebitRankings", rankingsBody);
+};
+
+Debits.getTodayDebitCount = () => {
+	return request.get("/debits/todayDebitCount");
+};
+
+Debits.getTodayRestoreCount = () => {
+	return request.get("/debits/getTodayRestoreCount");
 };
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
@@ -228,12 +246,28 @@ const Roles = new BaseService(ServiceName.ROLE);
 Roles.tokenRole = () => {
 	return request.get("/roles/tokenRole");
 };
+
+Roles.addPermission = (info) => {
+	return request.post("/roles/addPermission", info);
+};
+
+Roles.removePermission = (info) => {
+	return request.post("/roles/removePermission", info);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
 //#region permission
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Permissions = new BaseService(ServiceName.PERMISSION);
+
+Permissions.tokenPermission = () => {
+	return request.get("/permissions/tokenPermission");
+};
+
+Permissions.rolePermission = (role) => {
+	return request.get(`/permissions/role/${role}`);
+};
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
