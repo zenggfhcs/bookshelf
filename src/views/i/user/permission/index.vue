@@ -1,7 +1,7 @@
 <script setup>
 import { action, addItem, queryList, removeItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
-import { B_ROLE_INDEX } from "@/constant/breadcrumb.js";
+import { B_PERMISSION } from "@/constant/breadcrumb.js";
 import { INFO } from "@/constant/default-info.js";
 import { messageOptions } from "@/constant/options.js";
 import IAdd from "@/icons/i-add.vue";
@@ -318,8 +318,8 @@ const updateHandler = debounce(() => {
 
 
 onMounted(() => {
-	props.updateMenuItem("i-role");
-	props.updateBreadcrumbArray(B_ROLE_INDEX);// todo
+	props.updateMenuItem("i-permission");
+	props.updateBreadcrumbArray(B_PERMISSION);
 	query();
 });
 </script>

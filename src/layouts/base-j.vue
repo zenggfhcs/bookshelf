@@ -1,11 +1,13 @@
 <script setup>
+import { action } from "@/api/action.js";
+import { Service } from "@/api/index.js";
 import { Header } from "@/constant/Header.js";
 import Home from "@/icons/home.vue";
 import IGuide from "@/icons/i-guide.vue";
 import IUser from "@/icons/i-user.vue";
 import Search from "@/icons/search.vue";
 import sun from "@/icons/sun.vue";
-import { BASE_I, J_HOME, J_MY, J_QUERY, J_READ_GUIDE, J_USER_INFO, LOGIN, REGISTER } from "@/router/router-value.js";
+import { BASE_I, J_HOME, J_MY_LIB, J_QUERY, J_READ_GUIDE, LOGIN, REGISTER } from "@/router/route-value.js";
 import { local } from "@/storage/local.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -114,13 +116,13 @@ const menuOptions = [
 	},
 	// {
 	// 	label: () =>
-	// 		h(RouterLink, gProps(J_MY.name), { default: () => "统计" }),
+	// 		h(RouterLink, gProps(J_MY_LIB.name), { default: () => "统计" }),
 	// 	key: "j-statistics",
 	// 	icon: renderIcon(Statistics)
 	// },
 	{
 		label: () =>
-			h(RouterLink, gProps(J_MY.name), {
+			h(RouterLink, gProps(J_MY_LIB.name), {
 				default: () => "我的图书馆"
 			}),
 		key: "j-my-info",
@@ -136,6 +138,9 @@ onBeforeMount(() => {
 	if (local.get(Header.TOKEN)) {
 		loginStatus.value = true;
 	}
+	action(message, Service.Routes.getByGroup(""), (res) => {
+		console.log(res);
+	});
 });
 </script>
 
@@ -185,7 +190,7 @@ onBeforeMount(() => {
 											后台
 										</n-button>
 									</router-link>
-									<router-link :to="J_USER_INFO.path">
+									<router-link :to="J_MY_LIB.path">
 										<n-button
 											:bordered="false"
 											class="w-100% no-border-btn"

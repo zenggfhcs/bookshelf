@@ -4,7 +4,7 @@ import { Service } from "@/api/index.js";
 import { B_LOG_CHECK } from "@/constant/breadcrumb.js";
 import { LOG_SELECT, LOG_TYPE_MAP, SERVICE_NAME_MAP } from "@/constant/map.js";
 import IBack from "@/icons/i-back.vue";
-import { LOG } from "@/router/router-value.js";
+import { LOG } from "@/router/route-value.js";
 import { getTagType } from "@/utils/convert.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
 import { onMounted, reactive } from "vue";

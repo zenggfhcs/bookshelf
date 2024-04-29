@@ -8,13 +8,12 @@ import IDelete from "@/icons/i-delete.vue";
 import IReload from "@/icons/i-reload.vue";
 import write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/router-value.js";
+import { BOOK_INFO_ADD, BOOK_INFO_CHECK } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import {
 	NBackTop,
 	NButton,
 	NDataTable,
-	NDatePicker,
 	NFlex,
 	NForm,
 	NFormItem,
@@ -63,16 +62,11 @@ function rowProps(row) {
 	};
 }
 
-const timestamp = reactive({
-	creationTime: null,
-	lastUpdatedTime: null
-});
-
 async function query() {
 	loadingQuery.value = true;
 	await queryList(
 		message,
-		Service.BookInfos.filteredList(payloadReactive),
+		Service.BookInfos.filteredList(payload),
 		itemCount,
 		tableData
 	);
@@ -234,10 +228,11 @@ const pagination = reactive({
 	}
 });
 
-const payloadReactive = reactive({
+const payload = reactive({
 	entity: {
 		isbn: "",
-		cip: ""
+		cip: "",
+		bookName: ""
 	},
 	filter: {
 		page: {
@@ -248,9 +243,13 @@ const payloadReactive = reactive({
 });
 
 function filterResetHandler() {
+	for (const key in payload.entity) {
+		payload.entity[key] = "";
+	}
 }
 
 function filterHandler() {
+	query();
 	showFilterModal.value = false;
 }
 
@@ -346,29 +345,17 @@ onMounted(() => {
 			preset="dialog"
 			title="筛选"
 			transform-origin="center"
+			type="info"
 		>
-			<n-form :model="payloadReactive">
+			<n-form :model="payload">
 				<n-form-item label="ISBN">
-					<n-input v-model:value="payloadReactive.entity.isbn" clearable />
+					<n-input v-model:value="payload.entity.isbn" clearable />
 				</n-form-item>
 				<n-form-item label="CIP">
-					<n-input v-model:value="payloadReactive.entity.cip" clearable />
+					<n-input v-model:value="payload.entity.cip" clearable />
 				</n-form-item>
-				<n-form-item label="借阅时间">
-					<n-date-picker
-						v-model:value="timestamp.creationTime"
-						clearable
-						type="datetimerange"
-						update-value-on-close
-					/>
-				</n-form-item>
-				<n-form-item label="归还时间">
-					<n-date-picker
-						v-model:value="timestamp.lastUpdatedTime"
-						clearable
-						type="datetimerange"
-						update-value-on-close
-					/>
+				<n-form-item label="书籍名称">
+					<n-input v-model:value="payload.entity.bookName" clearable />
 				</n-form-item>
 			</n-form>
 			<n-flex justify="space-between">
@@ -379,8 +366,8 @@ onMounted(() => {
 				>
 					重置
 				</n-button>
-				<n-button type="success" @click.prevent="filterHandler">
-					确定
+				<n-button type="info" @click.prevent="filterHandler">
+					提交
 				</n-button>
 			</n-flex>
 		</n-modal>

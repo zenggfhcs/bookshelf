@@ -5,7 +5,7 @@ import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import Search from "@/icons/search.vue";
 import router from "@/router/index.js";
-import { J_BOOK_DETAIL } from "@/router/router-value.js";
+import { J_BOOK_DETAIL } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import {
 	NButton,

@@ -2,13 +2,17 @@
 
 import { action, addItem, removeItem, updateItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
+import { B_CLC_INDEX } from "@/constant/breadcrumb.js";
+import IAdd from "@/icons/i-add.vue";
 import IReload from "@/icons/i-reload.vue";
 import { debounce } from "@/utils/debounce.js";
 import { copyMatchingProperties, subMatchingProperties } from "@/utils/index.js";
+import { resetInfo } from "@/utils/reset.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NBackTop,
 	NButton,
+	NDataTable,
 	NDropdown,
 	NFlex,
 	NForm,
@@ -18,10 +22,9 @@ import {
 	NLayout,
 	NLayoutHeader,
 	NModal,
-	NTree,
 	useMessage
 } from "naive-ui";
-import { computed, h, nextTick, onMounted, reactive, ref } from "vue";
+import { createVNode, h, nextTick, onMounted, reactive, ref } from "vue";
 
 const props = defineProps({
 	showModal: Function,
@@ -29,9 +32,32 @@ const props = defineProps({
 	updateMenuItem: Function
 });
 
-const defaultExpandedKeys = ref([]);
-
 const message = useMessage();
+
+const tableData = ref([]);
+
+const cols = [
+	{
+		title: "分类号",
+		key: "key",
+		width: 666,
+		render: (row) => {
+			return createVNode(
+				"div",
+				{
+					style: {
+						float: "right"
+					}
+				},
+				{ default: () => row?.key }
+			);
+		}
+	},
+	{
+		title: "分类号",
+		key: "value"
+	}
+];
 
 const showDropdownRef = ref(false);
 
@@ -40,6 +66,10 @@ const xRef = ref(0);
 const yRef = ref(0);
 
 const options = [
+	{
+		label: () => h("span", { style: { color: "#63e2b7" } }, "添加子项"),
+		key: "add-child"
+	},
 	{
 		label: () => h("span", { style: { color: "#f2c97d" } }, "编辑"),
 		key: "edit"
@@ -50,10 +80,10 @@ const options = [
 	}
 ];
 
-const showAddModal = ref(false);
+const isShowAddModalRef = ref(false);
 
 const addInfo = reactive({
-	parent: computed(() => lastParent.id),
+	parent: 0,
 	key: "",
 	value: ""
 });
@@ -62,8 +92,8 @@ const addHandler = debounce(async () => {
 	if (addFormRef.value) {
 		formValidator(addFormRef, message, async () => {
 			await addItem(message, Service.ClcIndexes.add(addInfo));
-			showAddModal.value = false;
-			query(lastParent.id);
+			isShowAddModalRef.value = false;
+			await query();
 		});
 	}
 });
@@ -96,53 +126,46 @@ const updateInfo = reactive({
 	revision: 0
 });
 
-function edit() {
-
-}
-
-const showEditModal = ref(false);
+const isShowEditModalRef = ref(false);
 
 function handleSelect(key) {
 	showDropdownRef.value = false;
 	// console.log(currentSelectedNodeRef);
 	switch (key) {
+		case "add-child": {
+			resetInfo(addInfo);
+			addInfo.parent = currentSelectedRow.id;
+			isShowAddModalRef.value = true;
+			break;
+		}
 		case "edit": {
-			copyMatchingProperties(currentSelectedNode, updateInfo);
-			showEditModal.value = true;
+			resetInfo(updateInfo);
+			copyMatchingProperties(currentSelectedRow, updateInfo);
+			isShowEditModalRef.value = true;
 			break;
 		}
 		case "del": {
 			props.showModal("error", "删除二次确认", "是否要删除该分类？", debounce(async () => {
-				await removeItem(message, Service.ClcIndexes.remove(currentSelectedNode.id));
-				query(lastParent.id);
+				await removeItem(message, Service.ClcIndexes.remove(currentSelectedRow.id));
+				await query(0);
 			}));
 			break;
 		}
 	}
 }
 
-const currentSelectedNode = reactive({
+const currentSelectedRow = reactive({
 	id: 0,
 	key: "",
 	value: "",
 	revision: 0
 });
 
-function nodeProps({ option }) {
+function rowProps(row) {
 	return {
-		onClick() {
-			// message.warning(JSON.stringify(option));
-			const _option = {
-				id: option.id,
-				key: option.key
-			};
-			copyMatchingProperties(_option, lastParent);
-			pathRef.value.push(_option);
-			query(option.id);
-		},
 		onContextmenu: (e) => {
 			e.preventDefault();
-			copyMatchingProperties(option, currentSelectedNode);
+			copyMatchingProperties(row, currentSelectedRow);
 			showDropdownRef.value = false;
 			nextTick().then(() => {
 				showDropdownRef.value = true;
@@ -153,64 +176,43 @@ function nodeProps({ option }) {
 	};
 }
 
-function setItemLabel(item) {
-	item.label = `${item.key}  ${item.value}`;
-}
-
-const treeDataRef = ref([]);
-
-const pathRef = ref([{
-	id: 0,
-	key: "全部"
-}]);
-
-const lastParent = reactive({
-	id: 0,
-	key: "全部"
-});
-
-function back(parent, index) {
-	if (index === pathRef.value.length - 1) {
-		return;
-	}
-	copyMatchingProperties(pathRef.value[index], lastParent);
-	pathRef.value.length = index + 1;
-	query(parent);
-}
-
 const updateHandler = debounce(() => {
 	if (editFormRef.value) {
 		formValidator(editFormRef, message, async () => {
-			const _subInfo = subMatchingProperties(currentSelectedNode, updateInfo);
-			_subInfo.id = currentSelectedNode.id;
-			_subInfo.revision = currentSelectedNode.revision;
+			const _subInfo = subMatchingProperties(currentSelectedRow, updateInfo);
+			_subInfo.id = currentSelectedRow.id;
+			_subInfo.revision = currentSelectedRow.revision;
 			await updateItem(message, Service.ClcIndexes.update(_subInfo));
-			showEditModal.value = false;
-			query(lastParent.id);
+			isShowEditModalRef.value = false;
+			await query(0);
 		});
 	}
 });
 
 const loadingQuery = ref(false);
 
-function query(parent) {
+async function query() {
 	loadingQuery.value = true;
-	action(message, Service.ClcIndexes.getByParent(parent), (res) => {
-		res?.forEach((item) => {
-			setItemLabel(item);
-		});
-		treeDataRef.value = [...res];
+
+	await action(message, Service.ClcIndexes.list(), (res) => {
+		tableData.value = res;
 	});
 	loadingQuery.value = false;
 }
 
 const queryHandler = debounce(() => {
-	query(lastParent.id);
+	query(0);
+});
+
+const showAddModalHandler = debounce(() => {
+	resetInfo(addInfo);
+	addInfo.parent = 0;
+	isShowAddModalRef.value = true;
 });
 
 onMounted(() => {
 	props.updateMenuItem("i-clc-index");
-	props.updateBreadcrumbArray(); // todo 添加面包屑
+	props.updateBreadcrumbArray(B_CLC_INDEX); // todo 添加面包屑
 	query(0);
 });
 
@@ -229,13 +231,18 @@ onMounted(() => {
 				</template>
 				刷新
 			</n-button>
-			<template v-for="(item, index) in pathRef">
-				<n-button secondary type="tertiary" @click.prevent="back(item.id, index)">
-					{{ item.key }}
-				</n-button>
-				<span v-if="index < pathRef.length - 1"> > </span>
-			</template>
-			<n-button type="success" @click.prevent="showAddModal = true;">添加</n-button>
+			<!--			<template v-for="(item, index) in pathRef">-->
+			<!--				<n-button secondary type="tertiary" @click.prevent="back(item.id, index)">-->
+			<!--					{{ item.key }}-->
+			<!--				</n-button>-->
+			<!--				<span v-if="index < pathRef.length - 1"> > </span>-->
+			<!--			</template>-->
+			<n-button type="success" @click.prevent="showAddModalHandler">
+				<template #icon>
+					<n-icon :component="IAdd" />
+				</template>
+				添加
+			</n-button>
 		</n-flex>
 
 	</n-layout-header>
@@ -246,21 +253,17 @@ onMounted(() => {
 		content-style="padding: .3em 1em;"
 	>
 		<n-flex class="items-center" vertical>
-			<n-tree
-				v-if="treeDataRef.length"
-				:data="treeDataRef"
-				:default-expanded-keys="defaultExpandedKeys"
-				:node-props="nodeProps"
-				accordion
-				selectable
-				show-line
+			<n-data-table
+				:columns="cols"
+				:data="tableData"
+				:loading="loadingQuery"
+				:row-props="rowProps"
+				:single-line="false"
 			/>
-			<!--			<template v-for="(item, index) in treeDataRef" :key="index">-->
-			<!--				<n-button class="max-w-max min-w-30em">{{`${item.key} ${item.value}`}}</n-button>-->
-			<!--			</template>-->
 		</n-flex>
 		<!--   返回顶部   -->
 		<n-back-top />
+
 	</n-layout>
 	<n-dropdown
 		:on-clickoutside="handleSelect"
@@ -275,7 +278,7 @@ onMounted(() => {
 	/>
 	<n-modal
 		id="edit-modal"
-		v-model:show="showEditModal"
+		v-model:show="isShowEditModalRef"
 		:mask-closable="false"
 		class="w-25em"
 		preset="dialog"
@@ -307,7 +310,7 @@ onMounted(() => {
 	</n-modal>
 	<n-modal
 		id="add-modal"
-		v-model:show="showAddModal"
+		v-model:show="isShowAddModalRef"
 		:mask-closable="false"
 		class="w-25em"
 		preset="dialog"

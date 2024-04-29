@@ -4,7 +4,7 @@ import { Service } from "@/api/index.js";
 import { B_BOOK_ADD } from "@/constant/breadcrumb.js";
 import IAdd from "@/icons/i-add.vue";
 import IBack from "@/icons/i-back.vue";
-import { BOOK } from "@/router/router-value.js";
+import { BOOK } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
 import {

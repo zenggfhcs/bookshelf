@@ -7,7 +7,7 @@ import IDelete from "@/icons/i-delete.vue";
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { USER_CHECK } from "@/router/router-value.js";
+import { USER_CHECK } from "@/router/route-value.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { renderCell } from "@/utils/render.js";

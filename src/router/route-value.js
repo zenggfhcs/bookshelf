@@ -22,6 +22,7 @@ import UserManager from "@/views/i/user/index.vue";
 import PermissionManager from "@/views/i/user/permission/index.vue";
 import RoleCheck from "@/views/i/user/role/check.vue";
 import RoleManager from "@/views/i/user/role/index.vue";
+import Route from "@/views/i/user/route/index.vue";
 import JBookDetail from "@/views/j/book-detail.vue";
 import J from "@/views/j/index.vue";
 import JMy from "@/views/j/my/index.vue";
@@ -108,23 +109,15 @@ const ERROR = {
 const J_HOME = {
 	component: J,
 	name: "jIndex",
-	path: "/j/index",
-	props: true,
-	hidden: true
-};
-
-const J_USER_INFO = {
-	component: UserInfo,
-	name: "jUserInfo",
-	path: "/j/my-info",
+	path: "/index",
 	props: true,
 	hidden: true
 };
 
 const J_QUERY = {
 	component: JQUERY,
-	name: "jQuery",
-	path: "/j/query",
+	name: "query",
+	path: "/query",
 	props: (route) => ({ keyword: route.query.keyword, tab: route.query.tab }),
 	hidden: true
 };
@@ -156,24 +149,24 @@ const J_QUERY = {
 
 const J_READ_GUIDE = {
 	component: ReadGuide,
-	name: "jReadGuide",
-	path: "/j/read-guide",
+	name: "readGuide",
+	path: "/readGuide",
 	props: true,
 	hidden: true
 };
 
-const J_MY = {
+const J_MY_LIB = {
 	component: JMy,
-	name: "jMyInfo",
-	path: "/j/my",
+	name: "myLib",
+	path: "/myLib",
 	props: true,
 	hidden: true
 };
 
 const J_BOOK_DETAIL = {
 	component: JBookDetail,
-	name: "jBookDetail",
-	path: "/j/bookDetail:id",
+	name: "bookDetail",
+	path: "/bookDetail:id",
 	props: true,
 	hidden: true
 };
@@ -183,7 +176,7 @@ const BASE_J = {
 	name: "j",
 	path: "/",
 	props: true,
-	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE,*/J_READ_GUIDE, J_USER_INFO, J_MY, J_BOOK_DETAIL],
+	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE,*/J_READ_GUIDE, J_MY_LIB, J_BOOK_DETAIL],
 	redirect: J_HOME,
 	hidden: true
 };
@@ -301,6 +294,18 @@ const LOG_CHECK = {
 
 	name: "logCheck",
 	path: "/i/logs/:id",
+	props: true,
+	hidden: true
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region sys router
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const SYS_ROUTER = {
+	component: Route,
+	name: "route",
+	path: "/i/users/routeInfo",
 	props: true,
 	hidden: true
 };
@@ -428,7 +433,7 @@ const BASE_I = {
 		USER_CHECK,
 		ROLE, ROLE_CHECK, PERMISSION,
 		LOG,
-		LOG_CHECK,
+		LOG_CHECK, SYS_ROUTER,
 		I_MY
 	],
 	redirect: I_HOME,
@@ -473,7 +478,7 @@ export {
 	ROLE_CHECK,
 	PERMISSION,
 	LOG,
-	LOG_CHECK,
+	LOG_CHECK, SYS_ROUTER,
 	I_MY,
 
 	// j
@@ -482,8 +487,7 @@ export {
 	J_READ_GUIDE,
 	// J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE,
 	J_BOOK_DETAIL,
-	J_USER_INFO,
-	J_MY
+	J_MY_LIB
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion

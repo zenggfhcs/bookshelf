@@ -1,5 +1,6 @@
 <script setup>
 import BookBrain from "@/icons/book-brain.vue";
+import { getIconByName } from "@/icons/getIconByName.js";
 import WorkBenchIcon from "@/icons/home.vue";
 import BookManagerIcon from "@/icons/i-book.vue";
 import DebitManagerIcon from "@/icons/i-debit.vue";
@@ -18,8 +19,9 @@ import {
 	LOG,
 	PERMISSION,
 	ROLE,
+	SYS_ROUTER,
 	USER
-} from "@/router/router-value.js";
+} from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -99,7 +101,7 @@ const menuOptions = ref([
 	},
 	{
 		label: "馆藏管理",
-		key: "j-collection",
+		key: "i-collection",
 		icon: renderIcon(BookManagerIcon),
 		children: [
 			// {
@@ -144,6 +146,12 @@ const menuOptions = ref([
 			{
 				label: () => h(RouterLink, gProps(PERMISSION.name), { default: () => "权限信息" }),
 				key: "i-permission"
+			},
+			{
+				label: () =>
+					h(RouterLink, gProps(SYS_ROUTER.name), { default: () => "路由管理" }),
+				key: "i-route",
+				icon: renderIcon(getIconByName("i-route"))
 			}
 		]
 	},
@@ -153,6 +161,7 @@ const menuOptions = ref([
 		key: "i-log",
 		icon: renderIcon(ILog)
 	},
+
 	{
 		label: () =>
 			h(RouterLink, gProps(I_MY.name), { default: () => "我的信息" }),

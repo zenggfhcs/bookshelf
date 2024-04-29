@@ -2,7 +2,7 @@
 import { Service } from "@/api/index.js";
 import { B_I } from "@/constant/breadcrumb.js";
 import router from "@/router/index.js";
-import { DEBIT_CHECK } from "@/router/router-value.js";
+import { DEBIT_CHECK } from "@/router/route-value.js";
 import { NCard, NGi, NGrid, NLayout, NNumberAnimation, NTag } from "naive-ui";
 import { h, onMounted, reactive, ref } from "vue";
 

@@ -4,7 +4,7 @@ import { Service } from "@/api/index.js";
 import { messageOptions } from "@/constant/options.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
 import { goto } from "@/router/goto.js";
-import { LOGIN } from "@/router/router-value.js";
+import { LOGIN } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { formValidator } from "@/utils/validator.js";
 import { NButton, NDivider, NFlex, NForm, NFormItem, NInput, useMessage } from "naive-ui";

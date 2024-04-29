@@ -7,7 +7,7 @@ import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
 import { messageOptions } from "@/constant/options.js";
 import IBack from "@/icons/i-back.vue";
 import { goto } from "@/router/goto.js";
-import { USER } from "@/router/router-value.js";
+import { USER } from "@/router/route-value.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { copyMatchingProperties } from "@/utils/index.js";

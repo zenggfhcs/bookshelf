@@ -1,6 +1,6 @@
 import { Service } from "@/api/index.js";
 import { Header } from "@/constant/Header.js";
-import { NO_TOKEN_PAGE, PredefinedRoutes } from "@/router/router-value.js";
+import { NO_TOKEN_PAGE, PredefinedRoutes } from "@/router/route-value.js";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({

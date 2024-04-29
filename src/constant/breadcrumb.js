@@ -106,6 +106,45 @@ export { B_BOOK_INFO, B_BOOK_INFO_ADD, B_BOOK_INFO_CHECK };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region clc index
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const CLC_INDEX = {
+	path: `/i/clcIndexes`,
+	label: `分类信息`
+};
+
+const B_CLC_INDEX = [I_HOME, CLC_INDEX];
+
+export { B_CLC_INDEX };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region permission
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const PERMISSION = {
+	path: `/i/permissions`,
+	label: `权限信息`
+};
+
+const B_PERMISSION = [I_HOME, PERMISSION];
+
+export { B_PERMISSION };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
+//#region route
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const ROUTE = {
+	path: `/i/permissions`,
+	label: `权限信息`
+};
+
+const B_ROUTE = [I_HOME, ROUTE];
+
+export { B_ROUTE };
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 //#region publisher
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const PUBLISHER_INDEX = {

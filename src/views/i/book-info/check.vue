@@ -12,7 +12,7 @@ import IDelete from "@/icons/i-delete.vue";
 import IEdit from "@/icons/i-edit.vue";
 import IReload from "@/icons/i-reload.vue";
 import IWarehouse from "@/icons/i-warehouse.vue";
-import { BOOK_INFO } from "@/router/router-value.js";
+import { BOOK_INFO } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NModal, useMessage } from "naive-ui";
 import { onBeforeMount, onMounted, reactive, ref } from "vue";
@@ -109,7 +109,9 @@ function showDeleteConfirmModal() {
 }
 
 const options = {
-	action: true
+	action: {
+		remove: true
+	}
 };
 
 onBeforeMount(() => {
@@ -150,7 +152,7 @@ onMounted(() => {
 				</template>
 				入库
 			</n-button>
-			<n-button v-show="!isUpdatingRef" type="error" @click.prevent="showDeleteConfirmModal">
+			<n-button v-show="!books.length && !isUpdatingRef" type="error" @click.prevent="showDeleteConfirmModal">
 				<template #icon>
 					<n-icon :component="IDelete" />
 				</template>

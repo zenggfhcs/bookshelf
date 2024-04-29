@@ -6,7 +6,7 @@ import { LOG_PRE_DEFINED_SERVICE_NAME, LOG_PRE_DEFINED_TYPE, LOG_TYPE_MAP, SERVI
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { LOG_CHECK } from "@/router/router-value.js";
+import { LOG_CHECK } from "@/router/route-value.js";
 import { getTagType } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
 import { formatTime } from "@/utils/format.js";
@@ -447,7 +447,7 @@ onMounted(() => {
 						showFilterModal = false;
 					"
 				>
-					确定
+					提交
 				</n-button>
 			</n-flex>
 		</n-modal>

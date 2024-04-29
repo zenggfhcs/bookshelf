@@ -6,7 +6,7 @@ import IAdd from "@/icons/i-add.vue";
 import IReload from "@/icons/i-reload.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { BOOK_ADD, BOOK_CHECK } from "@/router/router-value.js";
+import { BOOK_ADD, BOOK_CHECK } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import {
 	NBackTop,

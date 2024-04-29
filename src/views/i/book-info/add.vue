@@ -8,7 +8,7 @@ import { messageOptions } from "@/constant/options.js";
 import IAdd from "@/icons/i-add.vue";
 import IBack from "@/icons/i-back.vue";
 import { goto } from "@/router/goto.js";
-import { BOOK_INFO } from "@/router/router-value.js";
+import { BOOK_INFO } from "@/router/route-value.js";
 import { local } from "@/storage/local.js";
 import { convertToChineseNum, optional } from "@/utils/convert.js";
 import { debounce } from "@/utils/debounce.js";
@@ -31,7 +31,6 @@ import {
 	NInputNumber,
 	NLayout,
 	NLayoutHeader,
-	NModal,
 	NSelect,
 	NTag,
 	NUpload,
@@ -48,8 +47,6 @@ const props = defineProps({
 const message = useMessage();
 
 const loadingAdd = ref(false);
-
-const loadingQueryType = ref(false);
 
 const priceReactive = reactive({
 	int: null,
@@ -305,12 +302,8 @@ function beforeUpload(data) {
 	return false;
 }
 
-const showPreviewModal = ref(false);
-const previewCoverUrl = ref("");
-
 function handleUploadCoverFinish({ file, event }) {
 	const response = JSON.parse(event.target?.response);
-	previewCoverUrl.value = response.data;
 	info.cover = response.data;
 	return file;
 }
@@ -323,14 +316,8 @@ function handleUploadCoverError({ file, event }) {
 
 function removeCover() {
 	// todo data
-	previewCoverUrl.value = "";
 	info.cover = "";
 }
-
-function handlePreview() {
-	showPreviewModal.value = true;
-}
-
 
 onMounted(() => {
 	props.updateMenuItem("i-book-info");
@@ -380,7 +367,6 @@ onMounted(() => {
 								list-type="image-card"
 								@error="handleUploadCoverError"
 								@finish="handleUploadCoverFinish"
-								@preview="handlePreview"
 								@remove="removeCover"
 								@before-upload="beforeUpload"
 							/>
@@ -541,14 +527,6 @@ onMounted(() => {
 			</n-form>
 		</n-card>
 	</n-layout>
-	<n-modal
-		v-model:show="showPreviewModal"
-		preset="card"
-		style="width: 600px"
-		title="一张很酷的图片"
-	>
-		<img :src="previewCoverUrl" alt="" style="width: 100%" />
-	</n-modal>
 </template>
 
 <style scoped>

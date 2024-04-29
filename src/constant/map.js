@@ -119,8 +119,9 @@ const GENDER_MAP = new BiMap();
 
 const male = g("男", 1, GENDER_MAP);
 const female = g("女", 0, GENDER_MAP);
+const yqy = g("美国沃尔玛购物袋", 2, GENDER_MAP);
 
-const GENDER_PRE_DEFINED = [male, female];
+const GENDER_PRE_DEFINED = [male, female, yqy];
 
 export { GENDER_MAP, GENDER_PRE_DEFINED };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */

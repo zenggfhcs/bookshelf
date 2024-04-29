@@ -7,7 +7,7 @@ import { messageOptions } from "@/constant/options.js";
 import IBack from "@/icons/i-back.vue";
 import IReload from "@/icons/i-reload.vue";
 import { goto } from "@/router/goto.js";
-import { ROLE } from "@/router/router-value.js";
+import { ROLE } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import {
 	NButton,
@@ -37,7 +37,8 @@ const info = reactive({
 	name: "",
 	remark: null,
 	revision: null,
-	permissions: []
+	permissions: [],
+	routeItems: []
 });
 
 const rolePermissionNameMap = new Map();
@@ -51,6 +52,14 @@ async function query(id) {
 	loadingQuery.value = true;
 	await queryItem(message, Service.Roles.get(id), info);
 
+	await queryPermissionInfo();
+
+	await queryRouteInfo();
+
+	loadingQuery.value = false;
+}
+
+async function queryPermissionInfo() {
 	await action(message, Service.Permissions.list(), (res) => {
 		permissionsRef.value = res;
 	});
@@ -69,14 +78,18 @@ async function query(id) {
 			});
 		}
 	});
-	loadingQuery.value = false;
+}
 
+async function queryRouteInfo() {
+	await action(message, Service.Routes.list(), (res) => {
+		console.log(res);
+	});
 }
 
 const showRemoveModal = ref(false);
 
 const removeHandler = debounce(async () => {
-	await action(message, Service.BookInfos.getFirstLevelType(), () => {
+	await action(message, Service.Roles.remove(props.id), () => {
 		message.success("删除成功", messageOptions);
 		goto(ROLE);
 	}); // todo use remove item
@@ -93,6 +106,8 @@ const permissionOptions = ref([]);
 const permissionsRef = ref([]);
 
 const rolePermissionTagsRef = computed(() => info.permissions.map(item => item?.remark));
+
+const roleRouteTagsRef = computed(() => info.routeItems.map(item => `${item?.key}|${item?.label}`));
 
 function renderTag(tag, index) {
 	return createVNode(
@@ -214,7 +229,7 @@ onMounted(() => {
 				</td>
 			</tr>
 			<tr>
-				<td>对应权限</td>
+				<td>权限</td>
 				<td>
 					<div style="width: calc(14em * 3 + 2 * 8px);">
 						<n-dynamic-tags v-model:value="rolePermissionTagsRef" :render-tag="renderTag"
@@ -286,6 +301,22 @@ onMounted(() => {
 					<!--							</n-checkbox-group>-->
 					<!--						</n-collapse-item>-->
 					<!--					</n-collapse>-->
+				</td>
+			</tr>
+			<tr>
+				<td>菜单</td>
+				<td>
+					<n-dynamic-tags v-model:value="roleRouteTagsRef" :render-tag="renderTag"
+					                @create="handleAddRolePermission">
+						<template #input="{ submit, deactivate }">
+							<n-select
+								:options="permissionOptions"
+								style="min-width: calc(12em + 4px)"
+								@blur="deactivate"
+								@update:value="submit($event)"
+							/>
+						</template>
+					</n-dynamic-tags>
 				</td>
 			</tr>
 			</tbody>

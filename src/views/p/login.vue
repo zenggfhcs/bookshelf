@@ -3,7 +3,7 @@ import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { REG_EMAIL } from "@/constant/regular-expression.js";
 import router from "@/router/index.js";
-import { REGISTER, RESET_PASSWORD } from "@/router/router-value.js";
+import { REGISTER, RESET_PASSWORD } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { resetToken } from "@/utils/storage-operation.js";
 import { formValidator } from "@/utils/validator.js";

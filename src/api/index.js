@@ -36,7 +36,8 @@ const ServiceName = {
 	LOG: "logs",
 	ROLE: "roles",
 	CLC_INDEX: "clcIndexes",
-	PERMISSION: "permissions"
+	PERMISSION: "permissions",
+	ROUTER: "routes"
 };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
@@ -80,10 +81,6 @@ Books.collectionInfo = () => {
 //#region book info api
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BookInfos = new BaseService(ServiceName.BOOK_INFO);
-
-BookInfos.getFirstLevelType = () => {
-	return request.get(`/clcIndexes/firstLevel`);
-};
 
 BookInfos.quickQuery = (filterPayload) =>
 	request.post(`/bookInfos/list:quick-query`, filterPayload);
@@ -271,6 +268,20 @@ Permissions.rolePermission = (role) => {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
+//#region router
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+const Routes = new BaseService(ServiceName.ROUTER);
+
+Routes.firstLevel = () => {
+	return request.get(`/routes/firstLevel`);
+};
+
+Routes.getByGroup = (group) => {
+	return request.get(`/routes/group/${group}`);
+};
+/* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
+//#endregion
+
 const Service = {
 	Publishers,
 	Users,
@@ -281,7 +292,8 @@ const Service = {
 	Token,
 	Roles,
 	ClcIndexes,
-	Permissions
+	Permissions,
+	Routes
 };
 
 export { Service };

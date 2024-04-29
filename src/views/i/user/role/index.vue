@@ -7,7 +7,7 @@ import IAdd from "@/icons/i-add.vue";
 import IDelete from "@/icons/i-delete.vue";
 import IReload from "@/icons/i-reload.vue";
 import router from "@/router/index.js";
-import { ROLE_CHECK } from "@/router/router-value.js";
+import { ROLE_CHECK } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { renderCell } from "@/utils/render.js";
 import { formValidator, inputValidator } from "@/utils/validator.js";
@@ -231,7 +231,6 @@ onMounted(() => {
 			</n-button>
 		</n-flex>
 	</n-layout-header>
-
 	<n-layout
 		id="main"
 		:native-scrollbar="false"
@@ -250,7 +249,6 @@ onMounted(() => {
 			@update-checked-row-keys="handleCheck"
 		/>
 	</n-layout>
-
 	<n-layout-footer class="h-2.4em" position="absolute">
 		<n-flex :size="0" class="items-center mr4 h-100%" justify="center">
 			<n-pagination

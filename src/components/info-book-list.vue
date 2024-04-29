@@ -3,7 +3,7 @@
 import { removeItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { debounce } from "@/utils/debounce.js";
-import { NButton, NFlex, NSpace, NTable, useMessage } from "naive-ui";
+import { NButton, NFlex, NSpace, NTable, NTag, useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 
 const props = defineProps({
@@ -50,17 +50,22 @@ onMounted(() => {
 				<th>序号</th>
 				<th>馆藏地（排/架参考）</th>
 				<th>索取号</th>
-				<th>状态</th>
+				<th class="w-11em">状态</th>
 				<th v-if="options?.action">操作</th>
 			</tr>
 			<tr v-for="(item, index) in props.data" :key="index">
 				<td>{{ index + 1 }}</td>
 				<td></td>
-				<td>{{ item.id }}</td>
-				<td></td>
+				<td>{{ item?.libIndex }}</td>
+				<td>
+					<n-tag v-if="item.borrowable" :bordered="false" type="success">可借的</n-tag>
+					<n-tag v-else :bordered="false" type="warning">{{ item?.currentDebit?.returnDeadline }}应还</n-tag>
+				</td>
 				<td v-if="options?.action">
 					<n-space>
-						<n-button :bordered="false" type="error" @click.prevent="removeHandler(item?.id)">出库</n-button>
+						<n-button v-if="options.action?.remove && item.borrowable" :bordered="false" type="error"
+						          @click.prevent="removeHandler(item?.id)">出库
+						</n-button>
 						<!--						<n-button :bordered="false" type="warning">归还</n-button>-->
 					</n-space>
 				</td>

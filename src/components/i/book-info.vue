@@ -21,7 +21,7 @@ onMounted(() => {
 		<n-table :bordered="false" class="w-100%">
 			<tbody class="trc">
 			<tr>
-				<td rowspan="12" style="border-bottom: 0; vertical-align: top;">
+				<td rowspan="13" style="border-bottom: 0; vertical-align: top;">
 					<n-image :src="props.info.cover" alt="书籍图片链接" width="360" />
 				</td>
 				<td class="w-12%">ISBN</td>
@@ -125,9 +125,9 @@ onMounted(() => {
 			<tr>
 				<td style="vertical-align: top;">内容摘要</td>
 				<td colspan="3">
-					<n-text v-if="props.info.describe" class="w-70%">
+					<div v-if="props.info.describe" class="max-w-50em">
 						{{ props.info.describe }}
-					</n-text>
+					</div>
 					<NoData v-else />
 				</td>
 			</tr>

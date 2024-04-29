@@ -136,7 +136,7 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
-	action(message, Service.BookInfos.getFirstLevelType(), (res) => {
+	action(message, Service.ClcIndexes.list(), (res) => {
 		res?.forEach((item) => {
 			setItemLabel(item);
 		});

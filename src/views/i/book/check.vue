@@ -6,7 +6,7 @@ import NoData from "@/components/no-data.vue";
 // todo start
 import { B_BOOK_CHECK } from "@/constant/breadcrumb.js";
 import IBack from "@/icons/i-back.vue";
-import { BOOK } from "@/router/router-value.js";
+import { BOOK } from "@/router/route-value.js";
 import { formatTime } from "@/utils/format.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NTable, NTag, useMessage } from "naive-ui";
 import { onMounted, reactive } from "vue";

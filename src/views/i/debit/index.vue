@@ -6,7 +6,7 @@ import IReload from "@/icons/i-reload.vue";
 import Send from "@/icons/send.vue";
 import Write from "@/icons/write.vue";
 import router from "@/router/index.js";
-import { DEBIT_CHECK } from "@/router/router-value.js";
+import { DEBIT_CHECK } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { preTime } from "@/utils/pre.js";
 import { renderCell } from "@/utils/render.js";

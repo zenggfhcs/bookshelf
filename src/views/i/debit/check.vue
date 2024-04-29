@@ -8,7 +8,7 @@ import IBack from "@/icons/i-back.vue";
 import IReload from "@/icons/i-reload.vue";
 import IReturn from "@/icons/i-return.vue";
 import Send from "@/icons/send.vue";
-import { BOOK_INFO_CHECK, DEBIT } from "@/router/router-value.js";
+import { BOOK_INFO_CHECK, DEBIT } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { formatTime } from "@/utils/format.js";
 import { transMouth } from "@/utils/index.js";
