@@ -72,9 +72,11 @@ async function query(id) {
 
 	await queryItem(message, Service.BookInfos.get(id), info);
 
-	await action(message, Service.Books.getByInfoId(info.id), (res) => {
-		books.value = [...res];
-	});
+	if (info.id) {
+		await action(message, Service.Books.getByInfoId(info.id), (res) => {
+			books.value = [...res];
+		});
+	}
 
 	loadingQuery.value = false;
 }

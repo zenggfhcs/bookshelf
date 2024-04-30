@@ -87,7 +87,7 @@ const cols = [
 		}
 	},
 	{
-		title: "数据类型",
+		title: "操作名",
 		key: "serviceName",
 		// 溢出省略
 		ellipsis: {
@@ -98,14 +98,10 @@ const cols = [
 				NTag,
 				{
 					type: "warning",
-					style: {
-						width: "5em",
-						justifyContent: "center"
-					},
 					bordered: false
 				},
 				{
-					default: () => SERVICE_NAME_MAP.getByValue(row?.serviceName)
+					default: () => row?.serviceName
 				}
 			);
 		}

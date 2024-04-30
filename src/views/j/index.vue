@@ -1,7 +1,7 @@
 <script setup>
 import { messageOptions } from "@/constant/options.js";
 import BookShelf from "@/icons/book-shelf.vue";
-import Search from "@/icons/search.vue";
+import Search from "@/icons/i-query.vue";
 import { goto_ } from "@/router/goto.js";
 import { J_MY_LIB } from "@/router/route-value.js";
 import { NButton, NFlex, NInput, NInputGroup, NSpace, useMessage } from "naive-ui";
@@ -18,15 +18,15 @@ function query() {
 		message.warning("检索内容不可为空", messageOptions);
 		return;
 	}
-	goto_(`/j/query?keyword=${queryKeyword.value}`);
+	goto_(`/query?keyword=${queryKeyword.value}`);
 }
 
 function toQuery(type) {
-	goto_(`/j/query?tab=${type}`);
+	goto_(`/query?tab=${type}`);
 }
 
 onMounted(() => {
-	props.updateMenuItem("j-index");
+	props.updateMenuItem("home");
 });
 </script>
 
@@ -36,8 +36,7 @@ onMounted(() => {
 			<BookShelf class="w-10em h-10em" />
 			<div
 				id="logo-text"
-				class="logo-text line-height-1em font-size-4rem font-black v-c-n-text-color"
-			>
+				class="logo-text line-height-1em font-size-4rem font-black v-c-n-text-color">
 				BookShelf
 			</div>
 			<n-input-group>

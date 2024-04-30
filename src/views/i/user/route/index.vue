@@ -8,6 +8,7 @@ import { resetInfo } from "@/utils/reset.js";
 import { inputValidator } from "@/utils/validator.js";
 import {
 	NBackTop,
+	NInputNumber,
 	NButton,
 	NDataTable,
 	NDropdown,
@@ -51,6 +52,10 @@ const cols = [
 	{
 		title: "图标名",
 		key: "iconName"
+	},
+	{
+		title: "顺序",
+		key: "order"
 	}
 ];
 
@@ -60,6 +65,7 @@ const currentSelectedRow = reactive({
 	id: null,
 	parentId: null,
 	group: null,
+	order: 0,
 	key: null,
 	label: null,
 	toName: null,
@@ -75,6 +81,7 @@ const updateInfo = reactive({
 	id: null,
 	parentId: null,
 	group: null,
+	order: 0,
 	key: null,
 	label: null,
 	toName: null,
@@ -190,11 +197,11 @@ const rules = {
 		message: "请输入",
 		trigger: ["input", "blur"]
 	},
-	toName: {
-		required: true,
-		message: "请输入",
-		trigger: ["input", "blur"]
-	},
+	// toName: {
+	// 	required: true,
+	// 	message: "请输入",
+	// 	trigger: ["input", "blur"]
+	// },
 	iconName: {
 		required: true,
 		message: "请输入",
@@ -206,6 +213,7 @@ const addInfo = reactive({
 	id: null,
 	parentId: null,
 	group: null,
+	order: 0,
 	key: null,
 	label: null,
 	toName: null,
@@ -312,6 +320,9 @@ onMounted(() => {
 					clearable
 				/>
 			</n-form-item>
+			<n-form-item label="顺序" path="order">
+				<n-input-number v-model:value="addInfo.order" :min="0" clearable />
+			</n-form-item>
 		</n-form>
 		<n-flex justify="right">
 			<n-button
@@ -364,6 +375,9 @@ onMounted(() => {
 					:allow-input="inputValidator.noSideSpace"
 					clearable
 				/>
+			</n-form-item>
+			<n-form-item label="顺序" path="order">
+				<n-input-number v-model:value="updateInfo.order" :min="0" clearable />
 			</n-form-item>
 		</n-form>
 		<n-flex justify="right">

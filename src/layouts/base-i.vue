@@ -1,12 +1,14 @@
 <script setup>
+import { action } from "@/api/action.js";
+import { Service } from "@/api/index.js";
 import BookBrain from "@/icons/book-brain.vue";
 import { getIconByName } from "@/icons/getIconByName.js";
-import WorkBenchIcon from "@/icons/home.vue";
+import WorkBenchIcon from "@/icons/i-home.vue";
 import BookManagerIcon from "@/icons/i-book.vue";
 import DebitManagerIcon from "@/icons/i-debit.vue";
 import ILog from "@/icons/i-log.vue";
 import IUserSetting from "@/icons/i-user-setting.vue";
-import SelfIcon from "@/icons/self.vue";
+import SelfIcon from "@/icons/i-self.vue";
 import Sun from "@/icons/sun.vue";
 import {
 	BASE_I,
@@ -44,7 +46,7 @@ import {
 	NSpace,
 	useMessage
 } from "naive-ui";
-import { h, onMounted, reactive, ref } from "vue";
+import { h, onBeforeMount, onMounted, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 const props = defineProps({
@@ -86,90 +88,90 @@ function handleClickPopoverOutSide() {
 	}, 100);
 }
 
-const menuOptions = ref([
-	{
-		label: () =>
-			h(RouterLink, gProps(I_HOME.name), { default: () => "工作台" }),
-		key: "i-index",
-		icon: renderIcon(WorkBenchIcon)
-	},
-	{
-		label: () =>
-			h(RouterLink, gProps(DEBIT.name), { default: () => "借阅管理" }),
-		key: "i-debit",
-		icon: renderIcon(DebitManagerIcon)
-	},
-	{
-		label: "馆藏管理",
-		key: "i-collection",
-		icon: renderIcon(BookManagerIcon),
-		children: [
-			// {
-			// 	label: () =>
-			// 		h(RouterLink, gProps(BOOK.name), { default: () => "书籍管理" }),
-			// 	key: "i-book"
-			// 	// icon: renderIcon(BookManagerIcon)
-			// },
-			{
-				label: () =>
-					h(RouterLink, gProps(BOOK_INFO.name), {
-						default: () => "书籍信息"
-					}),
-				key: "i-book-info"
-				// icon: renderIcon(BookInfoManagerIcon)
-			},
-			{
-				label: () =>
-					h(RouterLink, gProps(CLC_INDEX.name), {
-						default: () => "分类信息"
-					}),
-				key: "i-clc-index"
-				// icon: renderIcon(BookInfoManagerIcon)
-			}
-		]
-	},
-	{
-		label: "用户管理",
-		key: "i-user-manager",
-		icon: renderIcon(IUserSetting),
-		children: [
-			{
-				label: () => h(RouterLink, gProps(USER.name), { default: () => "用户信息" }),
-				key: "i-user"
-				// icon: renderIcon(IUser)
-			},
-			{
-				label: () => h(RouterLink, gProps(ROLE.name), { default: () => "角色信息" }),
-				key: "i-role"
-				// icon: renderIcon(IRole)
-			},
-			{
-				label: () => h(RouterLink, gProps(PERMISSION.name), { default: () => "权限信息" }),
-				key: "i-permission"
-			},
-			{
-				label: () =>
-					h(RouterLink, gProps(SYS_ROUTER.name), { default: () => "路由管理" }),
-				key: "i-route",
-				icon: renderIcon(getIconByName("i-route"))
-			}
-		]
-	},
-	{
-		label: () =>
-			h(RouterLink, gProps(LOG.name), { default: () => "操作日志" }),
-		key: "i-log",
-		icon: renderIcon(ILog)
-	},
-
-	{
-		label: () =>
-			h(RouterLink, gProps(I_MY.name), { default: () => "我的信息" }),
-		key: "i-my",
-		icon: renderIcon(SelfIcon)
-	}
-]);
-
+const menuOptions = ref([]);
+// [
+// {
+// 	label: () =>
+// 		h(RouterLink, gProps(I_HOME.name), { default: () => "工作台" }),
+// 		key: "i-index",
+// 	icon: renderIcon(WorkBenchIcon)
+// },
+// {
+// 	label: () =>
+// 		h(RouterLink, gProps(DEBIT.name), { default: () => "借阅管理" }),
+// 		key: "i-debit",
+// 	icon: renderIcon(DebitManagerIcon)
+// },
+// {
+// 	label: "馆藏管理",
+// 		key: "i-collection",
+// 	icon: renderIcon(BookManagerIcon),
+// 	children: [
+// 	// {
+// 	// 	label: () =>
+// 	// 		h(RouterLink, gProps(BOOK.name), { default: () => "书籍管理" }),
+// 	// 	key: "i-book"
+// 	// 	// icon: renderIcon(BookManagerIcon)
+// 	// },
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(BOOK_INFO.name), {
+// 				default: () => "书籍信息"
+// 			}),
+// 		key: "i-book-info"
+// 		// icon: renderIcon(BookInfoManagerIcon)
+// 	},
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(CLC_INDEX.name), {
+// 				default: () => "分类信息"
+// 			}),
+// 		key: "i-clc-index"
+// 		// icon: renderIcon(BookInfoManagerIcon)
+// 	}
+// ]
+// },
+// {
+// 	label: "用户管理",
+// 		key: "i-user-manager",
+// 	icon: renderIcon(IUserSetting),
+// 	children: [
+// 	{
+// 		label: () => h(RouterLink, gProps(USER.name), { default: () => "用户信息" }),
+// 		key: "i-user"
+// 		// icon: renderIcon(IUser)
+// 	},
+// 	{
+// 		label: () => h(RouterLink, gProps(ROLE.name), { default: () => "角色信息" }),
+// 		key: "i-role"
+// 		// icon: renderIcon(IRole)
+// 	},
+// 	{
+// 		label: () => h(RouterLink, gProps(PERMISSION.name), { default: () => "权限信息" }),
+// 		key: "i-permission"
+// 	},
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(SYS_ROUTER.name), { default: () => "路由管理" }),
+// 		key: "i-route",
+// 		icon: renderIcon(getIconByName("i-route"))
+// 	}
+// ]
+// },
+// {
+// 	label: () =>
+// 		h(RouterLink, gProps(LOG.name), { default: () => "操作日志" }),
+// 		key: "i-log",
+// 	icon: renderIcon(ILog)
+// },
+//
+// {
+// 	label: () =>
+// 		h(RouterLink, gProps(I_MY.name), { default: () => "我的信息" }),
+// 		key: "i-my",
+// 	icon: renderIcon(SelfIcon)
+// }
+// ]
 const modalReactive = reactive({
 	show: false,
 	type: "default",
@@ -203,6 +205,26 @@ const exitHandler = debounce(() => {
 		}
 	);
 });
+function generateMenuItem(routeItem) {
+	const menuItem = {};
+	menuItem.label = routeItem?.toName ? () => h(RouterLink, gProps(routeItem?.toName), {
+			default: () => routeItem.label
+		})
+		: routeItem.label;
+	menuItem.key = routeItem?.key;
+	menuItem.icon = routeItem?.iconName ?
+		renderIcon(getIconByName(routeItem.iconName))
+		: null;
+	menuItem.children = routeItem?.children.map(item => generateMenuItem(item));
+	return menuItem;
+}
+
+onBeforeMount(() => {
+	action(message, Service.Routes.getByGroup("manage-menu"), (res) => {
+		console.log(res);
+		menuOptions.value = res?.map(item => generateMenuItem(item));
+	});
+})
 
 onMounted(() => {
 });
@@ -367,7 +389,8 @@ onMounted(() => {
 	flex: 0 0 auto;
 	width: 4em;
 	height: 3em;
-	padding: calc((3em - 40px) / 2) calc((4em - 40px) / 2);
+	padding: 0 .8em;
+	margin: .3em calc((64px - 4em) / 2);
 }
 
 .logo-text-box {

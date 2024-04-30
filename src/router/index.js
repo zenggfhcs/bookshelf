@@ -19,15 +19,15 @@ router.beforeEach(async (to, from) => {
 			return { name: "login" };
 		}
 
-		// 如果是管理端，检查用户角色
-		if (to.path.startsWith("/i/")) {
-			await Service.Roles.tokenRole()
-				.then(tokenInfo => {
-					if (tokenInfo?.name !== "root") {
-						return false;
-					}
-				});
-		}
+		// // 如果是管理端，检查用户角色
+		// if (to.path.startsWith("/i/")) {
+		// 	await Service.Roles.tokenRole()
+		// 		.then(tokenInfo => {
+		// 			if (tokenInfo?.name !== "root") {
+		// 				return false;
+		// 			}
+		// 		});
+		// }
 	}
 
 });

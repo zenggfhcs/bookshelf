@@ -159,6 +159,10 @@ Users.todayNewUserCount = () => {
 Users.todayActiveUserCount = () => {
 	return request.get("/users/todayActiveUserCount");
 };
+
+Users.updateRole = (info) => {
+	return request.post("/users/updateRole", info);
+}
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
@@ -251,6 +255,15 @@ Roles.addPermission = (info) => {
 Roles.removePermission = (info) => {
 	return request.post("/roles/removePermission", info);
 };
+
+Roles.addRoute = (info) => {
+	return request.post("/roles/addRoute", info);
+};
+
+Roles.removeRoute = (info) => {
+	return request.post("/roles/removeRoute", info);
+};
+
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -258,9 +271,9 @@ Roles.removePermission = (info) => {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const Permissions = new BaseService(ServiceName.PERMISSION);
 
-Permissions.tokenPermission = () => {
-	return request.get("/permissions/tokenPermission");
-};
+// Permissions.tokenPermission = () => {
+// 	return request.get("/permissions/tokenPermission");
+// };
 
 Permissions.rolePermission = (role) => {
 	return request.get(`/permissions/role/${role}`);

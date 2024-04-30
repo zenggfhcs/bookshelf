@@ -1,7 +1,7 @@
 <script setup>
-import PaneBookRankingList from "@/views/j/read-guide/pane-book-rankings.vue";
-import PaneCollectInfo from "@/views/j/read-guide/pane-collect-info.vue";
-import PaneReaderRankingList from "@/views/j/read-guide/pane-reader-rankings.vue";
+import PaneBookRankingList from "@/views/j/reader-guide/pane-book-rankings.vue";
+import PaneCollectInfo from "@/views/j/reader-guide/pane-collect-info.vue";
+import PaneReaderRankingList from "@/views/j/reader-guide/pane-reader-rankings.vue";
 import { NTabPane, NTabs } from "naive-ui";
 import { onBeforeMount, ref } from "vue";
 
@@ -34,7 +34,7 @@ function getTabName() {
 const typeRef = ref(props.tab ? getTabName() : "quick-query");
 
 onBeforeMount(() => {
-	props.updateMenuItem("j-read-guide");
+	props.updateMenuItem("readGuide");
 });
 </script>
 

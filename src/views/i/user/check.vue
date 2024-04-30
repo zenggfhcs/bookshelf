@@ -1,11 +1,13 @@
 <script setup>
-import { action, queryItem } from "@/api/action.js";
+import { action, queryItem, removeItem, updateItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import NoData from "@/components/no-data.vue";
 import { B_USER_CHECK } from "@/constant/breadcrumb.js";
 import { ROLE_MAP, ROLE_PRE_DEFINED } from "@/constant/map.js";
 import { messageOptions } from "@/constant/options.js";
 import IBack from "@/icons/i-back.vue";
+import IEdit from "@/icons/i-edit.vue";
+import IReload from "@/icons/i-reload.vue";
 import { goto } from "@/router/goto.js";
 import { USER } from "@/router/route-value.js";
 import { convertGender, getTagType } from "@/utils/convert.js";
@@ -87,16 +89,21 @@ const info = reactive({
 const showUpdateModal = debounce(() => {
 	copyMatchingProperties(info, source);
 	copyMatchingProperties(info, target);
-	showUpdate.value = true;
+	isShowUpdateModalRef.value = true;
 });
 
-async function query(id) {
-	if (!id) {
-		return;
-	}
-	await queryItem(message, Service.Users.get(id), info);
+const loadingQuery = ref(false);
+
+async function query() {
+	loadingQuery.value = true;
+	await queryItem(message, Service.Users.get(props.id), info);
 	newRoleRef.value = info.role.name;
+	loadingQuery.value = false;
 }
+
+const queryHandler = debounce(() => {
+	query();
+});
 
 const showResetPwdConfirmation = ref(false);
 
@@ -116,51 +123,83 @@ const resetPassword = debounce(() => {
 	// 登录过期？
 });
 
-const showUpdate = ref(false);
+const isShowUpdateModalRef = ref(false);
 
-const showUpdateConfirmation = ref(false);
+// const showUpdateConfirmation = ref(false);
 
 const updateFormRef = ref(null);
 
-const updateRule = {
-	name: {
-		trigger: ["input", "blur"],
-		required: true,
-		message: "不能为空"
-	},
-	place: {
-		trigger: ["input", "blur"],
-		required: true,
-		message: "不能为空"
-	}
-};
+// const updateRule = {
+// 	name: {
+// 		trigger: ["input", "blur"],
+// 		required: true,
+// 		message: "不能为空"
+// 	},
+// 	place: {
+// 		trigger: ["input", "blur"],
+// 		required: true,
+// 		message: "不能为空"
+// 	}
+// };
 
-function showUpdateAfterModified() {
-	if (isModified()) {
-		showUpdateConfirmation.value = true;
-		return;
-	}
-	message.warning("没有内容存在更改", messageOptions);
-}
+// function showUpdateAfterModified() {
+// 	if (isModified()) {
+// 		showUpdateConfirmation.value = true;
+// 		return;
+// 	}
+// 	message.warning("没有内容存在更改", messageOptions);
+// }
 
-const verificationAfterInspection = debounce(() => {
-	// todo verification
-	showUpdateConfirmation.value = true;
-});
+// const verificationAfterInspection = debounce(() => {
+// 	// todo verification
+// 	showUpdateConfirmation.value = true;
+// });
 
-function isModified() {
-	return !(info.name === source.name && info.remark === source.remark);
-}
+// function isModified() {
+// 	return !(info.name === source.name && info.remark === source.remark);
+// }
 
 const update = debounce(() => {
 });
 
-const updateRoleHandler = debounce(() => {
+const loadingUpdate = ref(false);
+
+const updateRoleHandler = debounce(async () => {
+	loadingUpdate.value = true;
 	if (info.role.name === newRoleRef.value) {
 		message.warning("目标角色与原有角色相同，无需更新", messageOptions);
-
 	}
 	// todo 更新
+	const _info = {
+		id: info.id,
+		role: {
+			name: newRoleRef.value
+		}
+	};
+	// console.log(_info);
+	await updateItem(message, Service.Users.updateRole(_info));
+	isShowUpdateModalRef.value = false;
+	loadingUpdate.value = false;
+	await query();
+});
+
+const removeHandler = debounce(() => {
+	props.showModal(
+		"error",
+		"删除二次确认",
+		"您是否要删除该用户？",
+		() => removeItem(message, Service.Users.remove(props.id), USER)
+	);
+});
+
+const resetPasswordHandler = debounce(() => {
+	props.showModal(
+		"warning",
+		"重置密码二次确认",
+		"您是否要重置该用户密码？",
+		() => { // todo 生成随机密码，发送到用户邮件，同时更新用户密码
+		}
+	);
 });
 
 onBeforeMount(() => {
@@ -171,7 +210,7 @@ onBeforeMount(() => {
 onMounted(() => {
 	props.updateMenuItem("i-user");
 	props.updateBreadcrumbArray(B_USER_CHECK(props.id));
-	query(props.id);
+	query();
 });
 </script>
 
@@ -187,32 +226,33 @@ onMounted(() => {
 				</n-button>
 			</router-link>
 			<n-button
-				type="error"
-				@click.prevent="
-					props.showModal(
-						'error',
-						'删除二次确认',
-						'您是否要删除该用户？',
-						() => {},
-					)
-				"
+				:loading="loadingQuery"
+				class="h-2.4em"
+				type="info"
+				@click.prevent="queryHandler"
 			>
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
+			</n-button>
+			<n-button
+				type="error"
+				@click.prevent="removeHandler">
 				删除
 			</n-button>
 			<n-button
 				type="warning"
-				@click.prevent="
-					props.showModal(
-						'warning',
-						'重置密码二次确认',
-						'您是否要重置密码？',
-						() => {},
-					)
-				"
-			>
+				@click.prevent="resetPasswordHandler">
+				<template #icon>
+					<n-icon :component="IEdit" />
+				</template>
 				重置密码
 			</n-button>
 			<n-button type="warning" @click.prevent="showUpdateModal">
+				<template #icon>
+					<n-icon :component="IEdit" />
+				</template>
 				修改角色
 			</n-button>
 		</n-flex>
@@ -520,7 +560,7 @@ onMounted(() => {
 	<n-modal
 		id="update-role-modal"
 		ref="updateFormRef"
-		v-model:show="showUpdate"
+		v-model:show="isShowUpdateModalRef"
 		:mask-closable="false"
 		:model="target"
 		preset="dialog"
@@ -555,8 +595,8 @@ onMounted(() => {
 					</n-tbody>
 				</n-table>
 				<n-flex justify="right">
-					<n-button type="warning" @click.prevent="updateRoleHandler"
-					>确定
+					<n-button :loading="loadingUpdate" type="warning" @click.prevent="updateRoleHandler">
+						提交
 					</n-button>
 				</n-flex>
 			</n-space>

@@ -5,7 +5,9 @@ import { copyMatchingProperties } from "@/utils/index.js";
 function action(message, promise, then, error) {
 	return promise
 		.then(res => {
-			then(res);
+			if (then) {
+				then(res);
+			}
 		})
 		.catch(err => {
 			if (error) {

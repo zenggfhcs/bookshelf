@@ -27,12 +27,14 @@ import JBookDetail from "@/views/j/book-detail.vue";
 import J from "@/views/j/index.vue";
 import JMy from "@/views/j/my/index.vue";
 import JQUERY from "@/views/j/query/index.vue";
-import ReadGuide from "@/views/j/read-guide/index.vue";
+import ReaderGuide from "@/views/j/reader-guide/index.vue";
 import Login from "@/views/p/login.vue";
 import Register from "@/views/p/register.vue";
 import ResetPassword from "@/views/p/reset-password.vue";
 import UserInfo from "@/views/p/user-info.vue";
 import Verify from "@/views/p/verify.vue";
+
+import WORKBENCH from "@/views/i/workbench/index.vue";
 
 //#region route item
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
@@ -108,8 +110,8 @@ const ERROR = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const J_HOME = {
 	component: J,
-	name: "jIndex",
-	path: "/index",
+	name: "home",
+	path: "/home",
 	props: true,
 	hidden: true
 };
@@ -148,9 +150,9 @@ const J_QUERY = {
 //
 
 const J_READ_GUIDE = {
-	component: ReadGuide,
-	name: "readGuide",
-	path: "/readGuide",
+	component: ReaderGuide,
+	name: "readerGuide",
+	path: "/readerGuide",
 	props: true,
 	hidden: true
 };
@@ -221,7 +223,7 @@ const BOOK_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const CLC_INDEX = {
 	component: ClcIndexManager,
-	name: "clcIndexManager",
+	name: "classifyInfo",
 	path: "/i/clcIndexes",
 	props: true,
 	hidden: true
@@ -233,7 +235,7 @@ const CLC_INDEX = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const BOOK_INFO = {
 	component: BookInfoManager,
-	name: "bookInfoManager",
+	name: "bookInfo",
 	path: "/i/bookInfos",
 	props: true,
 	hidden: true
@@ -282,8 +284,7 @@ const DEBIT_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const LOG = {
 	component: LogManager,
-
-	name: "logManager",
+	name: "logInfo",
 	path: "/i/logs",
 	props: true,
 	hidden: true
@@ -304,7 +305,7 @@ const LOG_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const SYS_ROUTER = {
 	component: Route,
-	name: "route",
+	name: "routeInfo",
 	path: "/i/users/routeInfo",
 	props: true,
 	hidden: true
@@ -345,7 +346,7 @@ const SYS_ROUTER = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const USER = {
 	component: UserManager,
-	name: "userManager",
+	name: "userInfo",
 	path: "/i/users",
 	hidden: true
 };
@@ -362,7 +363,7 @@ const USER_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const ROLE = {
 	component: RoleManager,
-	name: "roleManager",
+	name: "roleInfo",
 	path: "/i/users/roles",
 	hidden: true
 };
@@ -381,7 +382,7 @@ const ROLE_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const PERMISSION = {
 	component: PermissionManager,
-	name: "permissionManager",
+	name: "permissionInfo",
 	path: "/i/users/permissions",
 	hidden: true
 };
@@ -394,7 +395,7 @@ const PERMISSION = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const I_MY = {
 	component: My,
-	name: "myInfo",
+	name: "selfInfo",
 	path: "/i/myInfo",
 	props: true,
 	hidden: true
@@ -404,9 +405,15 @@ const I_MY = {
 
 const I_HOME = {
 	component: I,
-	name: "iIndex",
+	name: "IHome",
 	path: "/i/index"
 };
+
+const I_WORKBENCH = {
+	component: WORKBENCH,
+	name: "workbench",
+	path: "/i/workbench"
+}
 
 const I_USER_INFO = {
 	component: UserInfo,
@@ -419,6 +426,7 @@ const I_USER_INFO = {
 const BASE_I = {
 	children: [
 		I_HOME,
+		I_WORKBENCH,
 		I_USER_INFO,
 		DEBIT,
 		DEBIT_CHECK,
@@ -501,7 +509,7 @@ export const PredefinedRoutes = [PUBLIC, BASE_I, BASE_J, ERROR];
 
 const NO_TOKEN_PAGE = new Set();
 {
-	NO_TOKEN_PAGE.add("j");
+	NO_TOKEN_PAGE.add("home");
 	NO_TOKEN_PAGE.add("jIndex");
 	NO_TOKEN_PAGE.add("login");
 	NO_TOKEN_PAGE.add("register");

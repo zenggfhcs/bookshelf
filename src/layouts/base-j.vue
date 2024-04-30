@@ -2,12 +2,9 @@
 import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { Header } from "@/constant/Header.js";
-import Home from "@/icons/home.vue";
-import IGuide from "@/icons/i-guide.vue";
-import IUser from "@/icons/i-user.vue";
-import Search from "@/icons/search.vue";
+import { getIconByName } from "@/icons/getIconByName.js";
 import sun from "@/icons/sun.vue";
-import { BASE_I, J_HOME, J_MY_LIB, J_QUERY, J_READ_GUIDE, LOGIN, REGISTER } from "@/router/route-value.js";
+import { BASE_I, J_MY_LIB, LOGIN, REGISTER } from "@/router/route-value.js";
 import { local } from "@/storage/local.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -73,74 +70,90 @@ onMounted(() => {
 	// localStorage.clear();
 });
 
-const menuOptions = [
-	{
-		label: () =>
-			h(RouterLink, gProps(J_HOME.name), { default: () => "首页" }),
-		key: "j-index",
-		icon: renderIcon(Home)
-	},
-	{
-		label: () =>
-			h(RouterLink, gProps(J_QUERY.name), { default: () => "检索" }),
-		// children: [
-		// 	{
-		// 		label: () =>
-		// 			h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "快速检索" }),
-		// 		key: "j-quick-query"
-		// 	},
-		// 	{
-		// 		label: () =>
-		// 			h(RouterLink, gProps(J_QUERY_ADVANCED.name), { default: () => "高级检索" }),
-		// 		key: "j-advanced-query"
-		// 	},
-		// 	{
-		// 		label: () =>
-		// 			h(RouterLink, gProps(J_QUERY_TYPE.name), { default: () => "分类检索" }),
-		// 		key: "j-type-query"
-		// 	},
-		// 	{
-		// 		label: () =>
-		// 			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
-		// 		key: "j-read-guide"
-		// 	}
-		// ],
-		key: "j-query",
-		icon: renderIcon(Search)
-	},
-	{
-		label: () =>
-			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
-		key: "j-read-guide",
-		icon: renderIcon(IGuide)
-	},
-	// {
-	// 	label: () =>
-	// 		h(RouterLink, gProps(J_MY_LIB.name), { default: () => "统计" }),
-	// 	key: "j-statistics",
-	// 	icon: renderIcon(Statistics)
-	// },
-	{
-		label: () =>
-			h(RouterLink, gProps(J_MY_LIB.name), {
-				default: () => "我的图书馆"
-			}),
-		key: "j-my-info",
-		icon: renderIcon(IUser)
-	}
-];
+const menuOptions = ref([]);
+// 	[
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(J_HOME.name), { default: () => "首页" }),
+// 		key: "j-index",
+// 		icon: renderIcon(Home)
+// 	},
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(J_QUERY.name), { default: () => "检索" }),
+// 		// children: [
+// 		// 	{
+// 		// 		label: () =>
+// 		// 			h(RouterLink, gProps(J_QUERY_QUICK.name), { default: () => "快速检索" }),
+// 		// 		key: "j-quick-query"
+// 		// 	},
+// 		// 	{
+// 		// 		label: () =>
+// 		// 			h(RouterLink, gProps(J_QUERY_ADVANCED.name), { default: () => "高级检索" }),
+// 		// 		key: "j-advanced-query"
+// 		// 	},
+// 		// 	{
+// 		// 		label: () =>
+// 		// 			h(RouterLink, gProps(J_QUERY_TYPE.name), { default: () => "分类检索" }),
+// 		// 		key: "j-type-query"
+// 		// 	},
+// 		// 	{
+// 		// 		label: () =>
+// 		// 			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+// 		// 		key: "j-read-guide"
+// 		// 	}
+// 		// ],
+// 		key: "j-query",
+// 		icon: renderIcon(Search)
+// 	},
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+// 		key: "j-read-guide",
+// 		icon: renderIcon(IGuide)
+// 	},
+// 	// {
+// 	// 	label: () =>
+// 	// 		h(RouterLink, gProps(J_MY_LIB.name), { default: () => "统计" }),
+// 	// 	key: "j-statistics",
+// 	// 	icon: renderIcon(Statistics)
+// 	// },
+// 	{
+// 		label: () =>
+// 			h(RouterLink, gProps(J_MY_LIB.name), {
+// 				default: () => "我的图书馆"
+// 			}),
+// 		key: "j-my-info",
+// 		icon: renderIcon(IUser)
+// 	}
+// ];
 
 const themeIcon = computed(() => {
 	return sun;
 });
 
+function generateMenuItem(routeItem) {
+	const menuItem = {};
+	menuItem.label = routeItem?.toName ? () => h(RouterLink, gProps(routeItem?.toName), {
+			default: () => routeItem.label
+		})
+		: routeItem.label;
+	menuItem.key = routeItem?.key;
+	menuItem.icon = routeItem?.iconName ?
+		renderIcon(getIconByName(routeItem.iconName))
+		: null;
+	menuItem.children = routeItem?.children.map(item => generateMenuItem(item));
+	return menuItem;
+}
+
 onBeforeMount(() => {
 	if (local.get(Header.TOKEN)) {
 		loginStatus.value = true;
 	}
-	action(message, Service.Routes.getByGroup(""), (res) => {
+	action(message, Service.Routes.getByGroup("reader-menu"), (res) => {
 		console.log(res);
-	});
+		menuOptions.value = res?.map(item => generateMenuItem(item));
+	}, () => {});
 });
 </script>
 

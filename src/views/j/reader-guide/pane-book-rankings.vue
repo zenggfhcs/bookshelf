@@ -3,10 +3,10 @@ import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import Rankings from "@/components/rankings.vue";
 import IReload from "@/icons/i-reload.vue";
-import Search from "@/icons/search.vue";
+import Search from "@/icons/i-query.vue";
 import { debounce } from "@/utils/debounce.js";
 import { dateDisabled } from "@/utils/disabled.js";
-import { NButton, NDatePicker, NInputGroup, NInputGroupLabel, NSelect, NSpace, useMessage } from "naive-ui";
+import { NButton, NCard, NDatePicker, NInputGroup, NInputGroupLabel, NSelect, NSpace, useMessage } from "naive-ui";
 import { onBeforeMount, reactive, ref } from "vue";
 
 const message = useMessage();
@@ -20,26 +20,20 @@ const info = reactive({
 
 const cols = [
 	{
-		title: "借阅次数",
+		title: "借阅次数", // 读者姓名
 		key: "count",
-		width: 120
+		width: 100
 	},
 	{
-		title: "读者",
-		key: "target",
+		title: "书名", // 常读类型
+		key: "target.bookName"
+	},
+	{
+		title: "索书号", // 借书册数
+		width: 160,
+		key: "target.callNumber",
 		render: (row) => {
-			let res = "";
-			if (row.target.surname) {
-				res += row.target.surname + " ";
-			}
-			if (row.target.name) {
-				res += row.target.name + " ";
-			}
-			if (row.target.displayName) {
-				res += `(${row.target.displayName})`;
-			}
-
-			return res;
+			return `${row.target.bookType} / ${row.target.callNumber}`;
 		}
 	}
 ];
@@ -84,7 +78,7 @@ const queriedRef = ref(false);
 function query() {
 	preQuery();
 
-	action(message, Service.Debits.readerDebitRankings(info), (res) => {
+	action(message, Service.Debits.bookDebitRankings(info), (res) => {
 		rankingsRef.value = res.map((item, index) => {
 			item.ranking = index;
 			return item;
@@ -152,6 +146,7 @@ onBeforeMount(() => {
 		</n-button>
 	</n-space>
 	<Rankings v-if="rankingsRef.length" :cols="cols" :data="rankingsRef" />
+	<n-card v-else-if="queriedRef" class="m-t-1em">无数据</n-card>
 </template>
 
 <style scoped>

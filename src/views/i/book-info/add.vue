@@ -288,9 +288,11 @@ const add = debounce(() => {
 	console.log(info);
 	formValidator(addFormRef, message, async () => {
 		loadingAdd.value = true;
-		await addItem(message, Service.BookInfos.add(info));
+		await addItem(message, Service.BookInfos.add(info), (_) => {
+			message.success("添加成功", messageOptions);
+			goto(BOOK_INFO);
+		});
 		loadingAdd.value = false;
-		goto(BOOK_INFO);
 	});
 });
 

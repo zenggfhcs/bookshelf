@@ -34,7 +34,7 @@ function getTabName() {
 const typeRef = ref(props.tab ? getTabName() : "quick-query");
 
 onBeforeMount(() => {
-	props.updateMenuItem("j-query");
+	props.updateMenuItem("query");
 });
 </script>
 

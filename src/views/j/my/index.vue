@@ -27,7 +27,7 @@ function handleUpdateValue(value) {
 }
 
 onMounted(() => {
-	props.updateMenuItem("j-my-info");
+	props.updateMenuItem("myLib");
 });
 </script>
 

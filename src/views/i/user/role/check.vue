@@ -64,6 +64,7 @@ async function queryPermissionInfo() {
 		permissionsRef.value = res;
 	});
 
+	rolePermissionNameMap.clear();
 	info.permissions.forEach(item => {
 		rolePermissionNameMap.set(item.name, item);
 	});
@@ -80,9 +81,30 @@ async function queryPermissionInfo() {
 	});
 }
 
+const routesRef = ref([]);
+
+const roleRouteNameMap = new Map();
+
+const routeOptions = ref([]);
+
 async function queryRouteInfo() {
 	await action(message, Service.Routes.list(), (res) => {
-		console.log(res);
+		routesRef.value = res;
+	});
+
+	roleRouteNameMap.clear();
+	info.routeItems.forEach(item => {
+		roleRouteNameMap.set(item?.key, item);
+	});
+
+	routeOptions.value = [];
+	routesRef.value.forEach(item => {
+		if (!roleRouteNameMap.has(item?.key)) {
+			routeOptions.value.push({
+				label: item?.label,
+				value: item?.id
+			});
+		}
 	});
 }
 
@@ -107,17 +129,29 @@ const permissionsRef = ref([]);
 
 const rolePermissionTagsRef = computed(() => info.permissions.map(item => item?.remark));
 
-const roleRouteTagsRef = computed(() => info.routeItems.map(item => `${item?.key}|${item?.label}`));
+const roleRouteTagsRef = computed(() => info.routeItems.map(item => `${item?.group} | ${item?.label}`));
 
-function renderTag(tag, index) {
+function renderPermissionTag(tag, index) {
+	let type = "info";
+	if (tag.startsWith("新增")) {
+		type = "success";
+	}
+	if (tag.startsWith("查找") || tag.startsWith("获取")) {
+		type = "default";
+	}
+	if (tag.startsWith("删除")) {
+		type = "error";
+	}
+	if (tag.startsWith("修改") || tag.startsWith("更新")) {
+		type = "warning";
+	}
 	return createVNode(
 		NTag,
 		{
 			style: {
-				marginBottom: "1em",
-				marginRight: "1em"
+				// margin: ".3em"
 			},
-			type: index < 3 ? "success" : "error",
+			type: type,
 			bordered: false,
 			closable: true,
 			onClose: () => {
@@ -127,11 +161,33 @@ function renderTag(tag, index) {
 		{
 			default: () => createVNode(
 				"div",
+				{},
 				{
-					style: {
-						minWidth: "10em"
-					}
-				},
+					default: () => tag
+				}
+			)
+		}
+	);
+}
+
+function renderRouteTag(tag, index) {
+	return createVNode(
+		NTag,
+		{
+			style: {
+				// margin: ".3em"
+			},
+			type: tag.startsWith("reader") ? "success" : "error",
+			bordered: false,
+			closable: true,
+			onClose: () => {
+				handleRemoveRoleRoute(info.routeItems[index].id);
+			}
+		},
+		{
+			default: () => createVNode(
+				"div",
+				{},
 				{
 					default: () => tag
 				}
@@ -143,24 +199,41 @@ function renderTag(tag, index) {
 async function handleRemoveRolePermission(permissionId) {
 	const _info = {
 		id: info.id,
-		name: info.name,
-		remark: permissionId,
-		revision: info.revision
+		remark: permissionId
 	};
 	await removeItem(message, Service.Roles.removePermission(_info));
 
 	await query(props.id);
 }
 
-async function handleAddRolePermission(permissionName) {
+async function handleAddRolePermission(permissionId) {
 	// addItem(message, Service.Roles.addPermission())
 	const _info = {
 		id: info.id,
-		name: info.name,
-		remark: permissionName,
-		revision: info.revision
+		remark: permissionId
 	};
 	await addItem(message, Service.Roles.addPermission(_info));
+
+	await query(props.id);
+}
+
+async function handleAddRoleRoute(routeId) {
+	// addItem(message, Service.Roles.addPermission())
+	const _info = {
+		id: info.id,
+		remark: routeId
+	};
+	await addItem(message, Service.Roles.addRoute(_info));
+
+	await query(props.id);
+}
+
+async function handleRemoveRoleRoute(routeId) {
+	const _info = {
+		id: info.id,
+		remark: routeId
+	};
+	await removeItem(message, Service.Roles.removeRoute(_info));
 
 	await query(props.id);
 }
@@ -231,92 +304,38 @@ onMounted(() => {
 			<tr>
 				<td>权限</td>
 				<td>
-					<div style="width: calc(14em * 3 + 2 * 8px);">
-						<n-dynamic-tags v-model:value="rolePermissionTagsRef" :render-tag="renderTag"
+					<div class="max-w-40em">
+						<n-dynamic-tags :max="permissionsRef.length" v-model:value="rolePermissionTagsRef"
+						                :render-tag="renderPermissionTag"
 						                @create="handleAddRolePermission">
 							<template #input="{ submit, deactivate }">
 								<n-select
 									:options="permissionOptions"
-									style="min-width: calc(12em + 4px)"
+									class="min-w-10em"
 									@blur="deactivate"
 									@update:value="submit($event)"
 								/>
 							</template>
 						</n-dynamic-tags>
 					</div>
-
-					<!--					<n-collapse>-->
-					<!--						<n-collapse-item name="1" title="图书">-->
-					<!--							<n-checkbox-group>-->
-					<!--								<n-grid :cols="2" :y-gap="8">-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="推开" value="Pushes Open" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="窗户" value="The Window" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="举起" value="And Raises" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="望远镜" value="The Spyglass" />-->
-					<!--									</n-gi>-->
-					<!--								</n-grid>-->
-					<!--							</n-checkbox-group>-->
-					<!--						</n-collapse-item>-->
-					<!--						<n-collapse-item name="2" title="用户">-->
-					<!--							<n-checkbox-group>-->
-					<!--								<n-grid :cols="2" :y-gap="8">-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="推开" value="Pushes Open" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="窗户" value="The Window" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="举起" value="And Raises" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="望远镜" value="The Spyglass" />-->
-					<!--									</n-gi>-->
-					<!--								</n-grid>-->
-					<!--							</n-checkbox-group>-->
-					<!--						</n-collapse-item>-->
-					<!--						<n-collapse-item name="3" title="权限">-->
-					<!--							<n-checkbox-group>-->
-					<!--								<n-grid :cols="2" :y-gap="8">-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="推开" value="Pushes Open" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="窗户" value="The Window" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="举起" value="And Raises" />-->
-					<!--									</n-gi>-->
-					<!--									<n-gi>-->
-					<!--										<n-checkbox label="望远镜" value="The Spyglass" />-->
-					<!--									</n-gi>-->
-					<!--								</n-grid>-->
-					<!--							</n-checkbox-group>-->
-					<!--						</n-collapse-item>-->
-					<!--					</n-collapse>-->
 				</td>
 			</tr>
 			<tr>
 				<td>菜单</td>
 				<td>
-					<n-dynamic-tags v-model:value="roleRouteTagsRef" :render-tag="renderTag"
-					                @create="handleAddRolePermission">
-						<template #input="{ submit, deactivate }">
-							<n-select
-								:options="permissionOptions"
-								style="min-width: calc(12em + 4px)"
-								@blur="deactivate"
-								@update:value="submit($event)"
-							/>
-						</template>
-					</n-dynamic-tags>
+					<div class="max-w-50em">
+						<n-dynamic-tags :max="routesRef.length" v-model:value="roleRouteTagsRef" :render-tag="renderRouteTag"
+						                @create="handleAddRoleRoute">
+							<template #input="{ submit, deactivate }">
+								<n-select
+									:options="routeOptions"
+									class="min-w-10em"
+									@blur="deactivate"
+									@update:value="submit($event)"
+								/>
+							</template>
+						</n-dynamic-tags>
+					</div>
 				</td>
 			</tr>
 			</tbody>
