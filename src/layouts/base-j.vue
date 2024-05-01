@@ -99,7 +99,7 @@ const menuOptions = ref([]);
 // 		// 	},
 // 		// 	{
 // 		// 		label: () =>
-// 		// 			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+// 		// 			h(RouterLink, gProps(J_READER_GUIDE.name), { default: () => "读书指引" }),
 // 		// 		key: "j-read-guide"
 // 		// 	}
 // 		// ],
@@ -108,7 +108,7 @@ const menuOptions = ref([]);
 // 	},
 // 	{
 // 		label: () =>
-// 			h(RouterLink, gProps(J_READ_GUIDE.name), { default: () => "读书指引" }),
+// 			h(RouterLink, gProps(J_READER_GUIDE.name), { default: () => "读书指引" }),
 // 		key: "j-read-guide",
 // 		icon: renderIcon(IGuide)
 // 	},
@@ -242,7 +242,6 @@ onBeforeMount(() => {
 		<n-layout
 			:native-scrollbar="false"
 			class="absolute top-3em bottom-0 left-0 right-0"
-			content-style="padding: 1em;"
 		>
 			<router-view v-slot="{ Component }">
 				<component :is="Component" :updateMenuItem="updateMenuItem" />

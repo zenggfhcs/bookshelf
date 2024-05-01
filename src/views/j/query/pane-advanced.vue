@@ -1,13 +1,16 @@
 <script setup>
 import { queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
+import { messageOptions } from "@/constant/options.js";
+import router from "@/router/index.js";
+import { J_BOOK_DETAIL } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
+import { formatTo } from "@/utils/format.js";
 import { copyMatchingProperties } from "@/utils/index.js";
 import {
 	NButton,
 	NCard,
-	NCollapse,
-	NCollapseItem,
+	NCollapseTransition,
 	NDataTable,
 	NFlex,
 	NForm,
@@ -15,14 +18,11 @@ import {
 	NGi,
 	NGrid,
 	NInput,
-	NLayout,
-	NLayoutContent,
-	NLayoutSider,
 	NPagination,
 	NSelect,
 	NSpace,
+	NSpin,
 	NText,
-	NTree,
 	useMessage
 } from "naive-ui";
 import { computed, onMounted, reactive, ref } from "vue";
@@ -61,13 +61,31 @@ const cols = [
 	},
 	{
 		title: "出版日期",
-		key: "publishedDate" // todo yyyy-MM
+		key: "publishedDate",
+		render: (row) => {
+			return formatTo(row?.publishedDate, "yyyy年MM月");
+		}
 	},
 	{
 		title: "索引号",
 		key: "callNumber"
 	}
 ];
+
+function rowProps(row) {
+	return {
+		onDblclick: (e) => {
+			e.preventDefault();
+			const _to = router.resolve({
+				name: J_BOOK_DETAIL.name,
+				params: {
+					id: row?.id
+				}
+			});
+			window.open(_to.href, "_blank");
+		}
+	};
+}
 
 const pagination = reactive({
 	page: 1,
@@ -88,7 +106,7 @@ const pagination = reactive({
 	}
 });
 
-const payloadReactive = reactive({
+const payload = reactive({
 	entity: {
 		bookName: "",
 		publisher: "",
@@ -96,7 +114,7 @@ const payloadReactive = reactive({
 		bookType: "",
 		keyword: "",
 		isbn: "",
-		callNumber: "",
+		// callNumber: "",
 		cip: ""
 	},
 	filter: {
@@ -129,12 +147,14 @@ const ENTITY_DEFAULT_VALUE = {
 	bookType: "",
 	keyword: "",
 	isbn: "",
-	callNumber: "",
+	// callNumber: "",
 	cip: ""
 };
 
+const isShowQueryFormRef = ref(true);
+
 function reset() {
-	copyMatchingProperties(ENTITY_DEFAULT_VALUE, payloadReactive.entity);
+	copyMatchingProperties(ENTITY_DEFAULT_VALUE, payload.entity);
 }
 
 
@@ -144,7 +164,7 @@ async function query() {
 		isQueriedRef.value = true;
 	await queryList(
 		message,
-		Service.BookInfos.filteredList(payloadReactive),
+		Service.BookInfos.filteredList(payload),
 		itemCountRef,
 		tableDataRef
 	);
@@ -152,9 +172,22 @@ async function query() {
 	loadingQuery.value = false;
 }
 
-const handleQuery = debounce(() => {
+function canQuery() {
+	for (const entityKey in payload.entity) {
+		if (payload.entity[entityKey]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const queryHandler = debounce(() => {
 	// todo 至少输入一个才可以查询
-	query();
+	if (canQuery()) {
+		query();
+	} else {
+		message.warning("请输入至少一项检索关键字", messageOptions);
+	}
 });
 
 onMounted(() => {
@@ -162,126 +195,138 @@ onMounted(() => {
 </script>
 
 <template>
-	<n-card>
-		<n-layout has-sider>
-			<n-layout-sider class="m-r-4" collapse-mode="width" width="400">
+	<n-spin :show="loadingQuery">
+		<n-flex class="items-center" justify="center" vertical>
+			<n-flex class="w-80em" vertical>
 				<n-card>
-					<n-space vertical>
-						<div class="font-size-1.5em">馆藏书目组配检索</div>
-						<n-text>tips:&nbsp;检索点为前方一致</n-text>
-						<n-form
-							class="w-100%"
-							label-placement="left"
-							label-width="auto"
-							size="small">
-							<n-grid :cols="1" x-gap="12" y-gap="0">
-								<n-gi>
-									<n-form-item label="题名">
-										<n-input v-model:value="payloadReactive.entity.bookName" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="出版社">
-										<n-input v-model:value="payloadReactive.entity.publisher" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="著者">
-										<n-input v-model:value="payloadReactive.entity.author" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="分类号">
-										<n-input v-model:value="payloadReactive.entity.bookType" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="主题词">
-										<n-input v-model:value="payloadReactive.entity.keyword" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="ISBN">
-										<n-input v-model:value="payloadReactive.entity.isbn" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="索引号">
-										<n-input v-model:value="payloadReactive.entity.callNumber" />
-									</n-form-item>
-								</n-gi>
-								<n-gi>
-									<n-form-item label="CIP">
-										<n-input v-model:value="payloadReactive.entity.cip" />
-									</n-form-item>
-								</n-gi>
-							</n-grid>
-							<n-flex justify="space-between">
-								<n-button secondary type="default" @click.prevent="reset">重置</n-button>
-								<n-button type="primary" @click.prevent="handleQuery">检索</n-button>
-							</n-flex>
-						</n-form>
-					</n-space>
-				</n-card>
-			</n-layout-sider>
-			<n-card>
-				<n-flex v-if="tableDataRef.length" style="flex-wrap: nowrap">
-					<n-space class="flex-auto" vertical>
-						<n-space>
-							<n-pagination
-								v-model:page="pagination.page"
-								:item-count="itemCountRef"
-								simple
-								@update-page="pagination.onUpdatePage"
-								@update-pageSize="pagination.onUpdatePageSize"
-							/>
-							<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
-							          size="small" @update:value="pagination.onUpdatePageSize" />
-							<n-button class="ml-2" size="small" type="primary">排序</n-button>
+					<n-flex class="items-center" justify="space-between">
+						馆藏书目组配检索（检索点为前方一致）
+						<n-button :bordered="false" @click.prevent="isShowQueryFormRef = !isShowQueryFormRef">
+							<span v-show="isShowQueryFormRef">收起</span><span v-show="!isShowQueryFormRef">展开</span>
+						</n-button>
+					</n-flex>
+					<n-collapse-transition :show="isShowQueryFormRef">
+						<n-space vertical>
+							<div class="font-size-1.5em"></div>
+							<n-text></n-text>
+							<n-form
+								class="w-100%"
+								label-placement="left"
+								label-width="auto"
+								:model="payload.entity"
+								size="small">
+								<n-grid :cols="4" x-gap="12" y-gap="0">
+									<n-gi>
+										<n-form-item label="ISBN">
+											<n-input v-model:value="payload.entity.isbn" />
+										</n-form-item>
+									</n-gi>
+									<n-gi>
+										<n-form-item label="CIP">
+											<n-input v-model:value="payload.entity.cip" />
+										</n-form-item>
+									</n-gi>
+									<n-gi span="2">
+										<n-form-item label="题名">
+											<n-input v-model:value="payload.entity.bookName" />
+										</n-form-item>
+									</n-gi>
+									<n-gi>
+										<n-form-item label="出版社">
+											<n-input v-model:value="payload.entity.publisher" />
+										</n-form-item>
+									</n-gi>
+									<n-gi>
+										<n-form-item label="著者">
+											<n-input v-model:value="payload.entity.author" />
+										</n-form-item>
+									</n-gi>
+									<n-gi>
+										<n-form-item label="分类号">
+											<n-input v-model:value="payload.entity.bookType" />
+										</n-form-item>
+									</n-gi>
+									<n-gi>
+										<n-form-item label="主题词">
+											<n-input v-model:value="payload.entity.keyword" />
+										</n-form-item>
+									</n-gi>
+
+									<!--								<n-gi>-->
+									<!--									<n-form-item label="索引号">-->
+									<!--										<n-input v-model:value="payload.entity.callNumber" />-->
+									<!--									</n-form-item>-->
+									<!--								</n-gi>-->
+
+								</n-grid>
+								<n-flex justify="space-between">
+									<n-button secondary type="default" @click.prevent="reset">重置</n-button>
+									<n-button type="primary" @click.prevent="queryHandler">检索</n-button>
+								</n-flex>
+							</n-form>
 						</n-space>
-						<n-layout-content>
+
+					</n-collapse-transition>
+				</n-card>
+				<n-card>
+					&nbsp;
+					<n-flex v-if="tableDataRef.length" style="flex-wrap: nowrap">
+						<n-space class="flex-auto" vertical>
+							<n-space>
+								<n-pagination
+									v-model:page="pagination.page"
+									:item-count="itemCountRef"
+									simple
+									@update-page="pagination.onUpdatePage"
+									@update-pageSize="pagination.onUpdatePageSize"
+								/>
+								<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+								          size="small" @update:value="pagination.onUpdatePageSize" />
+								<n-button class="ml-2" size="small" type="primary">排序</n-button>
+							</n-space>
 							<n-data-table
 								:bordered="false"
 								:columns="cols"
 								:data="tableDataRef"
+								:row-props="rowProps"
 								:loading="loadingQuery"
 								:show-header="false"
 								:single-line="false"
 								remote />
-						</n-layout-content>
-						<n-space reverse>
-							<n-pagination
-								v-model:page="pagination.page"
-								:item-count="itemCountRef"
-								simple
-								@update-page="pagination.onUpdatePage"
-								@update-pageSize="pagination.onUpdatePageSize"
-							/>
-							<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
-							          size="small" @update:value="pagination.onUpdatePageSize" />
-						</n-space>
-					</n-space>
-					<n-card class="w-16em" size="small">
-						<n-collapse>
-							<n-collapse-item name="1" title="分类">
-								<n-tree
-									:data="data"
-									block-node
-									checkable
-									checkbox-placement="right"
-									@update:checked-keys="(v) => {console.log(v)}"
+							<n-space reverse>
+								<n-pagination
+									v-model:page="pagination.page"
+									:item-count="itemCountRef"
+									simple
+									@update-page="pagination.onUpdatePage"
+									@update-pageSize="pagination.onUpdatePageSize"
 								/>
-							</n-collapse-item>
-							<n-collapse-item name="2" title="出版日期">
-								<n-tree />
-							</n-collapse-item>
-						</n-collapse>
-					</n-card>
-				</n-flex>
-				<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
-			</n-card>
-		</n-layout>
-	</n-card>
+								<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+								          size="small" @update:value="pagination.onUpdatePageSize" />
+							</n-space>
+						</n-space>
+						<!--					<n-card class="w-16em" size="small">-->
+						<!--						<n-collapse>-->
+						<!--							<n-collapse-item name="1" title="分类">-->
+						<!--								<n-tree-->
+						<!--									:data="data"-->
+						<!--									block-node-->
+						<!--									checkable-->
+						<!--									checkbox-placement="right"-->
+						<!--									@update:checked-keys="(v) => {console.log(v)}"-->
+						<!--								/>-->
+						<!--							</n-collapse-item>-->
+						<!--							<n-collapse-item name="2" title="出版日期">-->
+						<!--								<n-tree />-->
+						<!--							</n-collapse-item>-->
+						<!--						</n-collapse>-->
+						<!--					</n-card>-->
+					</n-flex>
+					<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
+				</n-card>
+			</n-flex>
+		</n-flex>
+	</n-spin>
 </template>
 
 <style scoped>

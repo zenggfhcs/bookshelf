@@ -1,16 +1,21 @@
 <script setup>
 import { action, queryList } from "@/api/action.js";
 import { Service } from "@/api/index.js";
+import router from "@/router/index.js";
+import { J_BOOK_DETAIL } from "@/router/route-value.js";
+import { formatTo } from "@/utils/format.js";
 import {
 	NButton,
 	NCard,
+	NCollapseTransition,
 	NDataTable,
+	NFlex,
 	NLayout,
 	NLayoutContent,
-	NLayoutSider,
 	NPagination,
 	NSelect,
 	NSpace,
+	NSpin,
 	NText,
 	NTree,
 	useMessage
@@ -32,6 +37,8 @@ const tableDataRef = ref([]);
 const loadingQuery = ref(false);
 
 const isQueriedRef = ref(false);
+
+const isShowQueryFormRef = ref(true);
 
 const cols = [
 	{
@@ -55,13 +62,31 @@ const cols = [
 	},
 	{
 		title: "出版日期",
-		key: "publishDate"
+		key: "publishedDate",
+		render: (row) => {
+			return formatTo(row?.publishedDate, "yyyy年MM月");
+		}
 	},
 	{
 		title: "索引号",
 		key: "callNumber"
 	}
 ];
+
+function rowProps(row) {
+	return {
+		onDblclick: (e) => {
+			e.preventDefault();
+			const _to = router.resolve({
+				name: J_BOOK_DETAIL.name,
+				params: {
+					id: row?.id
+				}
+			});
+			window.open(_to.href, "_blank");
+		}
+	};
+}
 
 
 const pageSizeOptions = [
@@ -146,46 +171,60 @@ onMounted(async () => {
 </script>
 
 <template>
-	<n-card>
-		<n-layout has-sider>
-			<n-layout-sider class="m-r-4" collapse-mode="width" width="500">
-				<n-card class="h-100%" title="中图法分类（点击类别查看）">
-					<n-tree
-						:data="treeDataRef"
-						:default-expanded-keys="defaultExpandedKeys"
-						:node-props="nodeProps"
-						accordion
-						selectable
-						show-line
-					/>
+	<n-spin :show="loadingQuery">
+		<n-flex class="items-center" justify="center" vertical>
+			<n-flex class="w-80em" vertical>
+				<n-card>
+					<n-flex class="items-center" justify="space-between">
+						中图分类号（点击类别查看）
+						<n-button style="--n-padding: 0;" :bordered="false" @click.prevent="isShowQueryFormRef = !isShowQueryFormRef">
+							<span v-show="isShowQueryFormRef">收起</span><span v-show="!isShowQueryFormRef">展开</span>
+						</n-button>
+					</n-flex>
+					<n-collapse-transition :show="isShowQueryFormRef">
+						<n-card class="relative h-100% h-40em m-t-1em">
+							<n-layout-content style="background: none;" :native-scrollbar="false" class="absolute top-.3em bottom-.3em left-.3em right-.3em">
+								<n-tree
+									:data="treeDataRef"
+									:default-expanded-keys="defaultExpandedKeys"
+									:node-props="nodeProps"
+									accordion
+									selectable
+									show-line
+								/>
+							</n-layout-content>
+						</n-card>
+					</n-collapse-transition>
 				</n-card>
-			</n-layout-sider>
-			<n-card>
-				<n-space v-if="tableDataRef.length" vertical>
-					<n-space>
-						<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
-						<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
-						<n-button class="ml-2" size="small" type="primary">排序</n-button>
+				<n-card>
+					&nbsp;
+					<n-space v-if="tableDataRef.length" vertical>
+						<n-space>
+							<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
+							<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em"
+							          size="small" />
+							<n-button class="ml-2" size="small" type="primary">排序</n-button>
+						</n-space>
+							<n-data-table
+								:columns="cols"
+								:data="tableDataRef"
+								:loading="loadingQuery"
+								:row-props="rowProps"
+								:show-header="false"
+								:single-line="false"
+								bordered
+								remote />
+						<n-space reverse>
+							<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
+							<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em"
+							          size="small" />
+						</n-space>
 					</n-space>
-					<n-layout-content>
-						<n-data-table
-							:columns="cols"
-							:data="tableDataRef"
-							:loading="loadingQuery"
-							:show-header="false"
-							:single-line="false"
-							bordered
-							remote />
-					</n-layout-content>
-					<n-space reverse>
-						<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
-						<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em" size="small" />
-					</n-space>
-				</n-space>
-				<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
-			</n-card>
-		</n-layout>
-	</n-card>
+					<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
+				</n-card>
+			</n-flex>
+		</n-flex>
+	</n-spin>
 </template>
 
 <style scoped></style>

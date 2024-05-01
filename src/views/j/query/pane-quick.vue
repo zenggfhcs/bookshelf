@@ -9,9 +9,6 @@ import { J_BOOK_DETAIL } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import {
 	NButton,
-	NCard,
-	NCollapse,
-	NCollapseItem,
 	NDataTable,
 	NFlex,
 	NInput,
@@ -20,8 +17,9 @@ import {
 	NPagination,
 	NSelect,
 	NSpace,
-	NTree,
-	useMessage
+	NCard,
+	NSpin,
+	useMessage, NText
 } from "naive-ui";
 import { computed, onBeforeMount, onMounted, onUnmounted, reactive, ref } from "vue";
 
@@ -71,6 +69,8 @@ function rowProps(row) {
 }
 
 const tableDataRef = ref([]);
+
+const isQueriedRef = ref(false);
 
 const itemCountRef = ref(0);
 
@@ -206,77 +206,85 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<n-flex class="items-center" justify="center" vertical>
-		<n-flex class="w-80em" vertical>
-			<n-input-group>
-				<n-select
-					v-model:value="queryContentTypeRef"
-					:options="queryContentTypeOptions"
-					class="w-12em"
-				/>
-				<n-input v-model:value="queryKeyword" placeholder="请输入关键字" />
-				<n-button type="primary" @click.prevent="queryHandler">
-					<template #icon>
-						<Search />
-					</template>
-				</n-button>
-			</n-input-group>
-			<n-flex style="flex-wrap: nowrap">
-				<n-space class="flex-auto" vertical>
-					<n-space>
-						<n-pagination
-							v-model:page="pagination.page"
-							:item-count="itemCountRef"
-							simple
-							@update-page="pagination.onUpdatePage"
-							@update-pageSize="pagination.onUpdatePageSize"
+	<n-spin :show="loadingQuery">
+		<n-flex class="items-center" justify="center" vertical>
+			<n-flex class="w-80em" vertical>
+				<n-card>
+					<n-input-group>
+						<n-select
+							v-model:value="queryContentTypeRef"
+							:options="queryContentTypeOptions"
+							class="w-12em"
 						/>
-						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
-						          size="small" @update:value="pagination.onUpdatePageSize" />
-						<n-button class="ml-2" size="small" type="primary">排序</n-button>
-					</n-space>
-					<n-layout-content>
-						<n-data-table
-							:bordered="false"
-							:columns="cols"
-							:data="tableDataRef"
-							:loading="loadingQuery"
-							:row-props="rowProps"
-							:show-header="false"
-							:single-line="false"
-							remote />
-					</n-layout-content>
-					<n-space reverse>
-						<n-pagination
-							v-model:page="pagination.page"
-							:item-count="itemCountRef"
-							simple
-							@update-page="pagination.onUpdatePage"
-							@update-pageSize="pagination.onUpdatePageSize"
-						/>
-						<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
-						          size="small" @update:value="pagination.onUpdatePageSize" />
-					</n-space>
-				</n-space>
-				<n-card class="w-16em" size="small">
-					<n-collapse>
-						<n-collapse-item name="1" title="分类">
-							<n-tree
-								:data="data"
-								block-node
-								checkable
-								checkbox-placement="right"
-								@update:checked-keys="(v) => {console.log(v)}"
-							/>
-						</n-collapse-item>
-						<n-collapse-item name="2" title="出版日期">
-							<n-tree />
-						</n-collapse-item>
-					</n-collapse>
+						<n-input  v-model:value="queryKeyword" @keydown.enter="queryHandler" placeholder="请输入关键字" />
+						<!--					<n-button type="primary" @click.prevent="queryHandler">-->
+						<!--						<template #icon>-->
+						<!--							<Search />-->
+						<!--						</template>-->
+						<!--					</n-button>-->
+					</n-input-group>
+				</n-card>
+				<n-card>
+					&nbsp;
+					<n-flex v-if="tableDataRef.length" style="flex-wrap: nowrap">
+						<n-space class="flex-auto" vertical>
+							<n-space>
+								<n-pagination
+									v-model:page="pagination.page"
+									:item-count="itemCountRef"
+									simple
+									@update-page="pagination.onUpdatePage"
+									@update-pageSize="pagination.onUpdatePageSize"
+								/>
+								<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+								          size="small" @update:value="pagination.onUpdatePageSize" />
+								<n-button class="ml-2" size="small" type="primary">排序</n-button>
+							</n-space>
+							<n-layout-content>
+								<n-data-table
+									:bordered="false"
+									:columns="cols"
+									:data="tableDataRef"
+									:loading="loadingQuery"
+									:row-props="rowProps"
+									:show-header="false"
+									:single-line="false"
+									remote />
+							</n-layout-content>
+							<n-space reverse>
+								<n-pagination
+									v-model:page="pagination.page"
+									:item-count="itemCountRef"
+									simple
+									@update-page="pagination.onUpdatePage"
+									@update-pageSize="pagination.onUpdatePageSize"
+								/>
+								<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
+								          size="small" @update:value="pagination.onUpdatePageSize" />
+							</n-space>
+						</n-space>
+						<!--				<n-card class="w-16em" size="small">-->
+						<!--					<n-collapse>-->
+						<!--						<n-collapse-item name="1" title="分类">-->
+						<!--							<n-tree-->
+						<!--								:data="data"-->
+						<!--								block-node-->
+						<!--								checkable-->
+						<!--								checkbox-placement="right"-->
+						<!--								@update:checked-keys="(v) => {console.log(v)}"-->
+						<!--							/>-->
+						<!--						</n-collapse-item>-->
+						<!--						<n-collapse-item name="2" title="出版日期">-->
+						<!--							<n-tree />-->
+						<!--						</n-collapse-item>-->
+						<!--					</n-collapse>-->
+						<!--				</n-card>-->
+					</n-flex>
+					<n-text v-else-if="isQueriedRef">没有你想要的东西哦</n-text>
 				</n-card>
 			</n-flex>
 		</n-flex>
-	</n-flex>
+	</n-spin>
 </template>
 
 <style scoped>

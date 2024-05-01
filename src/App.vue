@@ -11,7 +11,7 @@ import {
 	useOsTheme,
 	zhCN
 } from "naive-ui";
-import { onBeforeMount, onMounted, ref } from "vue";
+import { onBeforeMount, onMounted, ref, provide } from "vue";
 
 
 const watermarkRef = ref("大家艰苦一下，牛奶和面包都会有的");
@@ -29,6 +29,7 @@ function switchTheme() {
 }
 
 onBeforeMount(() => {
+	provide("theme", theme);
 });
 
 onMounted(() => {

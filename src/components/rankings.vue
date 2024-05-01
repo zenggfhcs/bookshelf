@@ -61,7 +61,7 @@ const cols = [
 </script>
 
 <template>
-	<n-divider title-placement="left">
+	<n-divider title-placement="center">
 		排行榜
 	</n-divider>
 	<n-data-table

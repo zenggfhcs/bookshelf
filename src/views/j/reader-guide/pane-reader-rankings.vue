@@ -2,11 +2,22 @@
 import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import Rankings from "@/components/rankings.vue";
-import IReload from "@/icons/i-reload.vue";
 import Search from "@/icons/i-query.vue";
+import IReload from "@/icons/i-reload.vue";
 import { debounce } from "@/utils/debounce.js";
 import { dateDisabled } from "@/utils/disabled.js";
-import { NButton, NDatePicker, NInputGroup, NInputGroupLabel, NSelect, NSpace, useMessage } from "naive-ui";
+import {
+	NButton,
+	NCard,
+	NDatePicker,
+	NFlex,
+	NInputGroup,
+	NInputGroupLabel,
+	NSelect,
+	NSpace,
+	NSpin,
+	useMessage
+} from "naive-ui";
 import { onBeforeMount, reactive, ref } from "vue";
 
 const message = useMessage();
@@ -79,20 +90,26 @@ function preQuery() {
 	info.month = date.getMonth() + 1; // 获取到的 month从 0开始，0代表一月，+1进行修正
 }
 
-const queriedRef = ref(false);
+const isQueriedRef = ref(false);
 
-function query() {
+const loadingQuery = ref(false);
+
+async function query() {
+	loadingQuery.value = true;
+
 	preQuery();
 
-	action(message, Service.Debits.readerDebitRankings(info), (res) => {
+	await action(message, Service.Debits.readerDebitRankings(info), (res) => {
 		rankingsRef.value = res.map((item, index) => {
 			item.ranking = index;
 			return item;
 		});
-		if (!queriedRef.value) {
-			queriedRef.value = true;
+		if (!isQueriedRef.value) {
+			isQueriedRef.value = true;
 		}
 	});
+
+	loadingQuery.value = false;
 }
 
 const rankingsRef = ref([]);
@@ -110,48 +127,56 @@ onBeforeMount(() => {
 </script>
 
 <template>
-
-	<n-space class="w-80em">
-		<n-date-picker
-			v-model:value="dateRef"
-			:is-date-disabled="dateDisabled"
-			class="w-8em"
-			type="month"
-			update-value-on-close
-			value-format="yyyy-MM-dd"
-		/>
-		<n-input-group>
-			<n-input-group-label>分类号:</n-input-group-label>
-			<n-select
-				v-model:value="info.type"
-				:options="typeOptionsRef"
-				class="min-w-10em"
-				clearable
+	<n-spin :show="loadingQuery">
+		<n-space justify="center">
+			<n-date-picker
+				v-model:value="dateRef"
+				:is-date-disabled="dateDisabled"
+				class="w-8em"
+				type="month"
+				update-value-on-close
+				value-format="yyyy-MM-dd"
 			/>
-		</n-input-group>
-		<n-input-group>
-			<n-input-group-label>前</n-input-group-label>
-			<n-select
-				v-model:value="info.size"
-				:options="sizeOptions"
-				class="min-w-5em"
-			/>
-			<n-input-group-label>名</n-input-group-label>
-		</n-input-group>
-		<n-button :bordered="false" type="primary" @click.prevent="queryHandler">
-			<template #icon>
-				<Search />
-			</template>
-			查询
-		</n-button>
-		<n-button secondary @click.prevent="reset">
-			<template #icon>
-				<IReload />
-			</template>
-			重置
-		</n-button>
-	</n-space>
-	<Rankings v-if="rankingsRef.length" :cols="cols" :data="rankingsRef" />
+			<n-input-group>
+				<n-input-group-label>分类号:</n-input-group-label>
+				<n-select
+					v-model:value="info.type"
+					:options="typeOptionsRef"
+					class="min-w-10em"
+					clearable
+				/>
+			</n-input-group>
+			<n-input-group>
+				<n-input-group-label>前</n-input-group-label>
+				<n-select
+					v-model:value="info.size"
+					:options="sizeOptions"
+					class="min-w-5em"
+				/>
+				<n-input-group-label>名</n-input-group-label>
+			</n-input-group>
+			<n-button :bordered="false" type="primary" @click.prevent="queryHandler">
+				<template #icon>
+					<Search />
+				</template>
+				查询
+			</n-button>
+			<n-button secondary @click.prevent="reset">
+				<template #icon>
+					<IReload />
+				</template>
+				重置
+			</n-button>
+		</n-space>
+		<n-flex class="items-center" justify="center" vertical>
+			<n-flex class="w-80em" vertical>
+				<div>
+					<Rankings v-if="rankingsRef.length" :cols="cols" :data="rankingsRef" />
+					<n-card v-else-if="isQueriedRef" class="m-t-1em">无数据</n-card>
+				</div>
+			</n-flex>
+		</n-flex>
+	</n-spin>
 </template>
 
 <style scoped>

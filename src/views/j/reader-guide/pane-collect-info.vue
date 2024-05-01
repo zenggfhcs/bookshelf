@@ -1,5 +1,5 @@
 <template>
-	<v-chart :option="option" autoresize class="absolute top-0 bottom-0 bg-none" />
+	<v-chart :option="option" autoresize class="absolute right-0 left-0" />
 </template>
 
 <script setup>
@@ -8,18 +8,22 @@ import { PieChart } from "echarts/charts";
 import { LegendComponent, TitleComponent, TooltipComponent } from "echarts/components";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { onMounted, provide, ref } from "vue";
+import { computed, inject, onMounted, provide, ref } from "vue";
 import VChart, { THEME_KEY } from "vue-echarts";
 
 use([
-	CanvasRenderer,
-	PieChart,
 	TitleComponent,
 	TooltipComponent,
-	LegendComponent
+	LegendComponent,
+	PieChart,
+	CanvasRenderer
 ]);
 
-provide(THEME_KEY, "dark");
+const theme = inject("theme");
+
+const themeValue = computed(() => theme && theme.value ? 'dark' : null);
+
+provide(THEME_KEY, themeValue);
 
 const option = ref({
 	title: {
@@ -33,21 +37,19 @@ const option = ref({
 	legend: {
 		orient: "vertical",
 		left: "left",
-		data: ["Direct", "Email", "Ad Networks", "Video Ads", "Search Engines"]
+		data: []
 	},
 	series: [
 		{
-			name: "馆藏",
+			name: "",
 			type: "pie",
-			radius: "55%",
-			center: ["50%", "60%"],
-			data: [
-				{ value: 335, name: "Direct" },
-				{ value: 310, name: "Email" },
-				{ value: 234, name: "Ad Networks" },
-				{ value: 135, name: "Video Ads" },
-				{ value: 1548, name: "Search Engines" }
-			],
+			radius: [50, 250],
+			center: ["50%", "50%"],
+			roseType: "area",
+			itemStyle: {
+				borderRadius: 8
+			},
+			data: [],
 			emphasis: {
 				itemStyle: {
 					shadowBlur: 10,

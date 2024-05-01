@@ -2,7 +2,7 @@
 import AdvancedQuery from "@/views/j/query/pane-advanced.vue";
 import QuickQuery from "@/views/j/query/pane-quick.vue";
 import TypeQuery from "@/views/j/query/pane-type.vue";
-import { NTabPane, NTabs } from "naive-ui";
+import { NFlex, NTabPane, NTabs } from "naive-ui";
 import { onBeforeMount, ref } from "vue";
 
 const props = defineProps({
@@ -39,20 +39,20 @@ onBeforeMount(() => {
 </script>
 
 <template>
-	<n-tabs :default-value="typeRef" placement="left" type="line">
-		<n-tab-pane name="quick-query" tab="快速检索">
-			<QuickQuery :keyword="props.keyword" />
-		</n-tab-pane>
-		<n-tab-pane name="advanced-query" tab="高级检索">
-			<AdvancedQuery />
-		</n-tab-pane>
-		<n-tab-pane name="type-query" tab="分类检索">
-			<TypeQuery />
-		</n-tab-pane>
-		<!--		<n-tab-pane name="read-guide" tab="读者指引">-->
-		<!--			<ReadGuide />-->
-		<!--		</n-tab-pane>-->
-	</n-tabs>
+		<n-tabs :default-value="typeRef" justify-content="space-evenly" placement="top" type="line">
+			<n-tab-pane name="quick-query" tab="快速检索">
+				<QuickQuery :keyword="props.keyword" />
+			</n-tab-pane>
+			<n-tab-pane name="advanced-query" tab="高级检索">
+				<AdvancedQuery />
+			</n-tab-pane>
+			<n-tab-pane name="type-query" tab="分类检索">
+				<TypeQuery />
+			</n-tab-pane>
+			<!--		<n-tab-pane name="read-guide" tab="读者指引">-->
+			<!--			<ReadGuide />-->
+			<!--		</n-tab-pane>-->
+		</n-tabs>
 </template>
 
 <style scoped>

@@ -3,7 +3,7 @@ import { messageOptions } from "@/constant/options.js";
 import BookShelf from "@/icons/book-shelf.vue";
 import Search from "@/icons/i-query.vue";
 import { goto_ } from "@/router/goto.js";
-import { J_MY_LIB } from "@/router/route-value.js";
+import { J_MY_LIB, J_READER_GUIDE } from "@/router/route-value.js";
 import { NButton, NFlex, NInput, NInputGroup, NSpace, useMessage } from "naive-ui";
 import { onMounted, ref } from "vue";
 
@@ -40,18 +40,20 @@ onMounted(() => {
 				BookShelf
 			</div>
 			<n-input-group>
-				<n-input v-model:value="queryKeyword" placeholder="请输入关键字" size="large" />
-				<n-button ghost size="large" type="primary" @click.prevent="query">
-					<template #icon>
-						<Search />
-					</template>
-				</n-button>
+				<n-input status="success" class="text-center" round v-model:value="queryKeyword" @keydown.enter="query" placeholder="请输入关键字" size="large" />
+<!--				<n-button ghost size="large" type="primary" @click.prevent="query">-->
+<!--					<template #icon>-->
+<!--						<Search />-->
+<!--					</template>-->
+<!--				</n-button>-->
 			</n-input-group>
 			<n-space>
 				<!--				<n-button class="w-7em" secondary @click.prevent="toQuery('quick')">快速检索</n-button>-->
 				<n-button class="h-5em" secondary @click.prevent="toQuery('advanced')">高级检索</n-button>
 				<n-button class="h-5em" secondary @click.prevent="toQuery('type')">类型检索</n-button>
-				<n-button class="h-5em" secondary @click.prevent="toQuery('guide')">读者指引</n-button>
+				<router-link :to="J_READER_GUIDE">
+					<n-button class="h-5em" secondary>读者指引</n-button>
+				</router-link>
 				<router-link :to="J_MY_LIB">
 					<n-button class="h-5em" secondary>我的图书馆</n-button>
 				</router-link>

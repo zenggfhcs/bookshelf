@@ -1,6 +1,5 @@
-.fill {
-    fill: var(--n-text-color);
-    stroke: none;
+.stroke {
+    stroke: var(--n-text-color);
 }
 
 .n-menu-item .n-menu-item-content--selected .n-icon svg,
@@ -17,7 +16,7 @@
 .n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g path,
 .n-menu-item .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg path,
 .n-menu-item .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg g path {
-    fill: var(--n-item-text-color-active);
+    stroke: var(--n-item-text-color-active);
 }
 
 .n-button:not(.n-button--disabled):hover .n-button__icon svg,
@@ -33,5 +32,5 @@
 .n-menu-item .n-menu-item-content:hover .n-icon svg g path,
 .n-icon:hover svg g path,
 .n-icon:focus svg g path {
-    fill: var(--n-text-color-hover);
+    stroke: var(--n-text-color-hover);
 }

@@ -149,7 +149,7 @@ const J_QUERY = {
 // };
 //
 
-const J_READ_GUIDE = {
+const J_READER_GUIDE = {
 	component: ReaderGuide,
 	name: "readerGuide",
 	path: "/readerGuide",
@@ -178,7 +178,7 @@ const BASE_J = {
 	name: "j",
 	path: "/",
 	props: true,
-	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READ_GUIDE,*/J_READ_GUIDE, J_MY_LIB, J_BOOK_DETAIL],
+	children: [J_HOME, J_QUERY, /*J_QUERY_QUICK, J_QUERY_ADVANCED, J_QUERY_TYPE, J_READER_GUIDE,*/J_READER_GUIDE, J_MY_LIB, J_BOOK_DETAIL],
 	redirect: J_HOME,
 	hidden: true
 };
@@ -492,8 +492,8 @@ export {
 	// j
 	BASE_J,
 	J_HOME, J_QUERY,
-	J_READ_GUIDE,
-	// J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READ_GUIDE,
+	J_READER_GUIDE,
+	// J_QUERY_TYPE, J_QUERY_QUICK, J_QUERY_ADVANCED, J_READER_GUIDE,
 	J_BOOK_DETAIL,
 	J_MY_LIB
 };
