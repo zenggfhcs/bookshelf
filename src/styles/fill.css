@@ -1,37 +1,38 @@
+/*.n-menu-item-content--child-active:focus:not(:hover) .n-menu-item-content__icon .n-icon svg path,*/
+/*.n-menu-item-content--child-active:focus:not(:hover) .n-menu-item-content__icon .n-icon svg g,*/
+/*.n-menu-item-content--child-active:focus:not(:hover) .n-menu-item-content__icon .n-icon svg g path,*/
 .fill {
     fill: var(--n-text-color);
     stroke: none;
+    animation: .3s;
 }
 
-.n-menu-item .n-menu-item-content--selected .n-icon svg,
-.n-menu--horizontal .n-menu-item .n-menu-item-content:hover .n-icon svg,
-.n-menu-item .n-menu-item-content:focus .n-icon svg,
-.n-menu--horizontal .n-menu-item .n-menu-item-content:hover .n-icon svg g,
-.n-menu-item .n-menu-item-content:focus .n-icon svg g,
-.n-menu--horizontal .n-menu-item .n-menu-item-content:hover .n-icon svg g path,
-.n-menu-item .n-menu-item-content:focus .n-icon svg g path,
-.n-menu-item .n-menu-item-content--hover .n-icon svg,
-.n-menu-item .n-menu-item-content--hover .n-icon svg g path,
-.n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg path,
-.n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g,
-.n-menu-item .n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g path,
-.n-menu-item .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg path,
-.n-menu-item .n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg g path {
-    fill: var(--n-item-text-color-active);
-}
+/*.n-menu--horizontal .n-menu-item-content:hover .n-icon svg,*/
+/*.n-menu--horizontal .n-menu-item-content:hover .n-icon svg g,*/
+/*.n-menu--horizontal .n-menu-item-content:hover .n-icon svg g path,*/
+/*.n-menu-item-content--hover .n-icon svg,*/
+/*.n-menu-item-content--hover .n-icon svg g path,*/
+/*.n-button:not(.n-button--disabled):hover .n-button__icon svg,*/
+/*.n-button:not(.n-button--disabled):hover .n-button__icon svg circle,*/
+/*.n-button:not(.n-button--disabled):hover .n-button__icon svg g path,*/
+/*.n-icon:hover svg,*/
+/*.n-menu-item-content:hover .n-icon svg,*/
+/*.n-menu-item-content:hover .n-icon svg g,*/
+/*.n-menu-item-content:hover .n-icon svg g path,*/
+/*.n-icon:hover svg g path {*/
+/*    fill: var(--n-text-color-hover);*/
+/*}*/
 
-.n-button:not(.n-button--disabled):hover .n-button__icon svg,
-.n-button:not(.n-button--disabled):focus .n-button__icon svg,
-.n-button:not(.n-button--disabled):hover .n-button__icon svg circle,
-.n-button:not(.n-button--disabled):focus .n-button__icon svg circle,
-.n-button:not(.n-button--disabled):hover .n-button__icon svg g path,
-.n-button:not(.n-button--disabled):focus .n-button__icon svg g path,
-.n-icon:hover svg,
-.n-icon:focus svg,
-.n-menu-item .n-menu-item-content:hover .n-icon svg,
-.n-menu-item .n-menu-item-content:hover .n-icon svg g,
-.n-menu-item .n-menu-item-content:hover .n-icon svg g path,
-.n-icon:hover svg g path,
-.n-icon:focus svg g path {
-    fill: var(--n-text-color-hover);
-}
+/*.n-button:not(.n-button--disabled):focus .n-button__icon svg,*/
+/*.n-button:not(.n-button--disabled):focus .n-button__icon svg circle,*/
+/*.n-button:not(.n-button--disabled):focus .n-button__icon svg g path,*/
+/*.n-icon:focus svg,*/
+/*.n-icon:focus svg g path,*/
+/*.n-menu-item-content--selected .n-icon svg,*/
+/*.n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg path,*/
+/*.n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g,*/
+/*.n-menu-item-content--child-active .n-menu-item-content__icon .n-icon svg g path,*/
+/*.n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg path,*/
+/*.n-menu-item-content--selected .n-menu-item-content__icon .n-icon svg g path {*/
+/*    fill: var(--n-item-text-color-active);*/
+/*}*/

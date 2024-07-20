@@ -34,12 +34,6 @@ const props = defineProps([
 	"updateMenuItem",
 	"updateBreadcrumbArray"
 ]);
-
-{
-	props.updateMenuItem("i-book-info");
-	props.updateBreadcrumbArray(B_BOOK_INFO);
-}
-
 const message = useMessage();
 
 const tableData = ref([]);
@@ -261,6 +255,8 @@ function handleCheck(rowKeys) {
 
 
 onMounted(() => {
+	props.updateMenuItem("bookInfo");
+	props.updateBreadcrumbArray(B_BOOK_INFO);
 	query();
 });
 </script>
@@ -288,7 +284,7 @@ onMounted(() => {
 			<router-link :to="BOOK_INFO_ADD.path">
 				<n-button type="success">
 					<template #icon>
-						<IAdd />
+						<n-icon :component="IAdd" />
 					</template>
 					新增
 				</n-button>

@@ -40,7 +40,7 @@ const cols = [
 	{
 		title: "分类号",
 		key: "key",
-		width: 666,
+		width: 412,
 		render: (row) => {
 			return createVNode(
 				"div",
@@ -211,7 +211,7 @@ const showAddModalHandler = debounce(() => {
 });
 
 onMounted(() => {
-	props.updateMenuItem("i-clc-index");
+	props.updateMenuItem("classifyInfo");
 	props.updateBreadcrumbArray(B_CLC_INDEX); // todo 添加面包屑
 	query(0);
 });
@@ -241,7 +241,7 @@ onMounted(() => {
 				<template #icon>
 					<n-icon :component="IAdd" />
 				</template>
-				添加
+				新增
 			</n-button>
 		</n-flex>
 

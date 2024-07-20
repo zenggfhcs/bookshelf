@@ -3,13 +3,17 @@
 </template>
 
 <script setup>
+import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { PieChart } from "echarts/charts";
 import { LegendComponent, TitleComponent, TooltipComponent } from "echarts/components";
 import { use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
+import { useMessage } from "naive-ui";
 import { computed, inject, onMounted, provide, ref } from "vue";
 import VChart, { THEME_KEY } from "vue-echarts";
+
+const message = useMessage();
 
 use([
 	TitleComponent,
@@ -62,25 +66,18 @@ const option = ref({
 });
 
 onMounted(() => {
-	Service.Books.collectionInfo()
-		.then(res => {
-			option.value.series[0].data = res?.map(item => {
-				return {
-					value: item?.collectCount,
-					name: `${item?.collectType} ${item?.typeName}`
-				};
-			});
-
-			option.value.legend.data = res?.map(item => {
-				return `${item?.collectType} ${item?.typeName}`;
-			});
-		})
-		.catch(err => {
-
-		})
-		.finally(() => {
-
+	action(message, Service.Books.collectionInfo(), (res) => {
+		option.value.series[0].data = res?.map(item => {
+			return {
+				value: item?.collectCount,
+				name: `${item?.collectType} ${item?.typeName}`
+			};
 		});
+
+		option.value.legend.data = res?.map(item => {
+			return `${item?.collectType} ${item?.typeName}`;
+		});
+	})
 });
 </script>
 

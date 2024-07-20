@@ -1,32 +1,17 @@
-<script setup></script>
+<script setup>
+
+</script>
 
 <template>
-	<svg
-		fill="none"
-		height="256px"
-		viewBox="0 0 24 24"
-		width="256px"
-		xmlns="http://www.w3.org/2000/svg"
-	>
+	<svg version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-		<g
-			id="SVGRepo_tracerCarrier"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-		></g>
-		<g id="SVGRepo_iconCarrier">
+		<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+		<g id="SVGRepo_iconCarrier"><title>user</title>
 			<path
-				class="fill"
-				d="M12 1C8.96243 1 6.5 3.46243 6.5 6.5C6.5 9.53757 8.96243 12 12 12C15.0376 12 17.5 9.53757 17.5 6.5C17.5 3.46243 15.0376 1 12 1Z"
-			></path>
-			<path
-				class="fill"
-				d="M7 14C4.23858 14 2 16.2386 2 19V22C2 22.5523 2.44772 23 3 23H21C21.5523 23 22 22.5523 22 22V19C22 16.2386 19.7614 14 17 14H7Z"
-			></path>
+				d="M4 28q0 0.832 0.576 1.44t1.44 0.576h20q0.8 0 1.408-0.576t0.576-1.44q0-1.44-0.672-2.912t-1.76-2.624-2.496-2.144-2.88-1.504q1.76-1.088 2.784-2.912t1.024-3.904v-1.984q0-3.328-2.336-5.664t-5.664-2.336-5.664 2.336-2.336 5.664v1.984q0 2.112 1.024 3.904t2.784 2.912q-1.504 0.544-2.88 1.504t-2.496 2.144-1.76 2.624-0.672 2.912z"></path>
 		</g>
 	</svg>
 </template>
 
 <style scoped>
-@import url(@/styles/fill.css);
 </style>

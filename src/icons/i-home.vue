@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-	<svg class="fill" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+	<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g
 			id="SVGRepo_tracerCarrier"
@@ -18,6 +18,4 @@
 </template>
 
 <style scoped>
-/* @1c274c */
-@import url(@/styles/fill.css);
 </style>

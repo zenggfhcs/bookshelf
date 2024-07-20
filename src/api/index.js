@@ -75,6 +75,18 @@ Books.getByInfoId = (id) => {
 Books.collectionInfo = () => {
 	return request.get(`/books/collectionInfo`);
 };
+
+Books.getByKeyword = (keyword) => {
+	return request.get(`/books/keyword:${keyword}/list`);
+};
+
+Books.borrow = (debit) => {
+	return request.post(`/books/borrow`, debit);
+};
+
+Books.restore = (book) => {
+	return request.post(`/books/${book.id}/restore`, book);
+}
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -89,9 +101,9 @@ BookInfos.getByKeyword = (keyword) => {
 	return request.get(`/bookInfos/keyword/${keyword}`);
 };
 
-BookInfos.borrow = (id) => {
-	return request.post(`/bookInfos/${id}/borrow`);
-};
+// BookInfos.borrow = (id) => {
+// 	return request.post(`/bookInfos/${id}/borrow`);
+// };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
@@ -162,11 +174,15 @@ Users.todayActiveUserCount = () => {
 
 Users.updateRole = (info) => {
 	return request.post("/users/updateRole", info);
-}
+};
+
+Users.getByKeyword = (keyword) => {
+	return request.get(`/users/keyword:${keyword}/list`);
+};
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
-//#region debit api
+//#region debitHandler api
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 const Debits = new BaseService(ServiceName.DEBIT);
 
@@ -204,6 +220,10 @@ Debits.getTodayDebitCount = () => {
 Debits.getTodayRestoreCount = () => {
 	return request.get("/debits/getTodayRestoreCount");
 };
+
+Debits.remindedList = (info) => {
+	return request.post("/debits/remindedList", info);
+};
 /* === === === === === === === === === === === === === === === === === === === === === === === === === === */
 //#endregion
 
@@ -230,9 +250,9 @@ ClcIndexes.firstLevel = () => {
 	return request.get(`/clcIndexes/firstLevel`);
 };
 
-ClcIndexes.getByKeyword = (key) => {
-	return request.get(`/clcIndexes/${key}:startWith`);
-};
+// ClcIndexes.getByKeyword = (key) => {
+// 	return request.get(`/clcIndexes/${key}:startWith`);
+// };
 
 ClcIndexes.getByParent = (parent) => {
 	return request.get(`/clcIndexes/parent/${parent}`);

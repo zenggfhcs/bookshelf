@@ -1,6 +1,6 @@
 <script setup>
 import { messageOptions } from "@/constant/options.js";
-import BookShelf from "@/icons/book-shelf.vue";
+import BookShelf from "@/icons/i-book-shelf.vue";
 import Search from "@/icons/i-query.vue";
 import { goto_ } from "@/router/goto.js";
 import { J_MY_LIB, J_READER_GUIDE } from "@/router/route-value.js";

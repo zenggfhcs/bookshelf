@@ -1,3 +1,4 @@
+import IExpand from "@/icons/i-expand.vue";
 import { NIcon, NTag, NText } from "naive-ui";
 import { h } from "vue";
 
@@ -8,7 +9,7 @@ function renderIcon(icon, props = undefined) {
 export { renderIcon };
 
 function expandIcon() {
-	return h(NIcon, null, { default: () => h(null) });
+	return h(NIcon, null, {default: () => h(IExpand)});
 }
 
 export { expandIcon };

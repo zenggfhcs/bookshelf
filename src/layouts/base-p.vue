@@ -1,7 +1,7 @@
 <script setup>
-import BookBrain from "@/icons/book-brain.vue";
-import BookShelf from "@/icons/book-shelf.vue";
-import Flying from "@/icons/flying.vue";
+import BookBrain from "@/icons/i-book-brain.vue";
+import BookShelf from "@/icons/i-book-shelf.vue";
+import Flying from "@/icons/i-send.vue";
 import sun from "@/icons/sun.vue";
 import { NButton, NCard, NFlex, NGi, NGrid, NIcon, NLayout } from "naive-ui";
 

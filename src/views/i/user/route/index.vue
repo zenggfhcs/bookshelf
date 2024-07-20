@@ -2,20 +2,23 @@
 import { action, addItem, removeItem, updateItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { B_ROUTE } from "@/constant/breadcrumb.js";
+import IAdd from "@/icons/i-add.vue";
+import IReload from "@/icons/i-reload.vue";
 import { debounce } from "@/utils/debounce.js";
 import { copyMatchingProperties, subMatchingProperties } from "@/utils/index.js";
 import { resetInfo } from "@/utils/reset.js";
-import { inputValidator } from "@/utils/validator.js";
+import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NBackTop,
-	NInputNumber,
 	NButton,
 	NDataTable,
 	NDropdown,
 	NFlex,
 	NForm,
 	NFormItem,
+	NIcon,
 	NInput,
+	NInputNumber,
 	NLayout,
 	NLayoutHeader,
 	NModal,
@@ -153,22 +156,30 @@ const options = [
 
 const loadingQuery = ref(false);
 
+const addFormRef = ref(false);
+
 const addHandler = debounce(async () => {
-	await addItem(message, Service.Routes.add(addInfo));
-	isShowAddModalRef.value = false;
-	await query();
+	formValidator(addFormRef, message, async () => {
+		await addItem(message, Service.Routes.add(addInfo));
+		isShowAddModalRef.value = false;
+		await query();
+	});
 });
 
 const isShowUpdateModalRef = ref(false);
 
+const updateFormRef = ref();
+
 const updateHandler = debounce(async () => {
-	const _subInfo = subMatchingProperties(currentSelectedRow, updateInfo);
-	_subInfo.id = currentSelectedRow.id;
-	_subInfo.revision = currentSelectedRow.revision;
-	console.log(currentSelectedRow);
-	await updateItem(message, Service.Routes.update(_subInfo));
-	isShowUpdateModalRef.value = false;
-	await query();
+	formValidator(addFormRef, message, async () => {
+		const _subInfo = subMatchingProperties(currentSelectedRow, updateInfo);
+		_subInfo.id = currentSelectedRow.id;
+		_subInfo.revision = currentSelectedRow.revision;
+		console.log(currentSelectedRow);
+		await updateItem(message, Service.Routes.update(_subInfo));
+		isShowUpdateModalRef.value = false;
+		await query();
+	});
 });
 
 async function query() {
@@ -235,7 +246,7 @@ const queryHandler = debounce(() => {
 
 
 onMounted(() => {
-	props.updateMenuItem("i-route");
+	props.updateMenuItem("routeInfo");
 	props.updateBreadcrumbArray(B_ROUTE);
 	query();
 });
@@ -244,8 +255,18 @@ onMounted(() => {
 <template>
 	<n-layout-header bordered class="h-3em" position="absolute">
 		<n-flex class="h-3em items-center m-l-1em m-r-1em" justify="center">
-			<n-button :bordered tertiary type="info" @click.prevent="queryHandler">刷新</n-button>
-			<n-button :bordered type="success" @click.prevent="showAddModalHandler(props.group)">添加</n-button>
+			<n-button :bordered type="success" @click.prevent="showAddModalHandler(props.group)">
+				<template #icon>
+					<n-icon :component="IAdd" />
+				</template>
+				新增
+			</n-button>
+			<n-button :bordered tertiary type="info" @click.prevent="queryHandler">
+				<template #icon>
+					<n-icon :component="IReload" />
+				</template>
+				刷新
+			</n-button>
 		</n-flex>
 	</n-layout-header>
 	<n-dropdown
@@ -284,7 +305,7 @@ onMounted(() => {
 		preset="dialog"
 		title="添加"
 		transform-origin="center">
-		<n-form :model="addInfo" :rules="rules">
+		<n-form ref="addFormRef" :model="addInfo" :rules="rules">
 			<n-form-item label="组" path="group">
 				<n-input
 					v-model:value="addInfo.group"
@@ -321,7 +342,7 @@ onMounted(() => {
 				/>
 			</n-form-item>
 			<n-form-item label="顺序" path="order">
-				<n-input-number v-model:value="addInfo.order" :min="0" clearable />
+				<n-input-number class="flex-auto" v-model:value="addInfo.order" :min="0" clearable />
 			</n-form-item>
 		</n-form>
 		<n-flex justify="right">
@@ -340,7 +361,7 @@ onMounted(() => {
 		preset="dialog"
 		title="添加"
 		transform-origin="center">
-		<n-form :model="updateInfo" :rules="rules">
+		<n-form ref="updateFormRef" :model="updateInfo" :rules="rules">
 			<n-form-item label="组" path="group">
 				<n-input
 					v-model:value="updateInfo.group"
@@ -377,7 +398,7 @@ onMounted(() => {
 				/>
 			</n-form-item>
 			<n-form-item label="顺序" path="order">
-				<n-input-number v-model:value="updateInfo.order" :min="0" clearable />
+				<n-input-number class="flex-auto" v-model:value="updateInfo.order" :min="0" clearable />
 			</n-form-item>
 		</n-form>
 		<n-flex justify="right">

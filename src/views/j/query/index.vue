@@ -40,7 +40,7 @@ onBeforeMount(() => {
 
 <template>
 		<n-tabs :default-value="typeRef" justify-content="space-evenly" placement="top" type="line">
-			<n-tab-pane name="quick-query" tab="快速检索">
+			<n-tab-pane name="quick-query" tab="简易检索">
 				<QuickQuery :keyword="props.keyword" />
 			</n-tab-pane>
 			<n-tab-pane name="advanced-query" tab="高级检索">

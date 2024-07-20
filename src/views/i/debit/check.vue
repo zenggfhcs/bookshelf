@@ -23,7 +23,7 @@ const props = defineProps([
 ]);
 
 {
-	props.updateMenuItem("i-debit");
+	props.updateMenuItem("debitManager");
 	props.updateBreadcrumbArray(B_DEBIT_CHECK(props.id));
 }
 

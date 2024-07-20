@@ -45,7 +45,7 @@ const payloadReactive = reactive({
 onMounted(async () => {
 	await queryList(
 		message,
-		Service.Debits.filteredList(payloadReactive),
+		Service.Debits.remindedList(payloadReactive),
 		itemCountRef,
 		tableDataRef
 	);

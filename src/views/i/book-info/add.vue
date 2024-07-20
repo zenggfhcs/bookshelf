@@ -266,23 +266,23 @@ function renderTag(v, i) {
 	);
 }
 
-const handleQueryType = debounce((queryKeyword) => {
-	if (!queryKeyword) {
-		typeOptionsRef.value = [];
-		return;
-	}
-
-	action(message, Service.ClcIndexes.getByKeyword(queryKeyword), (res) => {
-		typeOptionsRef.value = res?.map((item) => {
-			return {
-				label: `${item.key}:${item.value}`,
-				value: `${item.value}`
-			};
-		});
-	}, () => {
-		typeOptionsRef.value = [];
-	});
-}, 100);
+// const handleQueryType = debounce((queryKeyword) => {
+// 	if (!queryKeyword) {
+// 		typeOptionsRef.value = [];
+// 		return;
+// 	}
+//
+// 	action(message, Service.ClcIndexes.getByKeyword(queryKeyword), (res) => {
+// 		typeOptionsRef.value = res?.map((item) => {
+// 			return {
+// 				label: `${item.key}:${item.value}`,
+// 				value: `${item.value}`
+// 			};
+// 		});
+// 	}, () => {
+// 		typeOptionsRef.value = [];
+// 	});
+// }, 100);
 
 const add = debounce(() => {
 	console.log(info);
@@ -322,7 +322,7 @@ function removeCover() {
 }
 
 onMounted(() => {
-	props.updateMenuItem("i-book-info");
+	props.updateMenuItem("bookInfo");
 	props.updateBreadcrumbArray(B_BOOK_INFO_ADD);
 });
 </script>

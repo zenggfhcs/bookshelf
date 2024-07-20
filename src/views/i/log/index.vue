@@ -299,7 +299,7 @@ onBeforeUnmount(() => {
 });
 
 onMounted(() => {
-	props.updateMenuItem("i-log");
+	props.updateMenuItem("logInfo");
 	props.updateBreadcrumbArray(B_LOG_INDEX);
 	query();
 });

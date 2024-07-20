@@ -250,7 +250,7 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-	props.updateMenuItem("i-role");
+	props.updateMenuItem("roleInfo");
 	props.updateBreadcrumbArray(B_ROLE_CHECK(props.id));
 	query(props.id);
 	// action(message, Service.Permissions.rolePermission(), (res) => {

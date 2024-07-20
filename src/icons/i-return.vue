@@ -3,7 +3,7 @@
 </script>
 
 <template>
-	<svg id="Capa_1" class="fill" data-darkreader-inline-fill="" height="200px"
+	<svg id="Capa_1" data-darkreader-inline-fill="" height="200px"
 	     style="--darkreader-inline-fill: #000000;" version="1.1"
 	     viewBox="0 0 337.814 337.814" width="200px" xml:space="preserve"
 	     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -13,5 +13,4 @@
 </template>
 
 <style scoped>
-@import url(@/styles/fill.css);
 </style>

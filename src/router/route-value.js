@@ -260,7 +260,7 @@ const BOOK_INFO_CHECK = {
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-//#region debit
+//#region debitHandler
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const DEBIT = {
 	component: DebitManager,

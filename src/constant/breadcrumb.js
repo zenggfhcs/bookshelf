@@ -15,7 +15,7 @@ export { B_I };
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 //#endregion
 
-//#region debit
+//#region debitHandler
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const DEBIT = {
 	path: "/i/debits",
@@ -135,8 +135,8 @@ export { B_PERMISSION };
 //#region route
 /* === === === === === === === === === === === === ===  === === === === === === === === === === === === === */
 const ROUTE = {
-	path: `/i/permissions`,
-	label: `权限信息`
+	path: `/i/routes`,
+	label: `路由信息`
 };
 
 const B_ROUTE = [I_HOME, ROUTE];

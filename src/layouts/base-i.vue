@@ -1,29 +1,10 @@
 <script setup>
 import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
-import BookBrain from "@/icons/book-brain.vue";
 import { getIconByName } from "@/icons/getIconByName.js";
-import WorkBenchIcon from "@/icons/i-home.vue";
-import BookManagerIcon from "@/icons/i-book.vue";
-import DebitManagerIcon from "@/icons/i-debit.vue";
-import ILog from "@/icons/i-log.vue";
-import IUserSetting from "@/icons/i-user-setting.vue";
-import SelfIcon from "@/icons/i-self.vue";
+import BookBrain from "@/icons/i-book-brain.vue";
 import Sun from "@/icons/sun.vue";
-import {
-	BASE_I,
-	BASE_J,
-	BOOK_INFO,
-	CLC_INDEX,
-	DEBIT,
-	I_HOME,
-	I_MY,
-	LOG,
-	PERMISSION,
-	ROLE,
-	SYS_ROUTER,
-	USER
-} from "@/router/route-value.js";
+import { BASE_I, BASE_J, I_MY } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { gProps } from "@/utils/generate.js";
 import logout from "@/utils/logout.js";
@@ -99,7 +80,7 @@ const menuOptions = ref([]);
 // {
 // 	label: () =>
 // 		h(RouterLink, gProps(DEBIT.name), { default: () => "借阅管理" }),
-// 		key: "i-debit",
+// 		key: "i-debitHandler",
 // 	icon: renderIcon(DebitManagerIcon)
 // },
 // {
@@ -205,6 +186,7 @@ const exitHandler = debounce(() => {
 		}
 	);
 });
+
 function generateMenuItem(routeItem) {
 	const menuItem = {};
 	menuItem.label = routeItem?.toName ? () => h(RouterLink, gProps(routeItem?.toName), {
@@ -221,10 +203,9 @@ function generateMenuItem(routeItem) {
 
 onBeforeMount(() => {
 	action(message, Service.Routes.getByGroup("manage-menu"), (res) => {
-		console.log(res);
 		menuOptions.value = res?.map(item => generateMenuItem(item));
 	});
-})
+});
 
 onMounted(() => {
 });

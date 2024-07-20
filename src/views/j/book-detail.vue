@@ -64,28 +64,28 @@ onMounted(() => {
 
 const loadingBorrowRef = ref(false);
 
-const borrowHandler = debounce(async () => {
-	loadingBorrowRef.value = true;
-
-	await action(message, Service.BookInfos.borrow(props.id), () => {
-		message.success("借阅成功", messageOptions);
-	});
-
-	loadingBorrowRef.value = false;
-});
+// const borrowHandler = debounce(async () => {
+// 	loadingBorrowRef.value = true;
+//
+// 	await action(message, Service.BookInfos.borrow(props.id), () => {
+// 		message.success("借阅成功", messageOptions);
+// 	});
+//
+// 	loadingBorrowRef.value = false;
+// });
 
 </script>
 
 <template>
 	<n-flex class="m-t-.5em" justify="center">
-		<n-flex class="w-80em items-center" justify="right">
-			<n-button :loading="loadingBorrowRef" type="warning" @click.prevent="borrowHandler">
-				<template #icon>
-					<n-icon :component="IEdit" />
-				</template>
-				借阅
-			</n-button>
-		</n-flex>
+<!--		<n-flex class="w-80em items-center" justify="right">-->
+<!--			<n-button :loading="loadingBorrowRef" type="warning" @click.prevent="borrowHandler">-->
+<!--				<template #icon>-->
+<!--					<n-icon :component="IEdit" />-->
+<!--				</template>-->
+<!--				借阅-->
+<!--			</n-button>-->
+<!--		</n-flex>-->
 		<n-flex class="w-80em" vertical>
 			<n-card>
 				<BookInfo :info="info" />

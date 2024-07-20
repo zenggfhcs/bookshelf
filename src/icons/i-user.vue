@@ -3,7 +3,7 @@
 </script>
 
 <template>
-	<svg class="fill" version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+	<svg version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 		<g id="SVGRepo_iconCarrier"><title>user</title>
@@ -14,5 +14,4 @@
 </template>
 
 <style scoped>
-@import url(@/styles/fill.css);
 </style>

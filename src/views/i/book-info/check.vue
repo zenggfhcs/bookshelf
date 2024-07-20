@@ -11,7 +11,7 @@ import IBack from "@/icons/i-back.vue";
 import IDelete from "@/icons/i-delete.vue";
 import IEdit from "@/icons/i-edit.vue";
 import IReload from "@/icons/i-reload.vue";
-import IWarehouse from "@/icons/i-warehouse.vue";
+import IWarehouse from "@/icons/i-add-book.vue";
 import { BOOK_INFO } from "@/router/route-value.js";
 import { debounce } from "@/utils/debounce.js";
 import { NButton, NFlex, NIcon, NLayout, NLayoutHeader, NModal, useMessage } from "naive-ui";
@@ -117,7 +117,7 @@ const options = {
 };
 
 onBeforeMount(() => {
-	props.updateMenuItem("i-book-info");
+	props.updateMenuItem("bookInfo");
 	props.updateBreadcrumbArray(B_BOOK_INFO_CHECK(props.id));
 });
 

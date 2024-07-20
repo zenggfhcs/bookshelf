@@ -14,15 +14,12 @@ const cols = [
 	},
 	{
 		title: "借期",
-		key: "creationTime",
-		render: (row) => {
-			return row.creationTime;
-		}
+		key: "creationTime"
 	},
 
 	{
 		title: "还期",
-		key: "returnDeadline"
+		key: "returnTime"
 	}
 ];
 
@@ -53,7 +50,7 @@ onMounted(async () => {
 </script>
 
 <template>
-	<span class="font-bold font-size-1.2em text-center"> 预约图书信息 </span>
+	<span class="font-bold font-size-1.2em text-center"> 图书借阅历史 </span>
 	<n-divider />
 	<n-data-table :columns="cols" :data="tableDataRef" :loading="loadingQuery" />
 	<n-divider />

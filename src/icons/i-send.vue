@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-	<svg fill="#000000" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+	<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g
 			id="SVGRepo_tracerCarrier"
@@ -54,14 +54,4 @@
 </template>
 
 <style scoped>
-.a {
-	fill: none;
-	stroke: var(--n-text-color);
-	stroke-linecap: round;
-	stroke-linejoin: round;
-}
-
-.b {
-	fill: var(--n-text-color);
-}
 </style>

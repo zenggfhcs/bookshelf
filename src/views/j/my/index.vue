@@ -3,7 +3,7 @@ import PaneCurrentDebit from "@/views/j/my/pane-current-debit.vue";
 import PaneFeedback from "@/views/j/my/pane-feedback.vue";
 import PaneLogout from "@/views/j/my/pane-logout.vue";
 import PaneMyInfo from "@/views/j/my/pane-my-info.vue";
-import PaneRepayInfo from "@/views/j/my/pane-repay-info.vue";
+import PaneRepayInfo from "@/views/j/my/pane-remind-info.vue";
 import PaneReserveInfo from "@/views/j/my/pane-reserve-info.vue";
 import PaneResetPassword from "@/views/j/my/pane-reset-password.vue";
 import { NFlex, NTabPane, NTabs, useMessage } from "naive-ui";
@@ -32,7 +32,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<n-flex justify="center">
+	<n-flex justify="center" class="m-t-1em">
 		<n-tabs
 			animated
 			class="w-82em"

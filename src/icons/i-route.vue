@@ -3,7 +3,7 @@
 </script>
 
 <template>
-	<svg class="fill" preserveAspectRatio="xMidYMid meet" version="1.1" viewBox="0 0 36 36"
+	<svg preserveAspectRatio="xMidYMid meet" version="1.1" viewBox="0 0 36 36"
 	     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -24,5 +24,4 @@
 </template>
 
 <style scoped>
-@import url(@/styles/fill.css);
 </style>

@@ -36,11 +36,6 @@ const props = defineProps([
 	"updateBreadcrumbArray"
 ]);
 
-{
-	props.updateMenuItem("i-debit");
-	props.updateBreadcrumbArray(B_DEBIT);
-}
-
 const message = useMessage();
 
 const tableData = ref([]);
@@ -273,6 +268,8 @@ function showRepayConfirmModal() {
 
 
 onMounted(() => {
+	props.updateMenuItem("debitManager");
+	props.updateBreadcrumbArray(B_DEBIT);
 	query();
 });
 </script>

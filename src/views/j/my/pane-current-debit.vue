@@ -40,7 +40,7 @@ const cols = [
 			return "借阅中";
 		}
 	},
-	{
+	/*{
 		title: "操作",
 		key: "action",
 		render: (row) => {
@@ -64,7 +64,7 @@ const cols = [
 				{ default: () => "归还" }
 			);
 		}
-	}
+	}*/
 ];
 
 const tableDataRef = ref([]);

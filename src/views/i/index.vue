@@ -1,5 +1,5 @@
 <script setup>
-import BookBrain from "@/icons/book-brain.vue";
+import BookBrain from "@/icons/i-book-brain.vue";
 import { NFlex } from "naive-ui";
 import { onMounted } from "vue";
 

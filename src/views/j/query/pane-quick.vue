@@ -180,6 +180,10 @@ async function query() {
 		tableDataRef
 	);
 
+	if (!isQueriedRef.value) {
+		isQueriedRef.value = true;
+	}
+
 	loadingQuery.value = false;
 }
 
@@ -238,7 +242,7 @@ onUnmounted(() => {
 								/>
 								<n-select v-model:value="pagination.pageSize" :options="pagination.pageSizes" class="w-7em"
 								          size="small" @update:value="pagination.onUpdatePageSize" />
-								<n-button class="ml-2" size="small" type="primary">排序</n-button>
+<!--								<n-button class="ml-2" size="small" type="primary">排序</n-button>-->
 							</n-space>
 							<n-layout-content>
 								<n-data-table

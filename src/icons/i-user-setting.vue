@@ -3,7 +3,7 @@
 </script>
 
 <template>
-	<svg class="fill" height="256px" viewBox="0 0 48.00 48.00" width="256px" xmlns="http://www.w3.org/2000/svg">
+	<svg height="256px" viewBox="0 0 48.00 48.00" width="256px" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g id="SVGRepo_iconCarrier">
 			<g id="Layer_2" data-name="Layer 2">
@@ -22,5 +22,4 @@
 </template>
 
 <style scoped>
-@import url(@/styles/fill.css);
 </style>

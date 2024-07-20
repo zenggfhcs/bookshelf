@@ -46,7 +46,7 @@ async function query(id) {
 
 
 onMounted(() => {
-	props.updateMenuItem("i-log");
+	props.updateMenuItem("logInfo");
 	props.updateBreadcrumbArray(B_LOG_CHECK(props.id));
 	query(props.id);
 });
@@ -63,13 +63,13 @@ onMounted(() => {
 					后退
 				</n-button>
 			</router-link>
-			<n-button
-				v-if="info.type !== LOG_SELECT.value"
-				title="操作回退会根据日志的内容，将影响到的数据回退到该日志生成前一刻；这个操作会生成新的日志"
-				type="error"
-			>
-				操作回退
-			</n-button>
+<!--			<n-button-->
+<!--				v-if="info.type !== LOG_SELECT.value"-->
+<!--				title="操作回退会根据日志的内容，将影响到的数据回退到该日志生成前一刻；这个操作会生成新的日志"-->
+<!--				type="error"-->
+<!--			>-->
+<!--				操作回退-->
+<!--			</n-button>-->
 		</n-flex>
 	</n-layout-header>
 	<n-layout
@@ -120,21 +120,23 @@ onMounted(() => {
 			<tr>
 				<td>输入</td>
 				<td style="--td-color: v-bind(); --td-text-color: v-bind()">
-					<JsonViewer
-						:value="JSON.parse(info.input ? info.input : '{}')"
-						class="p-0"
-						style="
+					<template v-for="(item, index) in JSON.parse(info.input)" :key="index">
+						<JsonViewer
+							:value="item"
+							class="p-0"
+							style="
 								color: var(--td-text-color);
 								background-color: var(--td-color);
 							"
-					/>
+						/>
+					</template>
 				</td>
 			</tr>
 			<tr>
 				<td>输出</td>
 				<td style="--td-color: v-bind(); --td-text-color: v-bind()">
 					<JsonViewer
-						:value="JSON.parse(info.output ? info.output : '{}')"
+						:value="JSON.parse(info.output ? info.output : '{}')?.data"
 						class="p-0"
 						style="
 								color: var(--td-text-color);

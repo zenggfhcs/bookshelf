@@ -267,8 +267,18 @@ function addKeyword(l) {
 	return l;
 }
 
+function canUpdate(info) {
+	console.log(info);
+	for (let k in info) {
+		const _v = info[k];
+		if (_v !== null) {
+			return true;
+		}
+	}
+	return false;
+}
+
 async function handleUpdate() {
-	// todo 更新逻辑
 	await updateFormRef?.value?.validate((errors) => {
 		if (errors) {
 			message.error("表单没有通过验证，请检查表单项", messageOptions);
@@ -277,14 +287,7 @@ async function handleUpdate() {
 	});
 
 	const _subInfo = subMatchingProperties(props.dataInfo, info);
-	let _hasUpdate = false;
-	for (let k in _subInfo) {
-		if (_subInfo[k]) {
-			_hasUpdate = true;
-			break;
-		}
-	}
-	if (!_hasUpdate) {
+	if (!canUpdate(_subInfo)) {
 		message.warning("没有需要更新的内容", messageOptions);
 		return Promise.reject();
 	}

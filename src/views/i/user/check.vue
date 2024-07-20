@@ -208,7 +208,7 @@ onBeforeMount(() => {
 });
 
 onMounted(() => {
-	props.updateMenuItem("i-user");
+	props.updateMenuItem("userInfo");
 	props.updateBreadcrumbArray(B_USER_CHECK(props.id));
 	query();
 });

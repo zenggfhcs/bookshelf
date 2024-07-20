@@ -3,6 +3,7 @@ import { action } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { Header } from "@/constant/Header.js";
 import { getIconByName } from "@/icons/getIconByName.js";
+import IExpand from "@/icons/i-expand.vue";
 import sun from "@/icons/sun.vue";
 import { BASE_I, J_MY_LIB, LOGIN, REGISTER } from "@/router/route-value.js";
 import { local } from "@/storage/local.js";

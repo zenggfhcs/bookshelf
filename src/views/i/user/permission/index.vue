@@ -318,7 +318,7 @@ const updateHandler = debounce(() => {
 
 
 onMounted(() => {
-	props.updateMenuItem("i-permission");
+	props.updateMenuItem("permissionInfo");
 	props.updateBreadcrumbArray(B_PERMISSION);
 	query();
 });
@@ -346,7 +346,7 @@ onMounted(() => {
 			</n-button>
 			<n-button type="success" @click.prevent="showAddModalHandler">
 				<template #icon>
-					<IAdd />
+					<n-icon :component="IAdd" />
 				</template>
 				新增
 			</n-button>
@@ -421,7 +421,7 @@ onMounted(() => {
 		:mask-closable="false"
 		class="w-25em"
 		preset="dialog"
-		title="添加角色"
+		title="添加权限"
 		transform-origin="center"
 	>
 		<n-form ref="addFormRef" :model="addInfo" :rules="addRules">

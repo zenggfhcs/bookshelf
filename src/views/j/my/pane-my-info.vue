@@ -1,14 +1,22 @@
 <script setup>
-import { queryItem } from "@/api/action.js";
+import { action, queryItem } from "@/api/action.js";
 import { Service } from "@/api/index.js";
 import { GENDER_PRE_DEFINED } from "@/constant/map.js";
+import { messageOptions } from "@/constant/options.js";
+import { REG_EMAIL, REG_PHONE_NUMBER } from "@/constant/regular-expression.js";
 import { convertGender } from "@/utils/convert.js";
-import { copyMatchingProperties } from "@/utils/index.js";
+import { debounce } from "@/utils/debounce.js";
+import { dateDisabled } from "@/utils/disabled.js";
+import { formatDate } from "@/utils/format.js";
+import { copyMatchingProperties, subMatchingProperties } from "@/utils/index.js";
+import { formValidator, inputValidator } from "@/utils/validator.js";
 import {
 	NButton,
 	NCard,
 	NDatePicker,
 	NFlex,
+	NForm,
+	NFormItem,
 	NInput,
 	NInputGroup,
 	NInputGroupLabel,
@@ -18,31 +26,112 @@ import {
 	NText,
 	useMessage
 } from "naive-ui";
-import { onMounted, reactive, ref } from "vue";
+import { onBeforeMount, onMounted, reactive, ref } from "vue";
 
 const message = useMessage();
 
-const info = reactive({
-	id: 1008611,
-	displayName: "孤独的ou割",
-	surname: "abc",
-	name: "def abc efg",
-	age: 19,
-	gender: null,
-	birthday: "1111-11-11",
-	remark: "这是个人描述",
-	email: "1008611@abc.efg",
-	phoneNumber: "12345678910"
+const payload = reactive({
+	entity: {
+		email: "",
+		newEmail: "",
+		token: "",
+		newToken: ""
+	}
 });
 
-const newInfo = reactive({
+const info = reactive({
 	id: 0,
 	displayName: "",
 	surname: "",
 	name: "",
 	age: 0,
 	gender: 0,
-	birthday: "1111-11-11",
+	birthday: "",
+	remark: "",
+	email: "",
+	phoneNumber: "",
+	revision: 0
+});
+
+const updateFormRef = ref();
+
+const rules = {
+	email: [
+		{
+			required: true, // 字段必填
+			trigger: ["input", "blur"],
+			validator(_, value) {
+				// 自定义检查
+				if (value === undefined || value === null || value.length === 0) {
+					return new Error("请输入邮箱");
+				} else if (!REG_EMAIL.test(value.trim())) {
+					return new Error("邮箱格式错误");
+				}
+			}
+		}
+	],
+	phoneNumber: [
+		{
+			required: true, // 字段必填
+			trigger: ["input", "blur"],
+			validator(_, value) {
+				// 自定义检查
+				if (value === undefined || value === null || value.length === 0) {
+					return new Error("请输入电话号码");
+				} else if (!REG_PHONE_NUMBER.test(value.trim())) {
+					return new Error("电话号码格式错误");
+				}
+			}
+		}
+	],
+	displayName: [
+		{
+			required: true,
+			message: "请输入",
+			trigger: ["input", "blur"]
+		}
+	],
+	surname: [
+		{
+			required: true,
+			message: "请输入",
+			trigger: ["input", "blur"]
+		}
+	],
+	name: [
+		{
+			required: true,
+			message: "请输入",
+			trigger: ["input", "blur"]
+		}
+	],
+	gender: [
+		{
+			required: true,
+			message: "请选择",
+			trigger: ["blur"],
+			validator: (_, value) => {
+				return true;
+			}
+		}
+	],
+	birthday: [
+		{
+			required: true,
+			message: "请选择",
+			trigger: ["blur"]
+		}
+	]
+};
+
+const newInfo = reactive({
+	id: 0,
+	displayName: "",
+	surname: "",
+	name: "",
+	// age: 0,
+	gender: 0,
+	birthday: null,
 	email: "",
 	phoneNumber: ""
 });
@@ -50,17 +139,73 @@ const newInfo = reactive({
 const timestampRef = ref(0);
 
 
-const alterUserInfoRef = ref(false);
+const isAlterUserInfoRef = ref(false);
 
-onMounted(async () => {
+const isAlterUserAccountInfoRef = ref(false);
+
+function canUpdate(info) {
+	for (const infoKey in info) {
+		const _v = info[infoKey];
+		if (_v !== null && _v !== undefined && _v !== "") {
+			return true;
+		}
+	}
+	return false;
+}
+
+function showUpdate() {
+	copyMatchingProperties(info, newInfo);
+	timestampRef.value = new Date(info.birthday).getTime();
+	isAlterUserInfoRef.value = true;
+}
+
+function showUpdateAccount() {
+	copyMatchingProperties(info, newInfo);
+	isAlterUserAccountInfoRef.value = true;
+}
+
+const updateHandler = debounce(() => {
+	if (updateFormRef.value) {
+		// console.log(info, newInfo);
+		formValidator(updateFormRef, message, update);
+	}
+
+});
+
+function update() {
+	if (timestampRef.value) {
+		newInfo.birthday = formatDate(timestampRef.value);
+	}
+	const _subInfo = subMatchingProperties(info, newInfo);
+	if (!canUpdate(_subInfo)) {
+		message.warning("没有需要更新的内容", messageOptions);
+		// console.log(info, newInfo);
+		return;
+	}
+	_subInfo.id = info.id;
+	_subInfo.revision = info.revision;
+
+	action(message, Service.Users.update(_subInfo), () => {
+		message.success("修改成功", messageOptions);
+		query();
+		isAlterUserInfoRef.value = false;
+		isAlterUserAccountInfoRef.value = false;
+	});
+}
+
+async function query() {
 	await queryItem(
 		message,
 		Service.Users.tokenUser(),
 		info
 	);
+}
 
-	timestampRef.value = new Date(info.birthday).getTime();
-	copyMatchingProperties(info, newInfo);
+onBeforeMount(() => {
+	query();
+});
+
+onMounted(async () => {
 });
 </script>
 
@@ -69,105 +214,144 @@ onMounted(async () => {
 		<n-card class="w-60em" title="个人资料信息">
 			<template #header-extra>
 				<n-button
-					v-if="!alterUserInfoRef"
+					v-if="!isAlterUserInfoRef"
 					:bordered="false"
 					class="m-l-a color-[var(--n-text-color-focus)]"
 					style="--n-padding: 0; --n-font-size: 16px"
-					@click="alterUserInfoRef = true;">
+					@click.prevent="showUpdate">
 					编辑个人资料信息
 				</n-button>
 				<n-space>
 					<n-button
-						v-if="alterUserInfoRef"
+						v-if="isAlterUserInfoRef"
 						:bordered="false"
 						secondary
 						type="warning"
-						@click="alterUserInfoRef = false;">
+						@click="isAlterUserInfoRef = false;">
 						取消
 					</n-button>
 					<n-button
-						v-if="alterUserInfoRef"
+						v-if="isAlterUserInfoRef"
 						:bordered="false"
 						type="warning"
-						@click="">
+						@click.prevent="updateHandler">
 						提交
 					</n-button>
 				</n-space>
 			</template>
-			<n-table :bordered="false">
-				<tbody>
-				<tr>
-					<td>用户名</td>
-					<td>
-						<n-input v-if="alterUserInfoRef" v-model:value="newInfo.displayName" />
-						<n-text v-else>{{ info.displayName }}</n-text>
-					</td>
-					<td>用户名以用于帐户安全设置</td>
-				</tr>
-				<tr>
-					<td>出生日期</td>
-					<td>
-						<n-date-picker v-if="alterUserInfoRef" v-model:value="timestampRef" type="date" />
-						<n-text v-else>{{ info.birthday }}</n-text>
-					</td>
-					<td>出生日期以用于帐户安全设置</td>
-				</tr>
-				<tr>
-					<td>性别</td>
-					<td>
-						<n-select v-if="alterUserInfoRef" v-model:value="newInfo.gender" :options="GENDER_PRE_DEFINED" />
-						<n-text v-else>{{ convertGender(info.gender) }}</n-text>
-					</td>
-					<td>性别以用于帐户推荐设置</td>
-				</tr>
-				<tr>
-					<td>用户名</td>
-					<td>
-						<n-input-group v-if="alterUserInfoRef">
-							<n-input-group-label>姓</n-input-group-label>
-							<n-input v-if="alterUserInfoRef" v-model:value="newInfo.surname" />
-							<n-input-group-label>名</n-input-group-label>
-							<n-input v-if="alterUserInfoRef" v-model:value="newInfo.name" />
-						</n-input-group>
-						<n-text v-else>{{ `${info.surname} ${info.name}` }}</n-text>
-					</td>
-					<td>用户名以用于帐户安全设置</td>
-				</tr>
-				</tbody>
-			</n-table>
+			<n-form ref="updateFormRef" :model="newInfo" :rules="rules" :show-label="false" :show-feedback="false">
+				<n-table :bordered="false">
+					<tbody>
+					<tr>
+						<td>用户名</td>
+						<td>
+							<n-form-item path="displayName">
+								<n-input :allow-input="inputValidator.noSideSpace" v-if="isAlterUserInfoRef"
+								         v-model:value="newInfo.displayName" />
+								<n-text v-else>{{ info.displayName }}</n-text>
+							</n-form-item>
+						</td>
+						<td>用户名以用于帐户安全设置</td>
+					</tr>
+					<tr>
+						<td>出生日期</td>
+						<td>
+							<n-form-item path="birthday" class="flex-auto">
+								<n-date-picker :is-date-disabled="dateDisabled" class="w-100%" v-if="isAlterUserInfoRef"
+								               v-model:value="timestampRef" type="date" />
+								<n-text v-else>{{ info.birthday }}</n-text>
+							</n-form-item>
+						</td>
+						<td>出生日期以用于帐户安全设置</td>
+					</tr>
+					<tr>
+						<td>性别</td>
+						<td>
+							<n-form-item path="gender">
+								<n-select v-if="isAlterUserInfoRef" v-model:value="newInfo.gender"
+								          :options="GENDER_PRE_DEFINED" />
+								<n-text v-else>{{ convertGender(info.gender) }}</n-text>
+							</n-form-item>
+						</td>
+						<td>性别以用于帐户推荐设置</td>
+					</tr>
+					<tr>
+						<td>用户名</td>
+						<td>
+							<n-input-group v-if="isAlterUserInfoRef" class="w-100%">
+								<n-input-group-label>姓</n-input-group-label>
+								<n-form-item path="surname">
+									<n-input :allow-input="inputValidator.noSideSpace" v-model:value="newInfo.surname" />
+								</n-form-item>
+								<n-input-group-label>名</n-input-group-label>
+								<n-form-item path="name" class="flex-auto">
+									<n-input :allow-input="inputValidator.noSideSpace" v-model:value="newInfo.name" />
+								</n-form-item>
+							</n-input-group>
+							<n-text v-else>{{ `${info.surname} ${info.name}` }}</n-text>
+						</td>
+						<td>用户名以用于帐户安全设置</td>
+					</tr>
+					</tbody>
+				</n-table>
+			</n-form>
 		</n-card>
 
 		<n-card class="w-60em" title="账户信息">
 			<template #header-extra>
 				<n-button
+					v-if="!isAlterUserAccountInfoRef"
 					:bordered="false"
 					class="m-l-a color-[var(--n-text-color-focus)]"
 					style="--n-padding: 0; --n-font-size: 16px"
-					@click="message.success('编辑账户信息')"
+					@click.prevent="showUpdateAccount"
 				>
 					编辑账户信息
 				</n-button>
+				<n-space v-else>
+					<n-button
+						v-if="isAlterUserAccountInfoRef"
+						:bordered="false"
+						secondary
+						type="warning"
+						@click="isAlterUserAccountInfoRef = false;">
+						取消
+					</n-button>
+					<n-button
+						v-if="isAlterUserAccountInfoRef"
+						:bordered="false"
+						type="warning"
+						@click.prevent="updateHandler">
+						提交
+					</n-button>
+				</n-space>
 			</template>
-			<n-table :bordered="false">
-				<tbody>
-				<tr>
-					<td>电子邮箱</td>
-					<td>
-						<n-input v-if="alterUserInfoRef" v-model:value="info.email" />
-						<n-text v-else>{{ info.email }}</n-text>
-					</td>
-					<td>用于登录 BookShelf 帐户的电子邮件地址</td>
-				</tr>
-				<tr>
-					<td>电话号码</td>
-					<td>
-						<n-input v-if="alterUserInfoRef" v-model:value="info.phoneNumber" />
-						<n-text v-else>{{ info.phoneNumber }}</n-text>
-					</td>
-					<td>电话号码以用于帐户安全设置</td>
-				</tr>
-				</tbody>
-			</n-table>
+			<n-form ref="updateFormRef" :model="newInfo" :rules="rules" :show-label="false" :show-feedback="false">
+				<n-table :bordered="false">
+					<tbody>
+					<tr>
+						<td>电子邮箱</td>
+						<td>
+							<n-form-item path="email">
+								<n-input v-if="isAlterUserAccountInfoRef" v-model:value="newInfo.email" />
+								<n-text v-else>{{ info.email }}</n-text>
+							</n-form-item>
+						</td>
+						<td>用于登录 BookShelf 帐户的电子邮件地址</td>
+					</tr>
+					<tr>
+						<td>电话号码</td>
+						<td>
+							<n-form-item path="phoneNumber">
+								<n-input v-if="isAlterUserAccountInfoRef" v-model:value="newInfo.phoneNumber" />
+								<n-text v-else>{{ info.phoneNumber }}</n-text>
+							</n-form-item>
+						</td>
+						<td>电话号码以用于帐户安全设置</td>
+					</tr>
+					</tbody>
+				</n-table>
+			</n-form>
 		</n-card>
 	</n-flex>
 </template>
@@ -204,11 +388,6 @@ onMounted(async () => {
 <!--							</n-card>-->
 
 <style scoped>
-:deep(.n-tabs-tab span),
-span {
-	font-size: 16px;
-}
-
 :deep(.n-card-header .n-card-header__main) {
 	font-weight: bolder;
 }

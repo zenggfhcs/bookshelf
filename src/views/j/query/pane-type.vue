@@ -203,7 +203,7 @@ onMounted(async () => {
 							<n-pagination v-model:page="pagination.page" :item-count="itemCountRef" simple />
 							<n-select v-model:value="pagination.pageSize" :options="pageSizeOptions" class="w-7em"
 							          size="small" />
-							<n-button class="ml-2" size="small" type="primary">排序</n-button>
+<!--							<n-button class="ml-2" size="small" type="primary">排序</n-button>-->
 						</n-space>
 							<n-data-table
 								:columns="cols"

@@ -292,7 +292,7 @@ const pagination = reactive({
 
 
 onMounted(() => {
-	props.updateMenuItem("i-user");
+	props.updateMenuItem("userInfo");
 	props.updateBreadcrumbArray(B_USER_INDEX);
 	query();
 });

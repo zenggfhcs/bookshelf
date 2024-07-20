@@ -3,11 +3,11 @@
 </script>
 
 <template>
-	<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+	<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
 		<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 		<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 		<g id="SVGRepo_iconCarrier">
-			<g class="fill">
+			<g>
 				<path
 					d="M12.75 1a.75.75 0 000 1.5h.69l-1.97 1.97a.75.75 0 001.06 1.06l1.97-1.97v.69a.75.75 0 001.5 0v-2.5a.75.75 0 00-.75-.75h-2.5z"></path>
 				<path clip-rule="evenodd"
@@ -19,5 +19,4 @@
 </template>
 
 <style scoped>
-@import url(@/styles/fill.css);
 </style>

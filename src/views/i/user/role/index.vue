@@ -186,7 +186,7 @@ const addHandler = debounce(() => {
 
 
 onMounted(() => {
-	props.updateMenuItem("i-role");
+	props.updateMenuItem("roleInfo");
 	props.updateBreadcrumbArray(B_ROLE_INDEX);// todo
 	query();
 });
@@ -214,7 +214,7 @@ onMounted(() => {
 			</n-button>
 			<n-button type="success" @click.prevent="showAddModal = true">
 				<template #icon>
-					<IAdd />
+					<n-icon :component="IAdd" />
 				</template>
 				新增
 			</n-button>
